@@ -1,6 +1,4 @@
-# Latest Review Summary
-
-Current round: Round 05 - Micro-Benchmark Scripts and Initial Figures
+# Round 05 Summary: Micro-Benchmark Scripts and Initial Figures
 
 ## Modified Files
 
@@ -19,14 +17,14 @@ Current round: Round 05 - Micro-Benchmark Scripts and Initial Figures
 
 ## Implementation
 
-- Added shared benchmark helpers for deterministic matrices, density-controlled batches, repeated timing, CSV writing, fastest-backend marking, and BlockLUT table-size accounting.
-- Implemented block-width micro-benchmark for `Naive`, `SparseXor`, and `BlockLUT`.
-- Implemented density micro-benchmark for `Naive`, `SparseXor`, `BlockLUT`, and `PackedBatch`.
-- Implemented batch-size crossover micro-benchmark for `Naive.apply_many`, `BlockLUT.apply_many`, and `PackedBatch.apply_many`.
-- Implemented plotting for block-width latency, density comparison, and batch crossover.
-- Added Python run-all entry point and kept the shell wrapper as a thin launcher.
+- Added shared benchmark helpers for deterministic setup, timing, CSV output, fastest-backend marking, and BlockLUT table-size accounting.
+- Implemented block-width benchmark over widths `4, 6, 8, 10, 12, 14, 16, 18, 20`.
+- Implemented density benchmark over densities `0.005, 0.01, 0.02, 0.05, 0.1, 0.5`.
+- Implemented batch benchmark over batch sizes `1, 4, 16, 64, 256, 1024, 4096`.
+- Implemented plotting to PNG and PDF for the three benchmark CSVs.
+- Added a Python run-all script and kept the requested shell wrapper.
 - Added `.gitattributes` so shell scripts keep LF line endings.
-- Updated public docs to describe generic benchmark scripts without performance claims.
+- Updated public documentation and workflow status without adding performance claims.
 
 ## Test Result
 
@@ -61,5 +59,5 @@ was not executed directly here. The shell wrapper delegates to the Python runner
 
 ## Next Step
 
-Review the generated CSVs and decide whether to track selected benchmark
-artifacts or keep them as local reproducible outputs.
+Review whether selected generated benchmark artifacts should be tracked, or keep
+the repository limited to reproducible scripts.

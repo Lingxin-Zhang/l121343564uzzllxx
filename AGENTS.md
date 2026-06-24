@@ -4,7 +4,8 @@
 
 This is a public GF(2) kernel benchmark and correctness project. Keep the
 repository focused on small, testable backend implementations, correctness
-checks, and reproducible development notes.
+checks, reproducible micro-benchmarks, plotting scripts, and code-focused
+development notes.
 
 ## Development Rules
 
@@ -15,6 +16,7 @@ checks, and reproducible development notes.
 - Do not commit local sensitive documents, private notes, drafts, or unpublished
   research materials.
 - Keep public documentation generic and code-focused.
+- Do not reintroduce ignored local `paper/` or `references/` content into git.
 
 ## Backend Status
 
@@ -29,7 +31,19 @@ Implemented:
 Not implemented:
 
 1. `HybridPlanner`
-2. Formal benchmark runs
+
+## Benchmark Status
+
+Implemented:
+
+1. `benchmarks/bench_block_width.py`
+2. `benchmarks/bench_density.py`
+3. `benchmarks/bench_batch.py`
+4. `scripts/plot_results.py`
+5. `scripts/run_all_benchmarks.py`
+6. `scripts/run_all_benchmarks.sh`
+
+Generated CSV and figure outputs are local artifacts unless explicitly staged.
 
 ## 每轮工作流
 

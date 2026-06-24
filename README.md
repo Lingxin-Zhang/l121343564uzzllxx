@@ -1,8 +1,9 @@
 # GF(2) Kernel Correctness Repository
 
-This repository contains small GF(2) linear-kernel backends and pytest-based
-correctness checks. The current focus is correctness and API consistency, not
-benchmark claims.
+This repository contains small GF(2) linear-kernel backends, pytest-based
+correctness checks, and reproducible micro-benchmark scripts. The current focus
+is correctness, API consistency, and transparent measurement, not benchmark
+claims.
 
 ## Install
 
@@ -19,6 +20,21 @@ pip install -e .
 pytest
 ```
 
+## Run Micro-Benchmarks
+
+```bash
+python scripts/run_all_benchmarks.py
+```
+
+On systems with `bash`, the shell wrapper is also available:
+
+```bash
+bash scripts/run_all_benchmarks.sh
+```
+
+The benchmark scripts write CSV files to `results/raw/` and initial figures to
+`results/figures/`.
+
 ## Implemented Modules
 
 - `NaiveGF2Kernel`
@@ -27,10 +43,16 @@ pytest
 - `EventUpdateKernel`
 - `PackedBatchGF2Kernel` correctness-first `apply_many`
 
+## Benchmark Scripts
+
+- `benchmarks/bench_block_width.py`
+- `benchmarks/bench_density.py`
+- `benchmarks/bench_batch.py`
+- `scripts/plot_results.py`
+
 ## Not Yet Implemented
 
 - `HybridPlanner`
-- Formal benchmark scripts/results
 
 Do not report performance improvements unless they come from reproducible
 benchmark outputs committed with the relevant code and methodology.

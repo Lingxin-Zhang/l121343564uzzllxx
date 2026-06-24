@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Benchmark skeleton only. Implement benchmark modules before running experiments."
-exit 1
+cd "$(dirname "$0")/.."
+
+python scripts/run_all_benchmarks.py
