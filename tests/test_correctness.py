@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from linear_kernel import BlockLUTKernel, NaiveGF2Kernel, SparseXorKernel
+from linear_kernel import BlockLUTKernel, EventUpdateKernel, NaiveGF2Kernel, SparseXorKernel
 
 
 def test_package_imports() -> None:
@@ -142,3 +142,68 @@ def test_block_lut_apply_and_apply_many_match_naive(
         actual = block_lut.apply(x)
         assert_unpacked_bits(actual, (16,))
         np.testing.assert_array_equal(actual, expected)
+
+
+@pytest.mark.parametrize("flip_count", [1, 2, 5, 10])
+def test_event_update_matches_naive_recompute(
+    random_matrix: np.ndarray,
+    flip_count: int,
+) -> None:
+    rng = np.random.default_rng(20260626 + flip_count)
+    x = rng.integers(0, 2, size=255, dtype=np.uint8)
+    flipped_positions = rng.choice(255, size=flip_count, replace=False)
+    x_flipped = x.copy()
+    x_flipped[flipped_positions] ^= 1
+
+    naive = NaiveGF2Kernel(random_matrix)
+    event_update = EventUpdateKernel(random_matrix)
+    old = naive.apply(x)
+    old_before_update = old.copy()
+    expected = naive.apply(x_flipped)
+
+    actual = event_update.update(old, flipped_positions)
+
+    assert_unpacked_bits(actual, (16,))
+    np.testing.assert_array_equal(actual, expected)
+    np.testing.assert_array_equal(old, old_before_update)
+
+
+def test_event_update_accepts_list_positions(random_matrix: np.ndarray) -> None:
+    x = np.zeros(255, dtype=np.uint8)
+    flipped_positions = [0, 7, 254]
+    x_flipped = x.copy()
+    x_flipped[flipped_positions] ^= 1
+
+    naive = NaiveGF2Kernel(random_matrix)
+    event_update = EventUpdateKernel(random_matrix)
+
+    actual = event_update.update(naive.apply(x), flipped_positions)
+    expected = naive.apply(x_flipped)
+
+    assert_unpacked_bits(actual, (16,))
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_event_update_rejects_wrong_current_value_length(random_matrix: np.ndarray) -> None:
+    event_update = EventUpdateKernel(random_matrix)
+
+    with pytest.raises(ValueError, match="does not match matrix r=16"):
+        event_update.update(np.zeros(15, dtype=np.uint8), [0])
+
+
+@pytest.mark.parametrize("flipped_positions", [[-1], [255]])
+def test_event_update_rejects_out_of_range_positions(
+    random_matrix: np.ndarray,
+    flipped_positions: list[int],
+) -> None:
+    event_update = EventUpdateKernel(random_matrix)
+
+    with pytest.raises(ValueError, match="must be in \\[0, 255\\)"):
+        event_update.update(np.zeros(16, dtype=np.uint8), flipped_positions)
+
+
+def test_event_update_rejects_non_1d_positions(random_matrix: np.ndarray) -> None:
+    event_update = EventUpdateKernel(random_matrix)
+
+    with pytest.raises(ValueError, match="must be 1-D"):
+        event_update.update(np.zeros(16, dtype=np.uint8), np.zeros((1, 2), dtype=np.int64))

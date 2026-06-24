@@ -68,4 +68,17 @@ benchmark 必须固定 random seed，使用 `time.perf_counter()`，包含 warmu
 
 ## 当前状态
 
-本轮只完成项目初始化、AGENTS.md、README、文档和文件夹结构。尚未实现完整 backend、benchmark、实验结果或论文图。
+当前已实现并测试：
+
+- `NaiveGF2Kernel`
+- `SparseXorKernel`
+- `BlockLUTKernel`
+- `EventUpdateKernel`
+- 最小 correctness 测试
+
+尚未实现：
+
+- `PackedBatchGF2Kernel`
+- `HybridPlanner`
+- benchmark
+- 实验结果或论文图

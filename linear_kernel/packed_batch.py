@@ -13,6 +13,6 @@ class PackedBatchGF2Kernel:
     def __init__(self, matrix: np.ndarray) -> None:
         self.matrix = require_gf2_matrix(matrix)
 
-    def apply_batch(self, x_batch: np.ndarray) -> np.ndarray:
+    def apply_many(self, x_batch: np.ndarray) -> np.ndarray:
         """Apply the packed backend to a batch."""
-        raise NotImplementedError("PackedBatchGF2Kernel.apply_batch will be implemented later")
+        raise NotImplementedError("PackedBatchGF2Kernel.apply_many will be implemented later")

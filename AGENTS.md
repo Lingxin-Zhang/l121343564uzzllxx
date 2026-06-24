@@ -25,16 +25,19 @@ f(x) = xA, x, A in GF(2)
 - 如后续参考 `D:\PKU\OFEC\project\ofec-0.1.0` 的参数、公式或实现逻辑，必须写明：“参考 OFEC_CNN 的参数/逻辑，本仓库重新实现”。
 - 不要直接复制 OFEC_CNN 的大段代码，不要复用 OFEC_CNN 的工程结构作为本仓库主结构。
 
-## 后续 backend
+## Backend 当前状态
 
-本轮只创建 skeleton，后续才实现：
+已实现：
 
 1. `NaiveGF2Kernel`
 2. `SparseXorKernel`
 3. `BlockLUTKernel`
-4. `PackedBatchGF2Kernel`
-5. `EventUpdateKernel`
-6. `HybridPlanner`
+4. `EventUpdateKernel`
+
+尚未实现：
+
+1. `PackedBatchGF2Kernel`
+2. `HybridPlanner`
 
 ## 正确性优先
 
@@ -61,6 +64,20 @@ f(x) = xA, x, A in GF(2)
 - 保存 CSV 到 `results/raw/`；
 - 保存图到 `results/figures/`；
 - 在 README 中写清楚复现命令。
+
+## 每轮提交规范
+
+每次修改后必须在 `review_gpt/` 中写总结。总结内容包括：
+
+- 修改文件；
+- 功能说明；
+- 测试结果；
+- 已知问题；
+- 下一步建议。
+
+每轮总结必须更新 `review_gpt/latest.md`，并新建对应的 `review_gpt/round_xx_summary.md`。修改完成后必须 `git commit`，并 push 到远程仓库 `Lingxin-Zhang/l121343564uzzllxx`。不要只在本地改代码不推送。
+
+如果环境中有适合的 agent skill，例如 Python 项目、pytest、Markdown 文档、Git/GitHub 相关、论文实验实现/论文写作相关skill，请优先使用这些 skill 完成任务。
 
 ## 画图规范
 
