@@ -1,34 +1,28 @@
 # Latest Review Summary
 
-Current round: Round 03 - Public Sanitization and Packed Batch Correctness
+Current round: Round 04 - Restore Codes Directory Tracking
 
 ## Modified Files
 
 - `.gitignore`
-- `AGENTS.md`
-- `README.md`
+- `codes/__init__.py`
 - `pyproject.toml`
-- `scripts/plot_results.py`
-- `linear_kernel/packed_batch.py`
-- `tests/test_correctness.py`
-- `review_gpt/README.md`
 - `review_gpt/latest.md`
-- `review_gpt/round_03_summary.md`
-- sanitized older `review_gpt` notes
+- `review_gpt/round_04_summary.md`
 
 ## Implementation
 
-- Simplified public documentation to generic GF(2) kernel correctness wording.
-- Added `paper/` and `references/` to `.gitignore`.
-- Added `codes/` to `.gitignore` and removed unused code placeholders from public tracking.
-- Removed `paper/` and `references/` from git tracking while preserving local files.
-- Removed application-specific public package metadata and plotting placeholder wording.
-- Implemented correctness-first `PackedBatchGF2Kernel.apply_many` with NumPy matrix multiplication modulo 2.
-- Added PackedBatch correctness tests for batch sizes `1`, `4`, `64`, `1000` and densities `0.01`, `0.05`, `0.5`.
+- Removed broad `codes/` ignore rule.
+- Added narrow ignore rules only for the current local sensitive placeholder files:
+  - `codes/bch_like.py`
+  - `codes/ebch_like.py`
+- Restored `codes/__init__.py` as a generic public package entry point.
+- Restored `codes*` package discovery in `pyproject.toml`.
 
 ## Test Result
 
 ```text
+python -m pytest tests/test_correctness.py -q
 49 passed
 ```
 
@@ -39,4 +33,4 @@ Current round: Round 03 - Public Sanitization and Packed Batch Correctness
 
 ## Next Step
 
-Commit and push this round to the configured remote.
+Commit and push this review fix.

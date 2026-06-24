@@ -26,8 +26,15 @@ dist/
 *.swp
 *.swo
 
+# Local sensitive placeholders
+codes/bch_like.py
+codes/ebch_like.py
+
 # Generated experiment outputs
-codes/
+paper/references/papers/*.pdf
+paper/references/papers/**/*.pdf
+references/papers/*.pdf
+references/papers/**/*.pdf
 paper/
 references/
 results/raw/*.csv

@@ -15,7 +15,7 @@ dev = ["pytest>=7.4"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["linear_kernel*", "decoders*"]
+include = ["linear_kernel*", "codes*", "decoders*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
