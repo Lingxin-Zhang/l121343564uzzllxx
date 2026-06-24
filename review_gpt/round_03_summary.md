@@ -1,6 +1,4 @@
-# Latest Review Summary
-
-Current round: Round 03 - Public Sanitization and Packed Batch Correctness
+# Round 03 Summary: Public Sanitization and Packed Batch Correctness
 
 ## Modified Files
 
@@ -18,13 +16,15 @@ Current round: Round 03 - Public Sanitization and Packed Batch Correctness
 
 ## Implementation
 
-- Simplified public documentation to generic GF(2) kernel correctness wording.
+- Rewrote public README as a generic GF(2) kernel correctness repo overview.
+- Rewrote AGENTS.md as public development rules and fixed the per-round workflow.
+- Sanitized review handoff notes to keep them code-focused.
 - Added `paper/` and `references/` to `.gitignore`.
 - Added `codes/` to `.gitignore` and removed unused code placeholders from public tracking.
-- Removed `paper/` and `references/` from git tracking while preserving local files.
+- Removed `paper/` and `references/` from git tracking without deleting local files.
 - Removed application-specific public package metadata and plotting placeholder wording.
-- Implemented correctness-first `PackedBatchGF2Kernel.apply_many` with NumPy matrix multiplication modulo 2.
-- Added PackedBatch correctness tests for batch sizes `1`, `4`, `64`, `1000` and densities `0.01`, `0.05`, `0.5`.
+- Implemented `PackedBatchGF2Kernel.apply_many` as correctness-first NumPy `(X @ A) mod 2`.
+- Added PackedBatch correctness and invalid-width tests.
 
 ## Test Result
 
@@ -39,4 +39,4 @@ Current round: Round 03 - Public Sanitization and Packed Batch Correctness
 
 ## Next Step
 
-Commit and push this round to the configured remote.
+Push this round to the configured remote.

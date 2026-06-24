@@ -27,6 +27,9 @@ dist/
 *.swo
 
 # Generated experiment outputs
+codes/
+paper/
+references/
 results/raw/*.csv
 results/figures/*.png
 results/figures/*.pdf

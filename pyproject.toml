@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fec-linear-backend"
+name = "gf2-kernel-backends"
 version = "0.1.0"
-description = "Skeleton for exact GF(2) linear-kernel backend experiments for optical FEC."
+description = "GF(2) linear-kernel backend correctness experiments."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "matplotlib>=3.7"]
@@ -15,7 +15,7 @@ dev = ["pytest>=7.4"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["linear_kernel*", "codes*", "decoders*"]
+include = ["linear_kernel*", "decoders*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

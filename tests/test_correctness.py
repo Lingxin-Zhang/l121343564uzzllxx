@@ -5,7 +5,13 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from linear_kernel import BlockLUTKernel, EventUpdateKernel, NaiveGF2Kernel, SparseXorKernel
+from linear_kernel import (
+    BlockLUTKernel,
+    EventUpdateKernel,
+    NaiveGF2Kernel,
+    PackedBatchGF2Kernel,
+    SparseXorKernel,
+)
 
 
 def test_package_imports() -> None:
@@ -207,3 +213,29 @@ def test_event_update_rejects_non_1d_positions(random_matrix: np.ndarray) -> Non
 
     with pytest.raises(ValueError, match="must be 1-D"):
         event_update.update(np.zeros(16, dtype=np.uint8), np.zeros((1, 2), dtype=np.int64))
+
+
+@pytest.mark.parametrize("batch_size", [1, 4, 64, 1000])
+@pytest.mark.parametrize("density", [0.01, 0.05, 0.5])
+def test_packed_batch_apply_many_matches_naive(
+    random_matrix: np.ndarray,
+    batch_size: int,
+    density: float,
+) -> None:
+    rng = np.random.default_rng(20260627 + batch_size)
+    x_batch = (rng.random((batch_size, 255)) < density).astype(np.uint8)
+    naive = NaiveGF2Kernel(random_matrix)
+    packed = PackedBatchGF2Kernel(random_matrix)
+
+    expected = naive.apply_many(x_batch)
+    actual = packed.apply_many(x_batch)
+
+    assert_unpacked_bits(actual, (batch_size, 16))
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_packed_batch_apply_many_rejects_wrong_width(random_matrix: np.ndarray) -> None:
+    packed = PackedBatchGF2Kernel(random_matrix)
+
+    with pytest.raises(ValueError, match="does not match matrix n=255"):
+        packed.apply_many(np.zeros((4, 254), dtype=np.uint8))

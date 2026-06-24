@@ -1,4 +1,4 @@
-"""Plotting placeholder for IEEE/ACP-style figures."""
+"""Plotting placeholder for benchmark figures."""
 
 
 def main() -> None:
