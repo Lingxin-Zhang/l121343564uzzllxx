@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environments
+.venv/
+venv/
+env/
+.env
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Local/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Generated experiment outputs
+results/raw/*.csv
+results/figures/*.png
+results/figures/*.pdf
+paper/draft/*.aux
+paper/draft/*.bbl
+paper/draft/*.blg
+paper/draft/*.log
+paper/draft/*.out
+paper/draft/*.synctex.gz
