@@ -56,8 +56,12 @@ was not executed directly here. The shell wrapper delegates to the Python runner
 - `HybridPlanner` is not implemented.
 - Generated CSV and figure files are local artifacts ignored by git.
 - BlockLUT benchmark timing includes Python-loop overhead in current `apply_many`.
+- Push to `origin/main` failed in this environment after repeated attempts due
+  to GitHub HTTPS connection resets/timeouts. The GitHub connector can read the
+  repository but does not have push permission.
 
 ## Next Step
 
 Review whether selected generated benchmark artifacts should be tracked, or keep
-the repository limited to reproducible scripts.
+the repository limited to reproducible scripts. Retry `git push -u origin main`
+when GitHub network access is stable.
