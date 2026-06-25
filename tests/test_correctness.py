@@ -283,10 +283,10 @@ def test_packed_block_lut_vectorized_apply_many_packed_matches_single_apply(
     np.testing.assert_array_equal(actual, expected)
 
 
-def test_packed_block_lut_rejects_output_width_over_16() -> None:
-    matrix = np.zeros((4, 17), dtype=np.uint8)
+def test_packed_block_lut_rejects_output_width_over_32() -> None:
+    matrix = np.zeros((4, 33), dtype=np.uint8)
 
-    with pytest.raises(ValueError, match="output width"):
+    with pytest.raises(ValueError, match="at most 32"):
         PackedBlockLUTKernel(matrix, block_width=4)
 
 

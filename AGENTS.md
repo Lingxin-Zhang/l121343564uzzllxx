@@ -35,7 +35,7 @@ Implemented:
 3. `BlockLUTKernel`
 4. `EventUpdateKernel`
 5. `PackedBatchGF2Kernel.apply_many`
-6. `PackedBlockLUTKernel`
+6. `PackedBlockLUTKernel` with packed `uint16` / `uint32` output for `r <= 32`
 7. `HybridPlanner` simple rule-based baseline
 
 ## Benchmark Status
@@ -55,8 +55,20 @@ Implemented:
 11. `scripts/run_all_benchmarks.sh`
 12. `scripts/summarize_results.py`
 13. `scripts/export_paper_figures.py`
+14. `benchmarks/bench_cache_aware.py`
+15. `benchmarks/bench_code_profiles.py`
+16. `scripts/plot_round2_results.py`
 
 Generated CSV, PNG, and requested PDF figure outputs may be tracked for review.
+
+## Code Profiles and Cache Diagnostics
+
+Round-specific diagnostic benchmarks may use generic named `CodeProfile`
+objects and `CacheProfile` metadata to evaluate backend behavior across output
+width, matrix shape, batch size, density, block width, and estimated LUT cache
+footprint. Keep these profiles code-focused and generic. Synthetic profiles
+must be marked as synthetic, and verified-candidate profiles must not be
+described as official standards unless independently verified.
 
 ## Reference Registry
 
@@ -100,6 +112,9 @@ inspiration. Do not copy external implementation code.
      calling patterns and project-specific convention checks.
    - Caution: user-written code may contain bugs. Do not treat as gold
      standard. Put concrete local path only in untracked `AGENTS.local.md`.
+   - Local availability: if present, use the path recorded in untracked
+     `AGENTS.local.md` to avoid repeated web lookup and to keep public files
+     free of machine-specific absolute paths.
 
 6. zsr71/oFEC-HUAWEI
    - Role: public C++ oFEC/Huawei-style reference; useful for oFEC layout,
@@ -113,23 +128,45 @@ inspiration. Do not copy external implementation code.
      - `src/ofec_encoder.cpp`
    - Caution: not a gold standard; do not copy implementation code.
 
-7. YihanLiu1010/oFEC-Decoder
+7. kit-cel/Chase-Pyndiah-demo
+   - Role: public C++ Chase-Pyndiah/product/staircase reference; useful for
+     clean-room workload-trace design, row/column component-call structure,
+     staircase half-block coupling, `syn2data`/`data2syn`/`syn2syn` mapping
+     concepts, Chase-II candidate-count patterns, and parameters such as
+     `p_chase`, `decIter`, `windowLen`, and `decodeMode`.
+   - Important files to inspect if available locally:
+     - `README.md`
+     - `SISOsim.cpp`
+     - `simulation.h`
+     - `simulation.cpp`
+     - `lib/GPC.h`
+     - `lib/productCode.h`
+     - `lib/staircaseCode.h`
+     - `lib/BCH.h`
+     - `CP_parameter_opt.py`
+   - Caution: use only for reference inspection and clean-room trace design.
+     Do not copy implementation code, and do not implement a full
+     Chase-Pyndiah decoder in this repository.
+   - Local availability: if present, use the path recorded in untracked
+     `AGENTS.local.md`.
+
+8. YihanLiu1010/oFEC-Decoder
    - Role: VHDL oFEC decoder using Chase-Pyndiah; useful for hardware/pipeline
      organization.
    - Caution: hardware-oriented; not directly suitable as Python backend
      reference.
 
-8. zsr71/oFEC-SIM
+9. zsr71/oFEC-SIM
    - Role: auxiliary simulation-style oFEC reference.
    - Caution: use only for high-level organization if useful.
 
-9. vsousa46/Automa-oFEC
+10. vsousa46/Automa-oFEC
    - Role: auxiliary small oFEC reference.
    - Caution: low priority; do not rely on it for correctness.
 
 ### High-Throughput Communication Implementation References
 
-10. GNU Radio / VOLK
+11. GNU Radio / VOLK
     - Role: stream/chunk processing and SIMD kernel selection inspiration.
     - Caution: not BCH/oFEC correctness reference.
 

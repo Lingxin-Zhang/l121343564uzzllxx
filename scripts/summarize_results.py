@@ -233,12 +233,95 @@ def summarize_planner_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
     return summary
 
 
+def summarize_cache_aware_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    keys = (
+        "preset",
+        "code_profile",
+        "n",
+        "r",
+        "backend",
+        "block_width",
+        "batch_size",
+        "density",
+    )
+    summary = []
+    for key, group in sorted(_group_rows(rows, keys).items()):
+        summary.append(
+            {
+                **dict(zip(keys, key, strict=True)),
+                "mean_latency_per_word_us": _mean(
+                    _float(row, "latency_per_word_us") for row in group
+                ),
+                "mean_throughput_Mword_s": _mean(
+                    _float(row, "throughput_Mword_s") for row in group
+                ),
+                "std_latency_per_word_us": _std(
+                    _float(row, "latency_per_word_us") for row in group
+                ),
+                "std_throughput_Mword_s": _std(
+                    _float(row, "throughput_Mword_s") for row in group
+                ),
+                "lut_bytes": int(max(_float(row, "lut_bytes", 0.0) for row in group)),
+                "fits_l1": all(_truthy(row.get("fits_l1", "True")) for row in group),
+                "fits_l2": all(_truthy(row.get("fits_l2", "True")) for row in group),
+                "fits_l3": all(_truthy(row.get("fits_l3", "True")) for row in group),
+                "correctness_all_true": all(
+                    _truthy(row.get("correctness_passed", "True")) for row in group
+                ),
+                "num_rows": len(group),
+            }
+        )
+    return summary
+
+
+def summarize_code_profile_scaling_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    keys = (
+        "preset",
+        "code_profile",
+        "n",
+        "r",
+        "backend",
+        "batch_size",
+        "density",
+        "block_width",
+    )
+    summary = []
+    for key, group in sorted(_group_rows(rows, keys).items()):
+        summary.append(
+            {
+                **dict(zip(keys, key, strict=True)),
+                "mean_latency_per_word_us": _mean(
+                    _float(row, "latency_per_word_us") for row in group
+                ),
+                "mean_throughput_Mword_s": _mean(
+                    _float(row, "throughput_Mword_s") for row in group
+                ),
+                "std_latency_per_word_us": _std(
+                    _float(row, "latency_per_word_us") for row in group
+                ),
+                "std_throughput_Mword_s": _std(
+                    _float(row, "throughput_Mword_s") for row in group
+                ),
+                "packed_word_bits": int(
+                    max(_float(row, "packed_word_bits", 0.0) for row in group)
+                ),
+                "correctness_all_true": all(
+                    _truthy(row.get("correctness_passed", "True")) for row in group
+                ),
+                "num_rows": len(group),
+            }
+        )
+    return summary
+
+
 def summarize_best_backend_rows(summary_by_name: dict[str, list[dict[str, Any]]]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     rows.extend(_best_from_component(summary_by_name.get("component_loop", [])))
     rows.extend(_best_from_event(summary_by_name.get("event_update", [])))
     rows.extend(_best_from_planner(summary_by_name.get("planner", [])))
     rows.extend(_best_from_bch(summary_by_name.get("bch_syndrome", [])))
+    rows.extend(_best_from_cache_aware(summary_by_name.get("cache_aware", [])))
+    rows.extend(_best_from_code_profile_scaling(summary_by_name.get("code_profile_scaling", [])))
     return rows
 
 
@@ -280,6 +363,54 @@ def _best_from_bch(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         best = min(group, key=lambda row: float(row["mean_latency_per_word_us"]))
         baseline = next((row for row in group if row["backend"] == "Naive.apply_many"), None)
         out.append(_best_row("bch_syndrome", key[0], f"total_bits={key[1]};iterations={key[2]}", best["backend"], baseline["backend"] if baseline else "", best, "mean_throughput_Mbit_s", baseline))
+    return out
+
+
+def _best_from_cache_aware(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped = _group_rows(
+        rows,
+        ("preset", "code_profile", "block_width", "batch_size", "density"),
+    )
+    out = []
+    for key, group in grouped.items():
+        best = min(group, key=lambda row: float(row["mean_latency_per_word_us"]))
+        baseline = next((row for row in group if row["backend"] == "Naive.apply_many"), None)
+        out.append(
+            _best_row(
+                "cache_aware",
+                key[1],
+                f"preset={key[0]};block_width={key[2]};batch_size={key[3]};density={key[4]}",
+                best["backend"],
+                baseline["backend"] if baseline else "",
+                best,
+                "mean_throughput_Mword_s",
+                baseline,
+            )
+        )
+    return out
+
+
+def _best_from_code_profile_scaling(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped = _group_rows(
+        rows,
+        ("preset", "code_profile", "batch_size", "density", "block_width"),
+    )
+    out = []
+    for key, group in grouped.items():
+        best = min(group, key=lambda row: float(row["mean_latency_per_word_us"]))
+        baseline = next((row for row in group if row["backend"] == "Naive.apply_many"), None)
+        out.append(
+            _best_row(
+                "code_profile_scaling",
+                key[1],
+                f"preset={key[0]};batch_size={key[2]};density={key[3]};block_width={key[4]}",
+                best["backend"],
+                baseline["backend"] if baseline else "",
+                best,
+                "mean_throughput_Mword_s",
+                baseline,
+            )
+        )
     return out
 
 
@@ -382,6 +513,55 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "mean_latency_per_word_us",
                 "mean_throughput_Mword_s",
                 "relative_to_best_from_scratch",
+                "correctness_all_true",
+                "num_rows",
+            ],
+        ),
+        (
+            "cache_aware",
+            raw_dir / "cache_aware.csv",
+            summary_dir / "cache_aware_summary.csv",
+            summarize_cache_aware_rows,
+            [
+                "preset",
+                "code_profile",
+                "n",
+                "r",
+                "backend",
+                "block_width",
+                "batch_size",
+                "density",
+                "mean_latency_per_word_us",
+                "mean_throughput_Mword_s",
+                "std_latency_per_word_us",
+                "std_throughput_Mword_s",
+                "lut_bytes",
+                "fits_l1",
+                "fits_l2",
+                "fits_l3",
+                "correctness_all_true",
+                "num_rows",
+            ],
+        ),
+        (
+            "code_profile_scaling",
+            raw_dir / "code_profile_scaling.csv",
+            summary_dir / "code_profile_scaling_summary.csv",
+            summarize_code_profile_scaling_rows,
+            [
+                "preset",
+                "code_profile",
+                "n",
+                "r",
+                "backend",
+                "batch_size",
+                "density",
+                "block_width",
+                "mean_latency_per_word_us",
+                "mean_throughput_Mword_s",
+                "std_latency_per_word_us",
+                "std_throughput_Mword_s",
+                "packed_word_bits",
                 "correctness_all_true",
                 "num_rows",
             ],

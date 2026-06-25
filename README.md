@@ -28,6 +28,14 @@ python scripts/summarize_results.py
 python scripts/export_paper_figures.py
 ```
 
+Round-specific lightweight diagnostics are also available:
+
+```bash
+python -m benchmarks.bench_cache_aware --preset lightweight
+python -m benchmarks.bench_code_profiles --preset lightweight
+python scripts/plot_round2_results.py
+```
+
 On systems with `bash`, the shell wrapper is also available:
 
 ```bash
@@ -79,8 +87,9 @@ For example, `total_bits = 1,000,000` and `component_n = 255` gives
 - `PackedBlockLUTKernel`
 - `HybridPlanner` simple rule-based baseline
 
-Current `PackedBlockLUTKernel` support is limited to output width `r <= 16`.
-Wider packed outputs will need a later `uint32`/`uint64` or multi-word design.
+Current `PackedBlockLUTKernel` supports packed output width `r <= 32`: `uint16`
+for `r <= 16` and `uint32` for `17 <= r <= 32`. Wider packed outputs will need
+a later `uint64` or multi-word design.
 
 `EventUpdateKernel` supports both single-word `update()` and batch
 `update_many()` for event-driven syndrome updates. `HybridPlanner` is a
@@ -96,11 +105,18 @@ reproducible rule-based dispatcher baseline, not an optimal scheduler.
 - `benchmarks/bench_component_loop.py`
 - `benchmarks/bench_event_update.py`
 - `benchmarks/bench_planner.py`
+- `benchmarks/bench_cache_aware.py`
+- `benchmarks/bench_code_profiles.py`
 - `scripts/plot_results.py`
+- `scripts/plot_round2_results.py`
 
 The first benchmark group uses a fixed random GF(2) matrix. The component
 syndrome benchmark uses a deterministic BCH-like `(255, 16)` matrix to exercise
 the same kernels on a structured public workload.
+
+Code-profile diagnostics currently include small named GF(2) profiles for
+shape-scaling checks. Some profiles are synthetic and are marked as such in the
+CSV outputs; they are benchmark workloads, not standards claims.
 
 The deterministic BCH-like matrix is still kept as a placeholder. The BCH
 syndrome and component-loop benchmark path can use the separate

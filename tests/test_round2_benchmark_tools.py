@@ -1,0 +1,129 @@
+"""Tests for Round 2 benchmark helpers and summary output."""
+
+from __future__ import annotations
+
+import csv
+import subprocess
+import sys
+from pathlib import Path
+
+from scripts.summarize_results import summarize_cache_aware_rows
+
+
+def test_cache_aware_summary_groups_rows() -> None:
+    rows = [
+        {
+            "preset": "lightweight",
+            "code_profile": "synthetic_511_r32",
+            "n": "511",
+            "r": "32",
+            "backend": "PackedBlockLUT.apply_many_packed",
+            "block_width": "8",
+            "batch_size": "64",
+            "density": "0.05",
+            "lut_bytes": "16384",
+            "fits_l1": "True",
+            "fits_l2": "True",
+            "fits_l3": "True",
+            "latency_per_word_us": "2.0",
+            "throughput_Mword_s": "0.5",
+            "mean": "0.000128",
+            "std": "0.000001",
+            "repeats": "3",
+            "correctness_passed": "True",
+        },
+        {
+            "preset": "lightweight",
+            "code_profile": "synthetic_511_r32",
+            "n": "511",
+            "r": "32",
+            "backend": "PackedBlockLUT.apply_many_packed",
+            "block_width": "8",
+            "batch_size": "64",
+            "density": "0.05",
+            "lut_bytes": "16384",
+            "fits_l1": "True",
+            "fits_l2": "True",
+            "fits_l3": "True",
+            "latency_per_word_us": "4.0",
+            "throughput_Mword_s": "0.25",
+            "mean": "0.000256",
+            "std": "0.000002",
+            "repeats": "3",
+            "correctness_passed": "True",
+        },
+    ]
+
+    summary = summarize_cache_aware_rows(rows)
+
+    assert len(summary) == 1
+    assert summary[0]["mean_latency_per_word_us"] == 3.0
+    assert summary[0]["correctness_all_true"] is True
+    assert summary[0]["num_rows"] == 2
+
+
+def test_round2_benchmark_help_runs() -> None:
+    for module in ("benchmarks.bench_cache_aware", "benchmarks.bench_code_profiles"):
+        result = subprocess.run(
+            [sys.executable, "-m", module, "--help"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0
+        assert "usage" in result.stdout.lower()
+
+
+def test_summarize_results_writes_round2_outputs(tmp_path: Path) -> None:
+    raw_dir = tmp_path / "raw"
+    summary_dir = tmp_path / "summary"
+    raw_dir.mkdir()
+    _write_csv(
+        raw_dir / "cache_aware.csv",
+        [
+            {
+                "preset": "lightweight",
+                "code_profile": "synthetic_511_r32",
+                "n": "511",
+                "r": "32",
+                "backend": "Naive.apply_many",
+                "block_width": "8",
+                "batch_size": "64",
+                "density": "0.05",
+                "lut_bytes": "0",
+                "fits_l1": "True",
+                "fits_l2": "True",
+                "fits_l3": "True",
+                "latency_per_word_us": "1.0",
+                "throughput_Mword_s": "1.0",
+                "mean": "0.000064",
+                "std": "0.0",
+                "repeats": "3",
+                "correctness_passed": "True",
+            }
+        ],
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/summarize_results.py",
+            "--raw-dir",
+            str(raw_dir),
+            "--summary-dir",
+            str(summary_dir),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert (summary_dir / "cache_aware_summary.csv").exists()
+
+
+def _write_csv(path: Path, rows: list[dict[str, str]]) -> None:
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
