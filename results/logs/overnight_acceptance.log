@@ -1,0 +1,31 @@
+﻿Overnight acceptance checks
+command: python -m pytest -q
+result: 287 passed, 1 skipped, 23 warnings
+
+CSV/figure audit result: passed
+required artifacts:
+- results/raw/cache_aware_selection.csv: exists
+- results/raw/cache_aware.csv: exists
+- results/raw/candidate_testing.csv: exists
+- results/raw/component_decoder_exactness.csv: exists
+- results/summary/cache_aware_selection_workload_summary.csv: exists
+- results/figures/experiment_round07_cache_aware_calibration.png: exists
+- results/paper_figures/fig_bch_syndrome_throughput.png: exists
+
+row/correctness audit:
+- cache_aware_selection: rows=450, bad_correctness=0
+- cache_aware: rows=9216, bad_correctness=0
+- candidate_testing: rows=784, bad_correctness=0
+- component_decoder_exactness: rows=24, bad_correctness=0, bad_exact_mismatch=0
+- bch_syndrome: rows=36, bad_correctness=0
+- component_loop: rows=48, bad_correctness=0
+- event_update: rows=45, bad_correctness=0
+
+paper preset planner summary:
+- candidate_test_packed: mean=1.0183577615, p90=1.06167158338, max=1.26762252426, correctness_all_true=True
+- component_decode_batch: mean=1.0627601819, p90=1.16857047808, max=2.24627116743, correctness_all_true=True
+- dense_batch: mean=1.12143411217, p90=1.36295574826, max=2.5165193849, correctness_all_true=True
+- event_update: mean=1.00124543805, p90=1, max=1.08967153955, correctness_all_true=True
+- sparse_single: mean=1, p90=1, max=1, correctness_all_true=True
+
+exit: pytest_exit_code=0, audit_exit_code=0

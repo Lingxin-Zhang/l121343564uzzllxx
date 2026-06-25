@@ -1,0 +1,9 @@
+﻿Overnight component loop scaling benchmark
+start=2026-06-26T04:52:34.1846127+08:00
+command=python -m benchmarks.bench_component_loop --matrix-source galois_systematic_candidate --num-words 4096,16384,65536,262144 --iterations 1,5,10 --repeats 5
+
+wrote D:\PKU\acp2026\fec_linear_backend\results\raw\component_loop.csv
+
+end=2026-06-26T04:59:43.2482110+08:00
+exit_code=0
+elapsed_seconds=429

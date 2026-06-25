@@ -1,211 +1,785 @@
 preset,target_mode,code_profile,pattern_type,p_chase,candidate_weight,candidate_count,backend,output_mode,selected_backend,selected_backend_reason,block_width,mean_latency_per_candidate_us,mean_throughput_Mcandidate_s,std_latency_per_candidate_us,std_throughput_Mcandidate_s,matches_found,correctness_all_true,num_rows
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.10833337,0.0825877492335,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,8.42916536688,0.118635707864,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,8.32083363396,0.120180266064,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.30000189024,0.158730111105,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.32083295689,0.158206996897,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,7.70000042394,0.12987012272,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.79166745006,0.14723924682,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,11.0124995748,0.09080590589,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,2.33645854072,0.427998178685,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,2.11666641311,0.472441001477,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.41874942428,0.184544425605,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.67291681364,0.176276161427,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,2.19687475086,0.455192085762,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.03124984385,0.165803113101,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.944270793,0.0772542552602,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.75234374386,0.173842184078,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.966015628971,1.03517993913,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.05156246315,0.197958553872,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.35247393903,0.186829494434,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.600260439872,1.66594353646,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.3459636547,0.119818398614,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5797607448,0.0794927678107,0,0,23,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.8321451822,0.171463495637,0,0,23,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.575528972035,1.73753198985,0,0,23,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.8295166004,0.171540810079,0,0,23,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.78922526036,0.172734684699,0,0,23,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.512060547445,1.95289405714,0,0,23,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.78942870991,0.147287797358,0,0,23,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.9082030728,0.0719000143129,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.81080727594,0.172093127945,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.649609395017,1.5393866032,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.54687494514,0.180281691924,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.02786455299,0.165896229288,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.617578128489,1.61922832735,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.5312499727,0.132780083469,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.8550944017,0.0777901716433,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.77411295429,0.17318677482,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.506168618131,1.97562623241,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.71290689777,0.175042236447,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.71198729915,0.175070417287,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.56783040255,1.76108921873,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.97813313385,0.143304803852,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.1597656693,0.0706226376448,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.72760412372,0.174593072146,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.70195308884,1.42459662319,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.94244795341,0.144041411144,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.02226555202,0.166050465786,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.602734341252,1.65910573126,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.49453128669,0.15397569984,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.2418945261,0.0755178949682,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.89624023443,0.169599602499,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.60472005714,1.653657735,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.62381184466,0.177815337288,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.64978027266,0.17699803386,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.510270188177,1.959746078,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.15782877118,0.139707169865,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.4187500458,0.069354139355,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.921354159,0.168880288722,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.662500042381,1.5094338657,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.39752606225,0.185270064186,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.04960935865,0.16529992942,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.620182314985,1.61242908067,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.18580724626,0.122162661533,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.4062011745,0.0806048512298,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.82746582249,0.171601178018,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.556722004793,1.79622862289,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.72353515812,0.174717193548,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.59966634247,0.178582068795,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.548828126057,1.82206405343,0,0,1,True,1
-lightweight,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.14147135265,0.140027166759,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,11.6833349845,0.0855919993158,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,7.47916540907,0.133704757858,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,7.06250042034,0.141592911927,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.4999985625,0.15384618787,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.75833386291,0.147965463128,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,7.15833448339,0.139697300024,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.41666701995,0.155844147264,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,10.3479166379,0.0966378098113,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,2.3916666881,0.418118463151,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,2.09374957194,0.477612037944,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.65520834546,0.176828144767,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.44583357017,0.183626617875,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,2.01041681673,0.497409289298,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.96874970648,0.143497763892,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,11.3499999467,0.0881057272859,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.46132810086,0.183105644182,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.62226558839,1.60703085412,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.63841149415,0.177354916547,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.73125006061,0.174482004698,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.574609354468,1.74031277462,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,5.6412760235,0.177264859197,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,11.9715087881,0.0835316598515,0,0,24,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.0665283191,0.164838923912,0,0,24,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.495320639023,2.01889427013,0,0,24,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.00140788265,0.16662756799,0,0,24,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.86163738111,0.170600795475,0,0,24,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.479166663088,2.08695653732,0,0,24,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.75738118143,0.147986323866,0,0,24,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.4476562178,0.0803364089195,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,4.81002598463,0.207899084786,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.623958309613,1.60267117946,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.67604176164,0.176179112486,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.91471348343,0.169069897097,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.550520780962,1.81646185681,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.44479162778,0.155164054597,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.2337320979,0.081741204728,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.00444335911,0.166543331362,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.524723309544,1.90576629971,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.98623046718,0.167050033487,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.91026204688,0.169197235599,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.524495443225,1.90659425724,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.49810384346,0.153891046387,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.7837239436,0.0725493345699,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.53007809382,0.180829272758,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.670182240962,1.49213145154,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.82890622051,0.17155877315,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.64934900164,0.177011545881,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.55208329286,1.81132088751,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.71484368064,0.12962025433,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.1344726599,0.0824098440888,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.03151041882,0.165795950029,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.546004230273,1.83148764159,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.79028320165,0.172703124385,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.95032552061,0.168058032546,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.485310868233,2.06053493844,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.61319172934,0.151212915174,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.2395833084,0.0817021278263,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.05195312649,0.165235912952,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.606640620996,1.64842241912,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.35520833485,0.186734098371,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.58997392848,0.178891710908,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.550781275403,1.81560275314,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.86276041254,0.127181797172,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.3073404978,0.0812523225611,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.97906901116,0.167250118394,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.512174480605,1.95245963606,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.89412435185,0.169660485647,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.96652831556,0.167601651599,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.544075523597,1.83798012708,0,0,1,True,1
-lightweight,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.70961100487,0.149039936782,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5708344664,0.0795492139103,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,15.6125000406,0.0640512408261,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,15.1708324362,0.0659159610525,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,26.3124990549,0.0380047519589,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,24.5083332023,0.040802448365,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,15.2749998961,0.0654664488906,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.0333314448,0.124481357065,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,11.6500001847,0.0858369085104,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,4.71875015743,0.211920522731,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,4.68124987189,0.213618163389,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,21.3822913793,0.0467676724754,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,20.6302077762,0.0484726092364,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,3.93854134018,0.253901105417,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.58229146211,0.151922777312,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.2805989021,0.0752978090351,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.189062444,0.045067248899,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.2483072472,0.801084830872,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,21.8485677124,0.0457695906279,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.5138020748,0.0444171978006,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.20052080395,0.832971820819,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.43033854431,0.155512807469,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.8351888002,0.0722794617724,0,0,13,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.8071126287,0.0438459710477,0,0,13,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.30494791506,0.766314109904,0,0,13,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.101245122,0.0452463195842,0,0,13,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.5209716784,0.0444030574827,0,0,13,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.04986978992,0.952499071411,0,0,13,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.26284179583,0.137687151684,0,0,13,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.8921874774,0.0719829041773,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.9640625093,0.0435463019487,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.30572918048,0.765855596205,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,21.7764323528,0.0459212043461,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.1876302173,0.0450701580209,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.23867190875,0.80731628201,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.17812497189,0.12227741731,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.3950113956,0.0694685104802,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.6160970035,0.0442162942548,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.20170898299,0.832148227362,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.6049397772,0.0442381182988,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.6873942021,0.0440773405307,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.10429687084,0.905553593794,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.88833007448,0.126769543181,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.4277343376,0.0693109518515,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.5035156139,0.0444375011068,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.32838537562,0.752793593147,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.1191406429,0.0452097129876,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.4825520642,0.04447893625,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.22239581894,0.818065625314,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.95273433848,0.143828305716,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.4471191466,0.0692179520256,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.8197835289,0.0438216251585,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.22652994605,0.815308263136,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.8297444664,0.0438025051691,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.7289632117,0.0439967274656,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.08972981631,0.91765865725,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.03656413003,0.12443128479,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.4167969817,0.0693635348593,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,23.0946614768,0.0433000501438,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.33333332997,0.750000001894,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,21.8559895681,0.0457540481928,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.0947917266,0.0452595350241,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.18098963261,0.846747483967,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,9.40703118128,0.106303463944,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.8098958309,0.0780646473009,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.4229329386,0.0445971988919,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.18921712537,0.840889336917,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.6437011672,0.0441623916787,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.5624674499,0.0443213935807,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.01310222078,0.987067227262,0,0,1,True,1
-lightweight,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.51922200474,0.132992482383,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.1803573815,0.0820993973066,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,7.68928605664,0.13005108571,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,6.96071427748,0.143663417307,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.8232149708,0.171726444072,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.62678594309,0.177721351072,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,6.7928568959,0.147213464868,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,3,0,8,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.10357113016,0.163838510058,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,4,0,16,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,10.7151790871,0.0933255517121,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,4,0,16,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,6.9955359712,0.142948303621,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,4,0,16,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,6.14910719118,0.162625234674,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,4,0,16,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.23571413526,0.190995912719,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,4,0,16,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.24017897468,0.190833176659,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,4,0,16,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,3.58839263624,0.278676304789,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,4,0,16,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,5.67410721227,0.176239179591,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,10.5660715885,0.0946425539168,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,2.18035711441,0.458640464624,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,2.11160737048,0.473572887639,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.51383969391,0.181361819624,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.1361608452,0.194697952447,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.98660693838,0.503370838327,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,5,0,32,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,5.86964285633,0.170368116847,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,6,0,64,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.5100446122,0.0740190005812,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,6,0,64,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.56450889177,0.15233432028,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,6,0,64,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.4629465243,0.683551984565,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,6,0,64,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.96361608529,0.143603551338,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,6,0,64,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.08236605258,0.196758751663,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,6,0,64,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.16562504055,0.857908817338,0,0,1,True,1
+full,known_hit,bch_255_239_r16,chase_ii_all,6,0,64,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,5.6272321152,0.177707259898,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,8.57366071776,0.116636292585,0,0,1024,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.73790457078,0.174279649943,0,0,1024,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.461439737722,2.16713021929,0,0,1024,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.53144531068,0.180784576875,0,0,1024,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.51946149179,0.181177095173,0,0,1024,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.384695876424,2.59945598922,0,0,1024,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.29062499409,0.233066278544,0,0,1024,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,8.84531337166,0.11305421956,0,0,16384,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.68874075719,0.175785827248,0,0,16384,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.889349365707,1.12441751078,0,0,16384,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.56350010429,0.179742964187,0,0,16384,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.57120622905,0.179494342677,0,0,16384,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.836813790832,1.19500898641,0,0,16384,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,3.77510114343,0.264893564968,0,0,16384,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.52728799218,0.104961663888,0,0,256,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.37165176086,0.186162477487,0,0,256,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.606305807846,1.64933270812,0,0,256,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.1227678536,0.195206971813,0,0,256,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.58415181981,0.179078225712,0,0,256,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.5566406084,1.79649128164,0,0,256,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,3.88219866311,0.257585993602,0,0,256,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.33553990023,0.107117532643,0,0,4096,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.7272809743,0.174602923182,0,0,4096,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.587241907673,1.70287574326,0,0,4096,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.61093401075,0.178223446949,0,0,4096,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.62716238863,0.177709461881,0,0,4096,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.503791156348,1.98494949227,0,0,4096,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,0,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.01324986196,0.249174617678,0,0,4096,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,11.6793387162,0.0856212859562,0,0,5,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.56482979976,0.179700015272,0,0,5,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.467327010613,2.13982923582,0,0,5,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.56982421683,0.179538879697,0,0,5,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.5287388331,0.180873076155,0,0,5,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.407938062251,2.45135252759,0,0,5,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.78328683534,0.147421157954,0,0,5,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.6213570729,0.0792307827301,0,0,62,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.73333391429,0.174418586977,0,0,62,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.851186698014,1.17483038954,0,0,62,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.63584856244,0.177435569626,0,0,62,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.57032819464,0.179522635841,0,0,62,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.812114606167,1.23135329965,0,0,62,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.41447666741,0.155897363394,0,0,62,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.5989955977,0.0735348425417,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.54001118352,0.18050505078,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.624720964229,1.60071465063,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.86969866033,0.170366497135,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.76763393058,0.173381322746,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.578069213069,1.72989665838,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.70725445623,0.12974788956,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.8154820049,0.0780306194976,0,0,23,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.69132951966,0.175705869173,0,0,23,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.520643833316,1.92069882713,0,0,23,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.68006417317,0.17605434895,0,0,23,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.60508510107,0.178409423223,0,0,23,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.472244699219,2.11754626713,0,0,23,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,1,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.80939592306,0.146855904885,0,0,23,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.1386997769,0.076111032064,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.66633649766,0.176480870914,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.544266185898,1.83733626286,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.72582310302,0.174647379426,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.8195312574,0.171835145439,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.418094308381,2.39180486305,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.8472656218,0.146043699081,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.3826913015,0.0807578882206,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.71376778729,0.175015862952,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.902107457433,1.10851539,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.57628348221,0.179330911563,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.63746076259,0.177384826629,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.808462959563,1.23691504746,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.56507306727,0.152321229292,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,11.4994977918,0.0869603193202,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.38934149777,0.185551425979,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.631473215305,1.58359844212,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,4.77650668732,0.209358023648,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.36155133497,0.186513182011,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.681026774276,1.46837105056,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.7824218734,0.147439958567,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.1082310243,0.0762879444332,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.62937012205,0.177639767562,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.556399971937,1.79726824306,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.68216727004,0.175989187308,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.8230573379,0.171731092787,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.543512836007,1.83988294986,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,2,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.71903599222,0.148830874125,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.3896763422,0.0746844041967,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.74144810831,0.1741720871,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.469266183245,2.13098671011,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.60800781711,0.178316441883,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.6159598135,0.178063952238,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.417285150434,2.39644281365,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.91883371116,0.144533029951,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5331508098,0.0797883960051,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.69248744396,0.175670128366,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.921829659209,1.08479911664,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.6611711773,0.176641894174,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.6083339141,0.17830607366,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.841107177812,1.18890912642,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.87649448849,0.145422933396,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.8545759195,0.0721783189762,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.17254462855,0.193328443119,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.855691951074,1.16864485957,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.1787946249,0.161843864493,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.61378351449,0.178132982403,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.558928572251,1.78913737756,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.42159597524,0.134741907716,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.0296247188,0.0767481812852,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.71926966789,0.174847499431,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.622328402398,1.60686865029,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.66458914315,0.176535309928,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.67323172415,0.176266376666,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.487039622093,2.05322104124,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,3,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.08127790209,0.14121744886,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.3942801257,0.0806823784731,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.55184150893,0.180120415612,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.46344867347,2.15773624405,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.76441127415,0.173478253449,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.59757254288,0.178648868298,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.423646757294,2.3604571091,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.61707589903,0.151124154424,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.9187944685,0.0774066034134,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.67015904045,0.176361896177,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.912070138018,1.09640690811,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.77454485143,0.173173821613,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.60582624181,0.17838583589,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.850977434551,1.17511929153,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.8803536557,0.145341366162,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5455357128,0.0797096292176,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.06824777144,0.197306849447,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.682142854203,1.46596859271,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.0445312354,0.198234474788,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.74341515858,0.174112435265,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.582198643834,1.71762681104,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.55145091904,0.152637944229,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.330998881,0.0810964310068,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.74329659539,0.174116029599,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.572910853488,1.74547225613,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.66587960244,0.176495102291,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.56473911826,0.179702943615,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.453219166323,2.20643802007,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,4,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.50979003629,0.153614785488,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.4803292384,0.0801260912993,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.70011160659,0.175435161452,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.492857144049,2.02898550234,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.70177175112,0.175384081238,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.6066266682,0.178360368753,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.451743858321,2.21364381957,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.83399832724,0.146327223408,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.1375967842,0.0761174221152,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.78483799529,0.172865687996,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.904324777094,1.10579741408,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.64736415447,0.177073759128,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.57358834387,0.179417627981,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.824067033786,1.21349351327,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.73877999446,0.148394813426,0,0,2,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.3589843497,0.0809127976624,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.41093751443,0.184810857145,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.653794618951,1.5295323195,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.7412388352,0.174178435823,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.38694195841,0.185634077315,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.598493280839,1.67086253433,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.6395646959,0.1308975105,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.8982770653,0.0775297347805,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.76091308752,0.173583594268,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.52754952711,1.89555662286,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.50219377463,0.181745689258,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.56323939601,0.179751387423,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.465307615676,2.14911591023,0,0,1,True,1
+full,known_hit,bch_255_239_r16,fixed_weight,0,8,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.56019461636,0.152434502096,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5607143023,0.0796133066903,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,8.85714273733,0.112903227334,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,8.41071388485,0.118895971696,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,7.59464247884,0.131671767669,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,7.25357157145,0.137863118899,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,8.45714280981,0.118243243905,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,3,0,8,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.33392932619,0.136352554753,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,4,0,16,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.3482142434,0.0809833697643,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,4,0,16,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,4.5392859777,0.220298964399,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,4,0,16,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,4.35982136488,0.22936719565,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,4,0,16,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,7.0044640909,0.142766097024,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,4,0,16,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,7.10714292446,0.140703516255,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,4,0,16,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,5.47321438457,0.182707990175,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,4,0,16,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.81607151574,0.1134292069,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.4214285669,0.0805060379824,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,2.75357134732,0.363164731858,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,2.51205347013,0.398080698477,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,7.16428569701,0.139581256568,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.8995536172,0.144936912659,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,2.48616067568,0.402226617846,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,5,0,32,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.46026775492,0.134043446274,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,6,0,64,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.4930804571,0.0741120608579,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,6,0,64,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.94575893639,0.143972747854,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,6,0,64,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.48348226503,0.674089622487,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,6,0,64,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.50290179952,0.153777502849,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,6,0,64,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.21986600891,0.160775167595,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,6,0,64,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.32388400484,0.755353185285,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,chase_ii_all,6,0,64,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.38124999698,0.156709108791,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.64970702658,0.103630089208,0,0,1024,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.08624441968,0.164304936024,0,0,1024,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.478111051702,2.09156428499,0,0,1024,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.97943639085,0.167239842459,0,0,1024,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.03360769804,0.165738319435,0,0,1024,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.418610503467,2.38885549148,0,0,1024,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.28125001203,0.233576641679,0,0,1024,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,8.96338849848,0.111564951153,0,0,16384,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.08734915529,0.16427511787,0,0,16384,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.920690918044,1.08614083228,0,0,16384,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.05283116022,0.165211943557,0,0,16384,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.98958652986,0.166956432638,0,0,16384,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.881970214449,1.13382513788,0,0,16384,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.1376072473,0.241685578217,0,0,16384,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.95814736728,0.100420285332,0,0,256,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.96930804672,0.16752360444,0,0,256,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.64095982972,1.56016017484,0,0,256,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.92784596977,0.168695341461,0,0,256,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.74386159055,0.17409890267,0,0,256,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.585881707593,1.70682918931,0,0,256,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.33705356175,0.230571282038,0,0,256,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.24836425855,0.108127228994,0,0,4096,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.18972167794,0.161558152698,0,0,4096,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.721958705136,1.38512077337,0,0,4096,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.04648786253,0.16538526542,0,0,4096,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.16456124192,0.162217546514,0,0,4096,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.503536556705,1.9859531283,0,0,4096,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,0,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.28360072289,0.233448461864,0,0,4096,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.4732003428,0.0801718863256,0,0,6,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.19102957801,0.161524022362,0,0,6,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.461049109747,2.16896633972,0,0,6,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.1427315846,0.162794025138,0,0,6,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.08123605161,0.164440253842,0,0,6,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.405636171763,2.46526338037,0,0,6,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.34714006407,0.157551273472,0,0,6,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.0087149489,0.0768715437248,0,0,58,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.02996302998,0.165838496029,0,0,58,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.902620151574,1.10788574602,0,0,58,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.06247733005,0.164949070414,0,0,58,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.08297816638,0.16439315951,0,0,58,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.859382848566,1.16362573639,0,0,58,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.76831141837,0.147747338765,0,0,58,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.463727685,0.0742736353109,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.6654576578,0.176508247065,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.609765623137,1.63997438041,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.72494417943,0.148700119037,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.09882811529,0.163965926092,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.613839282388,1.62909091792,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.10318077576,0.140782000567,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.3172537647,0.081186928442,0,0,24,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.1158691409,0.16350905766,0,0,24,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.586045617622,1.70635180937,0,0,24,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.90999930239,0.169204757705,0,0,24,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.93425990709,0.168513010157,0,0,24,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.484469166752,2.06411484699,0,0,24,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,1,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.41284528464,0.155937022587,0,0,24,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.8986607137,0.0775274287922,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.98242188029,0.167156382484,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.469238281247,2.13111342353,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.16554130569,0.162191760694,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.09073661703,0.164183753605,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.433928570536,2.30452675371,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.7397181819,0.148374156457,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.8843540738,0.0776135143657,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.03228672601,0.165774613413,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.891854421679,1.12125922762,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.89425048757,0.169656854949,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.92922450439,0.168656120081,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.838485282222,1.19262677736,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.50479300392,0.153732793557,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.7409598138,0.0784870225333,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.40507809481,0.185011202883,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.939564707941,1.06432265021,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.02823661211,0.165885990273,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.8943638643,0.169653591638,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.562499995535,1.77777779189,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,9.25189731658,0.108085938028,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.4078822564,0.080593930482,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.02871093593,0.16587293878,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.538357978387,1.85750010243,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.93712332326,0.16843173799,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.03600027814,0.165672623247,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.539892578136,1.85222031289,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,2,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.45888672019,0.15482544335,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.9461216553,0.077243210486,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.08164062247,0.164429314732,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.45917968399,2.17779669891,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.03203124326,0.165781634689,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.85009764466,0.170937317758,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.432561380746,2.31181063431,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.77148439568,0.147678107423,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5685782295,0.0795634941154,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.09326956586,0.164115503047,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.901905168454,1.10876401974,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.02336948979,0.166020032757,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.94951259052,0.168080995676,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.824393136359,1.2130134955,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.69891967726,0.149277801224,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5636160776,0.0795949186779,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.93097096108,0.168606456946,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.657812506688,1.5201900083,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.58973215448,0.178899448554,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.4162388616,0.184629966579,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.557756688327,1.79289647427,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,5.95703126497,0.167868852037,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.9462716225,0.0772423157153,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.05528390046,0.165145023163,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.586997767219,1.70358399273,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.87900739747,0.170096741234,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.0375453452,0.165630225998,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.501733398193,1.99309036154,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,3,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.97555106147,0.143357849608,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.7254045716,0.0785829632663,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.05542689008,0.165141123517,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.442522321009,2.25977301601,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.06090960023,0.164991736547,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.10813336672,0.163716137151,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.422209820629,2.3684906204,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.68299386624,0.14963353551,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.0511910571,0.076621359355,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.05245710007,0.165222154154,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.918511090678,1.08871848163,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.05040631945,0.165278156078,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.06795567088,0.164800149216,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.830382428469,1.20426440362,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.96883545004,0.143495998316,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.2074218924,0.0703857468,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,5.6299665435,0.177620948948,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.630189755871,1.58682363635,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.56668524763,0.152283833059,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.55094863687,0.180149388045,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.561104895626,1.78219795941,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.61372769173,0.151200661202,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.2485979358,0.0754796850841,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.15178571601,0.16255442666,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.605426896933,1.65172707897,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.01580287147,0.166228851138,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.01018066147,0.166384349544,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.490066964533,2.04053746196,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,4,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.56853027132,0.152241058303,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.7760463166,0.0782714757928,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.09764231285,0.163997812383,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.473297989499,2.11283382179,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.88627232543,0.169886805216,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.95537109608,0.167915648558,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.467354912611,2.13970148385,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.72331195314,0.148736219139,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.1370649064,0.0761205038664,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.10023803712,0.163928029351,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.910106550123,1.09877244578,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,5.99342389711,0.16684953662,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.9772382462,0.167301345339,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.895826067802,1.11628812327,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.75304565436,0.148081332658,0,0,2,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.356975452,0.0748672484719,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.15133925359,0.162566224813,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.639062493844,1.56479219111,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.03007811151,0.16583533107,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,5.78738841536,0.172789508537,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.600948656678,1.66403566908,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.60329245557,0.131521969705,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.6242780445,0.0792124505238,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,6.05436662633,0.165170043659,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.570047431227,1.7542399899,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,6.13987862965,0.162869668982,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,6.00274135008,0.166590552829,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.460013254155,2.1738504075,0,0,1,True,1
+full,known_hit,ebch_256_239_r17,fixed_weight,0,8,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.8254813032,0.146509814558,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.2857142872,0.0813953488275,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,15.3321431883,0.0652224537507,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,16.4910712296,0.0606388745811,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,26.7374998657,0.0374006546993,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,25.1250000604,0.0398009949292,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,14.9696435463,0.0668018578335,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,3,0,8,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.96071461601,0.125616863339,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,4,0,16,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,16.4517862556,0.0607836732415,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,4,0,16,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,8.20089293744,0.121937941103,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,4,0,16,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,7.27678603393,0.137423306847,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,4,0,16,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,24.6035716763,0.0406445053246,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,4,0,16,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,20.9080358867,0.0478285002674,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,4,0,16,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,7.09821428505,0.140880503158,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,4,0,16,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.48214284281,0.154269972793,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.4973213797,0.0689782597633,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,6.14821432724,0.162648851646,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,5.78482156145,0.172866179082,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,24.1593749836,0.0413917992778,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,21.5156248617,0.0464778506982,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,4.65223222688,0.214950576676,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,5,0,32,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.30669663743,0.158561614343,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,6,0,64,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.9790178382,0.0667600513468,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,6,0,64,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,23.9104911088,0.041822645777,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,6,0,64,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,2.41696423992,0.41374215782,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,6,0,64,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.6765624965,0.0440983945497,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,6,0,64,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,21.3470982219,0.0468447743859,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,6,0,64,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,2.38683034175,0.418965681183,0,0,1,True,1
+full,known_hit,synthetic_511_r32,chase_ii_all,6,0,64,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.48459821865,0.154211558879,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.12995255931,0.109529594322,0,0,1024,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.4664481071,0.0445108187655,0,0,1024,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.35704520484,0.736895128055,0,0,1024,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,23.2802873938,0.0429547961794,0,0,1024,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.784933021,0.0438886521668,0,0,1024,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.877260049492,1.13991284634,0,0,1024,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.27140066352,0.234115241996,0,0,1024,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.13187604569,0.109506523632,0,0,16384,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.5036734441,0.0444371894431,0,0,16384,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.82930384948,0.546656040922,0,0,16384,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,21.8871163499,0.0456889790328,0,0,16384,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.4355381562,0.0445721423324,0,0,16384,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.71028180875,0.584698962993,0,0,16384,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.17251935758,0.239663357866,0,0,16384,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.63102677685,0.103831089163,0,0,256,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.5884486359,0.0442704152073,0,0,256,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.34391741215,0.744093343058,0,0,256,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.0988839114,0.0452511540406,0,0,256,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.415401775,0.0446121827322,0,0,256,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.19866071405,0.834264432193,0,0,256,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.27483259305,0.233927289135,0,0,256,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.7817347913,0.102231354799,0,0,4096,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.5882359095,0.0442708321272,0,0,4096,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.1272879468,0.887084797491,0,0,4096,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.1652936675,0.0451155764051,0,0,4096,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.176768275,0.0450922328989,0,0,4096,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.994991629406,1.00503358063,0,0,4096,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,0,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.48476562553,0.222977092561,0,0,4096,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.6573102648,0.0790057270526,0,0,3,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.6377511337,0.0441739991792,0,0,3,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.22102398694,0.818984729784,0,0,3,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.4540736602,0.0445353486914,0,0,3,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.3710518899,0.044700624938,0,0,3,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.834723769978,1.19800110643,0,0,3,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.22123325301,0.138480501178,0,0,3,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.1936758859,0.0757938885757,0,0,24,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.4851606114,0.0444737761621,0,0,24,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.87207990367,0.534165234101,0,0,24,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.1964093891,0.0450523317745,0,0,24,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.2754464286,0.0448924785056,0,0,24,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.70056501046,0.588039853724,0,0,24,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.63048182912,0.131053323027,0,0,24,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.2801339337,0.0753004453863,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.3559710711,0.0447307789414,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.27879466813,0.781986369606,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,21.9584263245,0.0455406041045,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,24.1212611464,0.0414572021723,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.24302456633,0.804489329568,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.56478792547,0.132191412351,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.2047991051,0.0757300426945,0,0,13,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.6134730761,0.0442214248398,0,0,13,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.23726632596,0.808233424781,0,0,13,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.3445312478,0.0447536799458,0,0,13,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.5128278442,0.0444191199311,0,0,13,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.0885811942,0.918626929554,0,0,13,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,1,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.20400390313,0.13881169603,0,0,13,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.0741210894,0.0764869770721,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.8857561443,0.0436953008542,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.10994698486,0.900943931231,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.6321289054,0.0441849727959,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.6492466433,0.0441515788913,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.913113841047,1.09515369831,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.86008648999,0.127225063143,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.0774056574,0.0764677663289,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.2416373131,0.0449607187602,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.86619611497,0.535849363299,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.2247794015,0.0449948223078,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.6241306862,0.0442005933342,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.68162754629,0.59466200004,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.47687203478,0.133745768999,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.2994977393,0.069932526179,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.8645089594,0.0437359053621,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.36071428512,0.734908136803,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.7056361837,0.0440419282644,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.9658482047,0.0435429160327,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.21015627233,0.826339558668,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.69938613895,0.114950639508,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.1026646198,0.0709085855018,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,21.9868338434,0.0454817645471,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.19659947018,0.835701523294,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.1635463151,0.0451191332734,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,21.845089291,0.045776878578,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.954684009814,1.0474670045,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,2,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.71112583818,0.129682749444,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.3301339247,0.0750180009931,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.1894112867,0.0450665403908,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.04144809906,0.96020147418,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.6118024459,0.0442246920559,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.3875558082,0.0446676720125,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.822237723241,1.21619328782,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.66393694513,0.130481240537,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.9535417826,0.0716663923455,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.6092503145,0.0442296841377,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.81852504204,0.549896194377,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.1833077561,0.0450789400299,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.183203997,0.0450791508807,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.73730991954,0.575602538586,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.51631731331,0.133043877516,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.9261160719,0.0669966651193,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.6848771945,0.0440822311458,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.22354910153,0.817294539917,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.9665178527,0.0435416464269,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,21.9597656204,0.0455378266456,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.15948660095,0.86245067358,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.81344864923,0.127984459218,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.941221403,0.0717297266212,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,23.0946568109,0.0433000588918,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.24987443988,0.800080366548,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.0752650648,0.0452995693172,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.4124930282,0.0446179726076,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.03826381194,0.963146349221,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,3,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.62137625746,0.131209897821,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.256696442,0.0754335745992,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,23.0325334769,0.043416847782,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.20072544567,0.832829855986,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.0320033577,0.0453885188634,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.7645786919,0.0439278940117,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.08240791568,0.923866118785,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.47045200861,0.133860708676,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.0734985352,0.076490619348,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.5358607712,0.044373721073,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.83785400409,0.544112860854,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.4328613275,0.0445774609579,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.2631513326,0.0449172709227,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.71165335518,0.584230444193,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.71882760172,0.129553353384,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.7590401736,0.0677550835445,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.8095424128,0.0438413003602,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.18275670502,0.845482418958,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.6456473099,0.04415859641,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.8278459612,0.043806148057,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.17287946263,0.852602532366,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,10.6661830159,0.0937542510293,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.0591761993,0.0765745085858,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.4248395629,0.0445934071097,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.1833147328,0.845083706201,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.5556466233,0.0443347963682,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.2607631132,0.0449220898185,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.01717354945,0.983116401855,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,4,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.2463518401,0.138000475559,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.4137276697,0.0745504921991,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.7870814667,0.0438845141911,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.40870534843,0.709871657058,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.6456194322,0.044158650771,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.7723353744,0.0439129313512,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.01566684764,0.98457481636,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.85551059477,0.127299172719,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.750762939,0.0727232375715,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.3107709607,0.0448214004688,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.80030517529,0.555461381619,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.4250287733,0.0445930308544,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.7387852258,0.0439777230872,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.70550624341,0.58633617078,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.93477521605,0.126027514677,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,14.4520647284,0.0691942652341,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.9811383698,0.0435139453889,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.42025666199,0.704098087875,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.7317521941,0.0439913294611,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.9668526767,0.0435410116518,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.24486606572,0.80329926852,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.84308035763,0.113082767493,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.9980364123,0.0714385911386,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,22.4963448647,0.0444516656379,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.26255580264,0.792044199482,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,22.3432965985,0.0447561529513,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,22.6113351017,0.0442256061176,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.03508300648,0.966106093655,0,0,1,True,1
+full,known_hit,synthetic_511_r32,fixed_weight,0,8,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.14450683809,0.1227821426,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,3,0,8,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.3410718516,0.0810302388665,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,3,0,8,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,4.97321473501,0.201077181116,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,3,0,8,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,4.43035657684,0.225715466161,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,3,0,8,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,3.15535726259,0.316921323572,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,3,0,8,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,3.13392852799,0.319088323511,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,3,0,8,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,4.21071516549,0.237489348174,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,3,0,8,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.8178591651,0.146673607621,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,4,0,16,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.2973213372,0.0752031160742,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,4,0,16,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,2.27589251673,0.439388061013,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,4,0,16,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,2.09017889574,0.47842794798,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,4,0,16,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.59464286501,0.385409496423,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,4,0,16,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.4821430478,0.402877666896,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,4,0,16,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.96339273576,0.50932245077,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,4,0,16,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,5.93392854041,0.168522420381,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,5,0,32,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.7571428103,0.0783874582944,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,5,0,32,HybridPlanner.apply_many,unpacked,PackedBlockLUTKernel,HybridPlanner batch unpacked-output rule,8,1.57276787961,0.635821733748,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,5,0,32,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,1.40044643818,0.714058012314,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,5,0,32,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.21294638842,0.451886229704,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,5,0,32,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.21517854828,0.451430879366,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,5,0,32,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,1.02098212145,0.97944908044,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,5,0,32,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,5.44866062618,0.183531342583,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,6,0,64,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.6694195777,0.0789302141165,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,6,0,64,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.83660730409,0.352533816915,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,6,0,64,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.805357168636,1.24168510438,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,6,0,64,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.74977680549,0.363665879355,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,6,0,64,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.5875000834,0.386473417495,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,6,0,64,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.714062480256,1.40043767548,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,chase_ii_all,6,0,64,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.50468739747,0.153735289476,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.78377512086,0.102210035252,0,0,1024,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.45248325622,0.40774998054,0,0,1024,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.23391462329,4.27506406369,0,0,1024,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.31923827901,0.431176049934,0,0,1024,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.49301059999,0.401121439277,0,0,1024,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.230217632894,4.34371593275,0,0,1024,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,3.6131696431,0.276765305474,0,0,1024,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,8.92192034081,0.112083493441,0,0,16384,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.42124459301,0.413010731294,0,0,16384,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.418139648113,2.39154551479,0,0,16384,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.45230015444,0.407780425325,0,0,16384,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.38685477123,0.418961393066,0,0,16384,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.373763602417,2.67548791143,0,0,16384,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,3.90056762661,0.256372942538,0,0,16384,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,8.79006698337,0.113764775842,0,0,256,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.31919645038,0.431183826552,0,0,256,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.303683041888,3.29290695253,0,0,256,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.18108256636,0.458487915782,0,0,256,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.26383927579,0.441727471864,0,0,256,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.279854897859,3.57328032367,0,0,256,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,3.34893973429,0.298601969382,0,0,256,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,9.03211146814,0.110716082671,0,0,4096,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.43881138471,0.410035809357,0,0,4096,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.302406527502,3.30680692729,0,0,4096,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.39574497739,0.417406697891,0,0,4096,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.35920061341,0.423872388943,0,0,4096,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.21495884336,4.65205331573,0,0,4096,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,0,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,4.05994349657,0.246308846624,0,0,4096,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,11.9306082606,0.0838180232022,0,0,12,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.3560825915,0.424433338461,0,0,12,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.255859374322,3.90839695692,0,0,12,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.33356584951,0.428528725774,0,0,12,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.43809988985,0.410155467445,0,0,12,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.24725167285,4.0444620191,0,0,12,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.09524274101,0.164062374952,0,0,12,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.3566537046,0.0809280589963,0,0,137,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.43442208462,0.410775110166,0,0,137,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.424946812976,2.35323567436,0,0,137,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.41945626353,0.413316006193,0,0,137,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.38938685777,0.418517410334,0,0,137,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.366158621391,2.73105681958,0,0,137,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.14588971816,0.162710371624,0,0,137,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.3487723295,0.0749132560893,0,0,4,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.81657366941,0.355041308119,0,0,4,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.332812500606,3.00469483021,0,0,4,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.43443082582,0.410773635215,0,0,4,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.48007813752,0.40321310239,0,0,4,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.293080347546,3.41203362276,0,0,4,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.91847097707,0.14454060779,0,0,4,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.2660260879,0.0815259965071,0,0,23,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.44280831753,0.409364907113,0,0,23,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.275006974399,3.63627141524,0,0,23,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.3330287401,0.428627381571,0,0,23,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.37652064884,0.420783215364,0,0,23,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.203498186936,4.91404869525,0,0,23,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,1,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.09857351971,0.163972771135,0,0,23,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5936662861,0.0794049943269,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.52094028903,0.396677384368,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.27378627822,3.65248399774,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.46635044375,0.405457384426,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.47375836742,0.404243200618,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.192787394683,5.18706112318,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.87172154455,0.14552394091,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5508222309,0.0796760548116,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.46411655981,0.405824958246,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.423681640374,2.36026276502,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.4126403798,0.414483653832,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.48832135849,0.401877352613,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.424619837958,2.35504776416,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.58537597634,0.151851618433,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.150502211,0.0823011248948,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.80206476028,0.356879688926,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.379854912223,2.63258409414,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.38186385104,0.419839278203,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.26986610739,0.440554619827,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.317689715043,3.14772544609,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,8.15145088901,0.122677547055,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.9592389787,0.0771650250176,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.399410576,0.416769022359,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.227713450889,4.39148410467,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.38988560446,0.418430069679,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.32258998218,0.430553824684,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.201220702577,4.96966756996,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,2,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.71814313843,0.148850654027,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.7618443051,0.0783585801621,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.49381974982,0.400991290599,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.254506143652,3.92917823378,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.5482700851,0.392423081778,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.44581472738,0.408861713361,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.243219866596,4.11150624328,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.67883650099,0.149726677671,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.453963797,0.0802957208083,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.43232509131,0.411129253887,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.399593680811,2.50254207717,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.36456211563,0.422911283822,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.39138881243,0.418167047868,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.385866001246,2.59157323208,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.21500331275,0.160900960092,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.4430804012,0.0743877124999,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.56880577711,0.389285951048,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.343359390951,2.91240031976,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.46495535196,0.405686861308,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.49414061467,0.400939704087,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.307700897143,3.24990927646,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.71601568366,0.129600566017,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.1712018699,0.0821611547235,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.27474888399,0.43960896389,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.214076450789,4.67122841544,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.40879255184,0.415145753933,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.38548061101,0.419202736498,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.177957590251,5.61931636964,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,3,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.27490234097,0.159365030029,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.7423130607,0.0784786871298,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.3830915146,0.419622995539,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.244642852262,4.08759132243,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.43152901801,0.411263856033,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.46230469462,0.406123580963,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.218498882987,4.57668243577,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.83466796707,0.146312886715,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.6098092217,0.0793033409483,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.46702183304,0.405347040957,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.413096400008,2.42074247072,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.45457938064,0.407401776405,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.50418439559,0.399331615419,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.375594656837,2.66244469083,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.77822527249,0.147531243032,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.2806919737,0.075297281345,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.58906249785,0.38624019344,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.343917398433,2.90767493752,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.33816964672,0.427684963493,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.49302453475,0.401119197209,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.293694191506,3.40490220413,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.84375001064,0.146118721234,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.9613630061,0.077152379694,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.44919782436,0.408296949333,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.225285993289,4.43880236583,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.3359479623,0.428091728129,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.32820521871,0.429515401805,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.226576450554,4.41352134149,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,4,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.3462158185,0.15757421881,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,1024,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.4579380554,0.080270105338,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,1024,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.45625000974,0.40712468032,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,1024,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.234877234107,4.25754332387,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,1024,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.36809431239,0.422280478766,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,1024,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.37163783368,0.421649539319,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,1024,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.190638948944,5.24551779968,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,1024,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.80682198403,0.146911437136,0,0,2,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,16384,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.6213910779,0.0792305692634,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,16384,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.45754656041,0.406909889769,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,16384,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.420072719213,2.38054021188,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,16384,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.4142325264,0.414210308686,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,16384,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.4030953542,0.416129970978,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,16384,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.38762555781,2.57980925109,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,16384,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.57603410963,0.152067337749,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,256,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,13.0537946461,0.0766060771684,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,256,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.1589843787,0.463180748256,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,256,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.305803561267,3.27007310136,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,256,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.39302455287,0.417881211792,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,256,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.61880583301,0.38185343388,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,256,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.311160712434,3.21377333333,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,256,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,7.29866071327,0.137011438028,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,4096,EventUpdate.from_zero,unpacked,EventUpdateKernel,update from zero syndrome,8,12.5715471536,0.0795447042261,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,4096,HybridPlanner.apply_many,unpacked,PackedBatchGF2Kernel,HybridPlanner batch unpacked-output rule,8,2.39749930334,0.417101268228,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,4096,HybridPlanner.apply_many_packed,packed,PackedBlockLUTKernel,HybridPlanner batch packed-output rule,8,0.214421735986,4.66370629546,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,4096,Naive.apply_many,unpacked,NaiveGF2Kernel,direct backend,8,2.37696358697,0.420704804011,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,4096,PackedBatch.apply_many,unpacked,PackedBatchGF2Kernel,direct backend,8,2.36062709088,0.423616251742,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,4096,PackedBlockLUT.apply_many_packed,packed,PackedBlockLUTKernel,direct backend,8,0.191639927039,5.21811928993,0,0,1,True,1
+full,known_hit,synthetic_bch_like_127_r14,fixed_weight,0,8,4096,SparseXor.apply_many,unpacked,SparseXorKernel,direct backend,8,6.63830566136,0.150640848887,0,0,1,True,1

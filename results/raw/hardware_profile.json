@@ -5,7 +5,7 @@
     "GF2_L2_BYTES": "",
     "GF2_L3_BYTES": ""
   },
-  "commit_hash": "08cd42a",
+  "commit_hash": "8f47564",
   "cpu_model": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
   "git_dirty": true,
   "gpu_used": false,

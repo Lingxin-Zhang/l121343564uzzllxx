@@ -1,0 +1,15 @@
+﻿Overnight cache-aware selection rerun
+start=2026-06-26T04:32:02.7599135+08:00
+command=python -m benchmarks.bench_cache_aware_selection --preset lightweight
+
+wrote D:\PKU\acp2026\fec_linear_backend\results\raw\cache_aware_selection.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\raw\hardware_profile.json
+
+command=python -m benchmarks.bench_cache_aware_selection --preset paper --append
+appended D:\PKU\acp2026\fec_linear_backend\results\raw\cache_aware_selection.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\raw\hardware_profile.json
+
+end=2026-06-26T04:37:12.4990621+08:00
+lightweight_exit_code=0
+paper_exit_code=0
+elapsed_seconds=310

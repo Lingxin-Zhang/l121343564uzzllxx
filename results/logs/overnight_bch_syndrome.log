@@ -1,0 +1,9 @@
+﻿Overnight BCH syndrome scaling benchmark
+start=2026-06-26T04:46:27.6569225+08:00
+command=python -m benchmarks.bench_bch_syndrome --matrix-source galois_systematic_candidate --total-bits 1000000,10000000,50000000 --iterations 1,5,10 --repeats 5
+
+wrote D:\PKU\acp2026\fec_linear_backend\results\raw\bch_syndrome.csv
+
+end=2026-06-26T04:52:20.8241000+08:00
+exit_code=0
+elapsed_seconds=353

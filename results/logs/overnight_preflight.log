@@ -1,0 +1,35 @@
+﻿Overnight supplemental experiment preflight
+start=2026-06-26T04:31:19.5230833+08:00
+command=python -m pytest -q
+
+...................s.................................................... [ 25%]
+........................................................................ [ 50%]
+........................................................................ [ 75%]
+........................................................................ [100%]
+============================== warnings summary ===============================
+tests/test_bch_verified_candidate.py: 6 warnings
+tests/test_cache_aware_selection_benchmark.py: 5 warnings
+tests/test_code_profiles.py: 2 warnings
+tests/test_event_update_benchmark_logic.py: 4 warnings
+tests/test_matrix_sources.py: 1 warning
+tests/test_optical_workload_trace.py: 2 warnings
+tests/test_planner.py: 1 warning
+tests/test_round2_cache_fields.py: 1 warning
+  D:\Anacoda\Lib\site-packages\galois\_codes\_bch.py:209: DeprecationWarning: galois.Field() is deprecated and will be removed in 0.5.0; use galois.GF() instead.
+    extension_field = Field(q**m, irreducible_poly=irreducible_poly)
+
+tests/test_cache_aware_selection_benchmark.py::test_cache_aware_selection_plot_reads_new_csv
+  D:\Anacoda\Lib\site-packages\fontTools\misc\py23.py:11: DeprecationWarning: The py23 module has been deprecated and will be removed in a future release. Please update your code.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+287 passed, 1 skipped, 23 warnings in 21.00s
+
+command=git status --short
+?? results/logs/overnight_preflight.log
+?? review_gpt/round_18_skill_and_figure_redesign_plan.md
+
+end=2026-06-26T04:31:41.4231804+08:00
+pytest_exit_code=0
+git_status_exit_code=0
+elapsed_seconds=22

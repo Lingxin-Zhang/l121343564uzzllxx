@@ -1,0 +1,9 @@
+﻿Overnight event update scaling benchmark
+start=2026-06-26T04:59:55.6387228+08:00
+command=python -m benchmarks.bench_event_update --matrix-source galois_systematic_candidate --flip-counts 1,2,4,8,16 --iterations 1,5,10 --repeats 5
+
+wrote D:\PKU\acp2026\fec_linear_backend\results\raw\event_update.csv
+
+end=2026-06-26T05:00:20.8062369+08:00
+exit_code=0
+elapsed_seconds=25

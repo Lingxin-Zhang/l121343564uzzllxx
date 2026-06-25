@@ -1,0 +1,9 @@
+﻿Overnight cache-aware full benchmark
+start=2026-06-26T04:37:36.1708978+08:00
+command=python -m benchmarks.bench_cache_aware --preset full --repeats 7
+
+wrote D:\PKU\acp2026\fec_linear_backend\results\raw\cache_aware.csv
+
+end=2026-06-26T04:41:30.4222657+08:00
+exit_code=0
+elapsed_seconds=234

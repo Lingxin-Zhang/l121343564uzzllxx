@@ -1,0 +1,9 @@
+﻿Overnight candidate testing full benchmark
+start=2026-06-26T04:42:05.4276502+08:00
+command=python -m benchmarks.bench_candidate_testing --preset full --repeats 7
+
+wrote D:\PKU\acp2026\fec_linear_backend\results\raw\candidate_testing.csv
+
+end=2026-06-26T04:46:07.5637735+08:00
+exit_code=0
+elapsed_seconds=242

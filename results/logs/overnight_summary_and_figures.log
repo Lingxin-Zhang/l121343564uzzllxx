@@ -1,0 +1,61 @@
+﻿Overnight summary and figure regeneration
+start=2026-06-26T05:00:43.3529200+08:00
+
+command=python scripts/summarize_results.py
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\bch_syndrome_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\component_loop_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\event_update_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\planner_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\cache_aware_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\cache_aware_selection_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\cache_aware_selection_workload_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\code_profile_scaling_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\candidate_testing_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\component_decoder_exactness_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\optical_workloads_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\optical_workload_breakdown_summary.csv
+wrote D:\PKU\acp2026\fec_linear_backend\results\summary\best_backend_by_workload.csv
+exit_code=0
+
+command=python scripts/plot_results.py
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\block_width_vs_latency.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\block_width_vs_latency.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\block_width_table_size.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\block_width_table_size.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\density_backend_comparison.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\density_backend_comparison.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\batch_crossover.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\batch_crossover.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\stream_throughput.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\stream_throughput.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\bch_syndrome_throughput.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\bch_syndrome_throughput.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\component_loop_speedup.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\component_loop_speedup.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\event_update_speedup.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\event_update_speedup.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\event_update_comparison.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\event_update_comparison.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\planner_comparison.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\planner_comparison.pdf
+exit_code=0
+
+command=python scripts/plot_experiment_round07_results.py
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\experiment_round07_cache_aware_calibration.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\figures\experiment_round07_cache_aware_calibration.pdf
+exit_code=0
+
+command=python scripts/export_paper_figures.py
+wrote D:\PKU\acp2026\fec_linear_backend\results\paper_figures\fig_bch_syndrome_throughput.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\paper_figures\fig_bch_syndrome_throughput.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\paper_figures\fig_component_loop_latency.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\paper_figures\fig_component_loop_latency.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\paper_figures\fig_event_update_comparison.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\paper_figures\fig_event_update_comparison.pdf
+wrote D:\PKU\acp2026\fec_linear_backend\results\paper_figures\fig_planner_latency.png
+wrote D:\PKU\acp2026\fec_linear_backend\results\paper_figures\fig_planner_latency.pdf
+exit_code=0
+
+end=2026-06-26T05:00:51.1458350+08:00
+elapsed_seconds=8
+exit_codes=0,0,0,0

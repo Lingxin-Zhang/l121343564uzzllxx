@@ -1,0 +1,9 @@
+﻿Overnight component decoder exactness full benchmark
+start=2026-06-26T04:41:40.5625606+08:00
+command=python -m benchmarks.bench_component_decoder_exactness --preset full --repeats 7
+
+wrote D:\PKU\acp2026\fec_linear_backend\results\raw\component_decoder_exactness.csv
+
+end=2026-06-26T04:41:54.7317304+08:00
+exit_code=0
+elapsed_seconds=14
