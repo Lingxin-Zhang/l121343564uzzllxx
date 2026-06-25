@@ -1,0 +1,23 @@
+{
+  "cache_profile_env_vars": {
+    "GF2_CACHE_LINE_BYTES": "",
+    "GF2_L1D_BYTES": "",
+    "GF2_L2_BYTES": "",
+    "GF2_L3_BYTES": ""
+  },
+  "commit_hash": "08cd42a",
+  "cpu_model": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "git_dirty": true,
+  "gpu_used": false,
+  "logical_cores": 20,
+  "numpy_version": "1.24.3",
+  "os": "Windows-10-10.0.26200-SP0",
+  "physical_cores": 14,
+  "python_version": "3.11.5 | packaged by Anaconda, Inc. | (main, Sep 11 2023, 13:26:23) [MSC v.1916 64 bit (AMD64)]",
+  "ram_bytes": 31923757056,
+  "selected_cache_profiles": [
+    "default_cpu_cache",
+    "small_l2_profile",
+    "large_l3_profile"
+  ]
+}

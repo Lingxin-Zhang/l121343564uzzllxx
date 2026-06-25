@@ -168,6 +168,14 @@ def test_evaluate_optical_workload_runs_small_correctness_path() -> None:
 
 
 def test_evaluate_optical_workload_records_batch_capped_executed_counts() -> None:
+    profile = get_code_profile("ebch_256_239_r17")
+    trace = generate_trace(
+        workload_type="staircase_like",
+        profile=profile,
+        num_blocks=8,
+        window_len=4,
+        num_iterations_or_steps=1,
+    )
     rows, _ = evaluate_optical_workload_with_breakdown(
         workload_type="staircase_like",
         code_profile="ebch_256_239_r17",
@@ -181,11 +189,17 @@ def test_evaluate_optical_workload_records_batch_capped_executed_counts() -> Non
         preset="unit",
     )
 
+    assert trace.trace_uncapped_syndrome_calls == 4 * 128
+    assert trace.trace_uncapped_event_updates == 4 * 128
+    assert trace.executed_syndrome_calls == trace.trace_uncapped_syndrome_calls
+    assert trace.executed_event_updates == trace.trace_uncapped_event_updates
     assert rows
     for row in rows:
         assert int(row["intended_syndrome_calls"]) == 4 * 128
         assert int(row["executed_syndrome_calls"]) == 4
+        assert int(row["executed_syndrome_calls"]) != trace.executed_syndrome_calls
         assert int(row["executed_syndrome_calls"]) < int(row["intended_syndrome_calls"])
         assert int(row["intended_event_updates"]) == 4 * 128
         assert int(row["executed_event_updates"]) == 4
+        assert int(row["executed_event_updates"]) != trace.executed_event_updates
         assert int(row["executed_event_updates"]) < int(row["intended_event_updates"])

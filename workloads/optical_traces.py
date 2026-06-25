@@ -53,9 +53,14 @@ class WorkloadTrace:
         return self.num_syndrome_calls
 
     @property
-    def executed_syndrome_calls(self) -> int:
-        """Trace-level uncapped alias; benchmarks compute actual executed counts."""
+    def trace_uncapped_syndrome_calls(self) -> int:
+        """Trace-level uncapped syndrome calls before benchmark batch caps."""
         return self.num_syndrome_calls
+
+    @property
+    def executed_syndrome_calls(self) -> int:
+        """Deprecated trace-level alias; benchmarks compute actual executed counts."""
+        return self.trace_uncapped_syndrome_calls
 
     @property
     def num_candidate_tests(self) -> int:
@@ -90,9 +95,14 @@ class WorkloadTrace:
         return self.num_event_updates
 
     @property
-    def executed_event_updates(self) -> int:
-        """Trace-level uncapped alias; benchmarks compute actual executed counts."""
+    def trace_uncapped_event_updates(self) -> int:
+        """Trace-level uncapped event updates before benchmark batch caps."""
         return self.num_event_updates
+
+    @property
+    def executed_event_updates(self) -> int:
+        """Deprecated trace-level alias; benchmarks compute actual executed counts."""
+        return self.trace_uncapped_event_updates
 
 
 def generate_trace(

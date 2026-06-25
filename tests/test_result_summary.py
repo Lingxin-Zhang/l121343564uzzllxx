@@ -10,6 +10,7 @@ from pathlib import Path
 
 from scripts.summarize_results import (
     summarize_cache_aware_selection_rows,
+    summarize_cache_aware_selection_workload_rows,
     summarize_component_decoder_exactness_rows,
     summarize_component_loop_rows,
     summarize_event_update_rows,
@@ -175,6 +176,8 @@ def test_cache_aware_selection_summary_preserves_planner_fields() -> None:
             "fits_l1": "True",
             "fits_l2": "True",
             "fits_l3": "True",
+            "uses_lut": "True",
+            "cache_fit_applicable": "True",
             "oracle_best_backend": "PackedBlockLUTKernel",
             "oracle_best_block_width": "6",
             "selected_latency_us": "10.0",
@@ -192,6 +195,77 @@ def test_cache_aware_selection_summary_preserves_planner_fields() -> None:
     assert summary[0]["oracle_best_backend"] == "PackedBlockLUTKernel"
     assert summary[0]["mean_planner_over_oracle"] == 1.25
     assert summary[0]["correctness_all_true"] is True
+
+
+def test_cache_aware_selection_workload_summary_reports_calibration_metrics() -> None:
+    rows = [
+        {
+            "preset": "unit",
+            "code_profile": "bch_255_239_r16",
+            "cache_profile": "default_cpu_cache",
+            "workload_type": "dense_batch",
+            "batch_size": "64",
+            "density_or_weight": "density=0.5",
+            "output_mode": "unpacked",
+            "selected_backend": "PackedBlockLUTKernel",
+            "selected_block_width": "8",
+            "selection_reason": "unit",
+            "lut_bytes": "16384",
+            "fits_l1": "True",
+            "fits_l2": "True",
+            "fits_l3": "True",
+            "uses_lut": "True",
+            "cache_fit_applicable": "True",
+            "oracle_best_backend": "PackedBlockLUTKernel",
+            "oracle_best_block_width": "8",
+            "selected_latency_us": "10.0",
+            "oracle_best_latency_us": "10.0",
+            "planner_over_oracle": "1.0",
+            "correctness_passed": "True",
+        },
+        {
+            "preset": "unit",
+            "code_profile": "ebch_256_239_r17",
+            "cache_profile": "small_l2_profile",
+            "workload_type": "dense_batch",
+            "batch_size": "1024",
+            "density_or_weight": "density=0.5",
+            "output_mode": "unpacked",
+            "selected_backend": "PackedBlockLUTKernel",
+            "selected_block_width": "8",
+            "selection_reason": "unit",
+            "lut_bytes": "32768",
+            "fits_l1": "False",
+            "fits_l2": "True",
+            "fits_l3": "True",
+            "uses_lut": "True",
+            "cache_fit_applicable": "True",
+            "oracle_best_backend": "PackedBatchGF2Kernel",
+            "oracle_best_block_width": "0",
+            "selected_latency_us": "12.0",
+            "oracle_best_latency_us": "10.0",
+            "planner_over_oracle": "1.2",
+            "correctness_passed": "True",
+        },
+    ]
+
+    summary = summarize_cache_aware_selection_workload_rows(rows)
+
+    assert len(summary) == 1
+    row = summary[0]
+    assert row["preset"] == "unit"
+    assert row["workload_type"] == "dense_batch"
+    assert math.isclose(row["mean_planner_over_oracle"], 1.1)
+    assert math.isclose(row["median_planner_over_oracle"], 1.1)
+    assert math.isclose(row["p90_planner_over_oracle"], 1.18)
+    assert math.isclose(row["p95_planner_over_oracle"], 1.19)
+    assert math.isclose(row["max_planner_over_oracle"], 1.2)
+    assert math.isclose(row["oracle_match_rate_backend_and_block"], 0.5)
+    assert math.isclose(row["oracle_match_rate_backend_only"], 0.5)
+    assert row["selected_backend_distribution"] == "PackedBlockLUTKernel:2"
+    assert row["oracle_backend_distribution"] == "PackedBatchGF2Kernel:1;PackedBlockLUTKernel:1"
+    assert row["num_rows"] == 2
+    assert row["correctness_all_true"] is True
 
 
 def test_summarize_results_cli_writes_summary_files(tmp_path: Path) -> None:

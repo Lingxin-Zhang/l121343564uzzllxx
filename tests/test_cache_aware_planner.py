@@ -50,6 +50,8 @@ def test_cache_aware_planner_selection_fields_are_complete() -> None:
     assert isinstance(selection.fits_l1, bool)
     assert isinstance(selection.fits_l2, bool)
     assert isinstance(selection.fits_l3, bool)
+    assert isinstance(selection.uses_lut, bool)
+    assert isinstance(selection.cache_fit_applicable, bool)
 
 
 def test_cache_aware_planner_lut_bytes_and_fit_flags_match_estimator() -> None:
@@ -83,6 +85,8 @@ def test_cache_aware_planner_lut_bytes_and_fit_flags_match_estimator() -> None:
     assert selection.fits_l1 == expected["fits_l1"]
     assert selection.fits_l2 == expected["fits_l2"]
     assert selection.fits_l3 == expected["fits_l3"]
+    assert selection.uses_lut is True
+    assert selection.cache_fit_applicable is True
 
 
 def test_cache_aware_planner_event_update_selects_event_update_kernel() -> None:
@@ -97,6 +101,11 @@ def test_cache_aware_planner_event_update_selects_event_update_kernel() -> None:
     assert selection.selected_backend == "EventUpdateKernel"
     assert selection.selected_block_width == 0
     assert selection.lut_bytes == 0
+    assert selection.uses_lut is False
+    assert selection.cache_fit_applicable is False
+    assert selection.fits_l1 is False
+    assert selection.fits_l2 is False
+    assert selection.fits_l3 is False
     assert "event update" in selection.selection_reason.lower()
 
 
@@ -127,3 +136,116 @@ def test_cache_aware_planner_packed_candidate_batch_uses_lut_when_cache_fits() -
     assert selection.selected_block_width in {4, 6, 8}
     assert selection.fits_l2 is True
     assert "cache" in selection.selection_reason.lower()
+
+
+def test_cache_aware_planner_candidate_count_sixteen_can_use_lut_when_cache_fits() -> None:
+    planner = CacheAwarePlanner(
+        _matrix(n=255, r=16),
+        cache_profile=CacheProfile(
+            profile_name="desktop_like_unit",
+            l1d_bytes=32 * 1024,
+            l2_bytes=1024 * 1024,
+            l3_bytes=16 * 1024 * 1024,
+            cache_line_bytes=64,
+            notes="desktop-like unit cache",
+        ),
+        block_width_candidates=(4, 6, 8, 10, 12),
+    )
+
+    selection = planner.select(
+        {
+            "type": "candidate_test_packed",
+            "batch_size": 16,
+            "candidate_count": 16,
+            "output_mode": "packed",
+        }
+    )
+
+    assert selection.selected_backend == "PackedBlockLUTKernel"
+    assert selection.selected_block_width == 12
+    assert selection.uses_lut is True
+
+
+def test_cache_aware_planner_large_dense_batch_uses_packed_lut_when_lut_fits() -> None:
+    planner = CacheAwarePlanner(
+        _matrix(n=255, r=16),
+        cache_profile=CacheProfile(
+            profile_name="desktop_like_unit",
+            l1d_bytes=32 * 1024,
+            l2_bytes=1024 * 1024,
+            l3_bytes=16 * 1024 * 1024,
+            cache_line_bytes=64,
+            notes="desktop-like unit cache",
+        ),
+        block_width_candidates=(4, 6, 8, 10),
+    )
+
+    selection = planner.select(
+        {
+            "type": "dense_batch",
+            "batch_size": 1024,
+            "density": 0.5,
+            "output_mode": "unpacked",
+        }
+    )
+
+    assert selection.selected_backend == "PackedBlockLUTKernel"
+    assert selection.selected_block_width == 8
+    assert selection.uses_lut is True
+    assert "batch" in selection.selection_reason.lower()
+
+
+def test_cache_aware_planner_large_component_decode_batch_uses_packed_lut_when_lut_fits() -> None:
+    planner = CacheAwarePlanner(
+        _matrix(n=256, r=17),
+        cache_profile=CacheProfile(
+            profile_name="desktop_like_unit",
+            l1d_bytes=32 * 1024,
+            l2_bytes=1024 * 1024,
+            l3_bytes=16 * 1024 * 1024,
+            cache_line_bytes=64,
+            notes="desktop-like unit cache",
+        ),
+        block_width_candidates=(4, 6, 8, 10),
+    )
+
+    selection = planner.select(
+        {
+            "type": "component_decode_batch",
+            "batch_size": 64,
+            "density": 0.02,
+            "output_mode": "unpacked",
+        }
+    )
+
+    assert selection.selected_backend == "PackedBlockLUTKernel"
+    assert selection.selected_block_width == 10
+    assert selection.cache_fit_applicable is True
+
+
+def test_cache_aware_planner_batch_size_one_does_not_blindly_use_packed_lut() -> None:
+    planner = CacheAwarePlanner(
+        _matrix(n=255, r=16),
+        cache_profile=CacheProfile(
+            profile_name="desktop_like_unit",
+            l1d_bytes=32 * 1024,
+            l2_bytes=1024 * 1024,
+            l3_bytes=16 * 1024 * 1024,
+            cache_line_bytes=64,
+            notes="desktop-like unit cache",
+        ),
+        block_width_candidates=(4, 6, 8, 10),
+    )
+
+    selection = planner.select(
+        {
+            "type": "dense_batch",
+            "batch_size": 1,
+            "density": 0.5,
+            "output_mode": "unpacked",
+        }
+    )
+
+    assert selection.selected_backend in {"NaiveGF2Kernel", "PackedBatchGF2Kernel"}
+    assert selection.uses_lut is False
+    assert selection.cache_fit_applicable is False

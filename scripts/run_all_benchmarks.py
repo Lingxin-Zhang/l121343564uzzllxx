@@ -73,6 +73,7 @@ def main() -> None:
     run([python, "scripts/plot_experiment_round02_results.py"])
     run([python, "scripts/plot_experiment_round04_results.py"])
     run([python, "scripts/plot_experiment_round06_results.py"])
+    run([python, "scripts/plot_experiment_round07_results.py"])
 
 
 if __name__ == "__main__":

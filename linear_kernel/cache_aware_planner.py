@@ -21,6 +21,8 @@ class CacheAwareSelection:
     fits_l1: bool
     fits_l2: bool
     fits_l3: bool
+    uses_lut: bool
+    cache_fit_applicable: bool
     selection_reason: str
 
     def as_dict(self) -> dict[str, Any]:
@@ -53,6 +55,7 @@ class CacheAwarePlanner:
             raise ValueError("block_width_candidates must be positive")
         self.sparse_threshold = int(sparse_threshold)
         self.batch_threshold = int(batch_threshold)
+        self.small_batch_threshold = 16
         if self.sparse_threshold < 0:
             raise ValueError("sparse_threshold must be non-negative")
         if self.batch_threshold < 1:
@@ -85,10 +88,14 @@ class CacheAwarePlanner:
                 "dense single input uses packed LUT when cache footprint is acceptable",
             )
 
-        lut = self._best_lut_candidate()
+        lut = self._best_lut_candidate(
+            candidate_count=candidate_count,
+            workload_type=workload_type,
+            batch_size=batch_size,
+        )
 
         if workload_type == "candidate_test_packed":
-            if candidate_count >= self.batch_threshold and lut["fits_l3"]:
+            if candidate_count >= self.small_batch_threshold and lut["fits_l3"]:
                 return self._lut_selection(
                     "large packed candidate batch uses LUT selected by cache footprint",
                     lut,
@@ -99,33 +106,51 @@ class CacheAwarePlanner:
             )
 
         if workload_type in {"dense_batch", "component_decode_batch", "batch"}:
+            workload_label = workload_type.replace("_", " ")
+            if batch_size < self.small_batch_threshold:
+                return self._non_lut_selection(
+                    "PackedBatchGF2Kernel",
+                    (
+                        f"small {workload_label} batch_size={batch_size} avoids LUT "
+                        "setup/mask overhead"
+                    ),
+                )
             if output_mode == "packed":
                 if lut["fits_l3"]:
-                    return self._lut_selection("packed batch output requires packed LUT path", lut)
+                    return self._lut_selection(
+                        "packed batch output uses LUT selected by cache footprint",
+                        lut,
+                    )
                 return self._non_lut_selection(
                     "PackedBatchGF2Kernel",
                     "packed LUT footprint does not fit L3; use vectorized fallback plus packing",
                 )
-            if batch_size >= self.batch_threshold:
-                return self._non_lut_selection(
-                    "PackedBatchGF2Kernel",
-                    f"large unpacked batch_size={batch_size} uses vectorized PackedBatch path",
-                )
-            if lut["fits_l2"]:
+            if lut["fits_l2"] or lut["fits_l3"]:
+                cache_level = "L2" if lut["fits_l2"] else "L3"
                 return self._lut_selection(
-                    "small/dense batch uses packed LUT because selected table fits L2",
+                    (
+                        f"{workload_label} batch_size={batch_size} uses packed LUT "
+                        f"because selected table fits {cache_level}; unpacked output "
+                        "does not force vectorized fallback"
+                    ),
                     lut,
                 )
             return self._non_lut_selection(
                 "PackedBatchGF2Kernel",
-                "selected LUT does not fit L2 for unpacked batch; use vectorized fallback",
+                "selected LUT does not fit L3 for unpacked batch; use vectorized fallback",
             )
 
         if lut["fits_l2"]:
             return self._lut_selection("default selection uses LUT fitting L2", lut)
         return self._non_lut_selection("PackedBatchGF2Kernel", "default vectorized fallback")
 
-    def _best_lut_candidate(self) -> dict[str, Any]:
+    def _best_lut_candidate(
+        self,
+        *,
+        candidate_count: int | None = None,
+        workload_type: str = "",
+        batch_size: int = 1,
+    ) -> dict[str, Any]:
         estimates = [
             {
                 "block_width": width,
@@ -139,10 +164,94 @@ class CacheAwarePlanner:
             }
             for width in self.block_width_candidates
         ]
-        for cache_key in ("fits_l2", "fits_l3"):
-            fitting = [estimate for estimate in estimates if estimate[cache_key]]
-            if fitting:
-                return max(fitting, key=lambda estimate: int(estimate["block_width"]))
+        candidate_count = 0 if candidate_count is None else int(candidate_count)
+        workload_type = str(workload_type)
+        batch_size = int(batch_size)
+        fitting_l3 = [estimate for estimate in estimates if estimate["fits_l3"]]
+
+        if workload_type == "candidate_test_packed" and fitting_l3:
+            if candidate_count >= 8192:
+                return self._prefer_exact_width(fitting_l3, preferred_width=6)
+            if candidate_count >= 16:
+                return self._prefer_widest_bounded(fitting_l3, max_width=12)
+
+        if workload_type in {"dense_batch", "component_decode_batch", "batch"} and fitting_l3:
+            if batch_size >= 8192:
+                return self._prefer_exact_width(fitting_l3, preferred_width=6)
+            if batch_size >= 16 and batch_size <= 64:
+                return self._prefer_widest_bounded(fitting_l3, max_width=12)
+
+        fitting_l1 = [estimate for estimate in estimates if estimate["fits_l1"]]
+        if fitting_l1:
+            return self._prefer_stable_width(fitting_l1, preferred_width=8)
+        fitting_l2 = [estimate for estimate in estimates if estimate["fits_l2"]]
+        if fitting_l2:
+            if candidate_count >= 16_384:
+                wider = [
+                    estimate
+                    for estimate in fitting_l2
+                    if int(estimate["block_width"]) in {10, 12}
+                ]
+                if wider:
+                    return min(wider, key=lambda estimate: int(estimate["lut_bytes"]))
+            return self._prefer_stable_width(fitting_l2, preferred_width=8)
+        if fitting_l3:
+            return self._prefer_stable_width(fitting_l3, preferred_width=8)
+        return min(estimates, key=lambda estimate: int(estimate["lut_bytes"]))
+
+    @staticmethod
+    def _prefer_exact_width(
+        estimates: list[dict[str, Any]],
+        *,
+        preferred_width: int,
+    ) -> dict[str, Any]:
+        preferred = [
+            estimate
+            for estimate in estimates
+            if int(estimate["block_width"]) == preferred_width
+        ]
+        if preferred:
+            return preferred[0]
+        return CacheAwarePlanner._prefer_stable_width(
+            estimates,
+            preferred_width=min(preferred_width, 8),
+        )
+
+    @staticmethod
+    def _prefer_widest_bounded(
+        estimates: list[dict[str, Any]],
+        *,
+        max_width: int,
+    ) -> dict[str, Any]:
+        bounded = [
+            estimate
+            for estimate in estimates
+            if int(estimate["block_width"]) <= max_width
+        ]
+        if bounded:
+            return max(bounded, key=lambda estimate: int(estimate["block_width"]))
+        return min(estimates, key=lambda estimate: int(estimate["lut_bytes"]))
+
+    @staticmethod
+    def _prefer_stable_width(
+        estimates: list[dict[str, Any]],
+        *,
+        preferred_width: int,
+    ) -> dict[str, Any]:
+        preferred = [
+            estimate
+            for estimate in estimates
+            if int(estimate["block_width"]) == preferred_width
+        ]
+        if preferred:
+            return preferred[0]
+        narrower = [
+            estimate
+            for estimate in estimates
+            if int(estimate["block_width"]) < preferred_width
+        ]
+        if narrower:
+            return max(narrower, key=lambda estimate: int(estimate["block_width"]))
         return min(estimates, key=lambda estimate: int(estimate["lut_bytes"]))
 
     def _lut_selection(
@@ -158,6 +267,8 @@ class CacheAwarePlanner:
             fits_l1=bool(lut["fits_l1"]),
             fits_l2=bool(lut["fits_l2"]),
             fits_l3=bool(lut["fits_l3"]),
+            uses_lut=True,
+            cache_fit_applicable=True,
             selection_reason=reason,
         )
 
@@ -166,8 +277,10 @@ class CacheAwarePlanner:
             selected_backend=backend,
             selected_block_width=0,
             lut_bytes=0,
-            fits_l1=True,
-            fits_l2=True,
-            fits_l3=True,
+            fits_l1=False,
+            fits_l2=False,
+            fits_l3=False,
+            uses_lut=False,
+            cache_fit_applicable=False,
             selection_reason=reason,
         )

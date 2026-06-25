@@ -1,0 +1,10 @@
+﻿Round 07 cache-aware selection paper preset log
+command: python -m benchmarks.bench_cache_aware_selection --preset paper --append
+start: 2026-06-26T03:53:30+08:00
+end: 2026-06-26T03:58:00+08:00
+elapsed_seconds: 270
+exit_code: 0
+outputs:
+- results/raw/cache_aware_selection.csv (appended paper preset rows)
+- results/raw/hardware_profile.json
+notes: stdout/stderr completed without benchmark error.

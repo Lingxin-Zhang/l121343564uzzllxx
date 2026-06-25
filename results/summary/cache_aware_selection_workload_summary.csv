@@ -1,0 +1,11 @@
+preset,workload_type,mean_planner_over_oracle,median_planner_over_oracle,p90_planner_over_oracle,p95_planner_over_oracle,max_planner_over_oracle,oracle_match_rate_backend_and_block,oracle_match_rate_backend_only,selected_backend_distribution,oracle_backend_distribution,num_rows,correctness_all_true
+lightweight,candidate_test_packed,1.02651068888,1,1.0953007824,1.1486457578,1.24904541185,0.666666666667,0.972222222222,PackedBatchGF2Kernel:9;PackedBlockLUTKernel:27,NaiveGF2Kernel:1;PackedBatchGF2Kernel:8;PackedBlockLUTKernel:27,36,True
+lightweight,component_decode_batch,1.05233533994,1.00015141396,1.12874782182,1.22900137943,1.68069493724,0.5,0.972222222222,PackedBatchGF2Kernel:9;PackedBlockLUTKernel:27,NaiveGF2Kernel:1;PackedBatchGF2Kernel:8;PackedBlockLUTKernel:27,36,True
+lightweight,dense_batch,1.10677799402,1.00742185752,1.19442470326,1.30624347306,2.65919416077,0.472222222222,0.972222222222,PackedBatchGF2Kernel:9;PackedBlockLUTKernel:27,NaiveGF2Kernel:1;PackedBatchGF2Kernel:8;PackedBlockLUTKernel:27,36,True
+lightweight,event_update,1.00076389445,1,1,1,1.02750020009,0.972222222222,0.972222222222,EventUpdateKernel:36,EventUpdateKernel:35;PackedBatchGF2Kernel:1,36,True
+lightweight,sparse_single,1,1,1,1,1,1,1,SparseXorKernel:9,SparseXorKernel:9,9,True
+paper,candidate_test_packed,1.02039082225,1,1.05331327993,1.09618887441,1.40736271302,0.791666666667,0.944444444444,PackedBatchGF2Kernel:18;PackedBlockLUTKernel:54,NaiveGF2Kernel:2;PackedBatchGF2Kernel:14;PackedBlockLUTKernel:56,72,True
+paper,component_decode_batch,1.05682353204,1.01148257508,1.16293202304,1.207278227,1.92376973562,0.430555555556,0.888888888889,PackedBatchGF2Kernel:18;PackedBlockLUTKernel:54,NaiveGF2Kernel:3;PackedBatchGF2Kernel:10;PackedBlockLUTKernel:59,72,True
+paper,dense_batch,1.0775814508,1,1.21193103705,1.33104835937,2.2270551915,0.583333333333,0.916666666667,PackedBatchGF2Kernel:18;PackedBlockLUTKernel:54,NaiveGF2Kernel:3;PackedBatchGF2Kernel:12;PackedBlockLUTKernel:57,72,True
+paper,event_update,1.00166286986,1,1,1,1.11972662965,0.986111111111,0.986111111111,EventUpdateKernel:72,EventUpdateKernel:71;PackedBatchGF2Kernel:1,72,True
+paper,sparse_single,1,1,1,1,1,1,1,SparseXorKernel:9,SparseXorKernel:9,9,True

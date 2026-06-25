@@ -6,7 +6,7 @@ import argparse
 import csv
 import math
 import statistics
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -72,6 +72,26 @@ def _mean(values: Iterable[float]) -> float:
 def _std(values: Iterable[float]) -> float:
     values = [value for value in values if not math.isnan(value)]
     return statistics.stdev(values) if len(values) > 1 else 0.0
+
+
+def _percentile(values: Iterable[float], percentile: float) -> float:
+    clean = sorted(value for value in values if not math.isnan(value))
+    if not clean:
+        return math.nan
+    if len(clean) == 1:
+        return clean[0]
+    rank = (len(clean) - 1) * percentile
+    lower = math.floor(rank)
+    upper = math.ceil(rank)
+    if lower == upper:
+        return clean[int(rank)]
+    weight = rank - lower
+    return clean[lower] * (1.0 - weight) + clean[upper] * weight
+
+
+def _distribution(values: Iterable[str]) -> str:
+    counts = Counter(value for value in values if value)
+    return ";".join(f"{key}:{counts[key]}" for key in sorted(counts))
 
 
 def _ratio(numerator: float, denominator: float) -> float:
@@ -310,6 +330,10 @@ def summarize_cache_aware_selection_rows(rows: list[dict[str, str]]) -> list[dic
                 "fits_l1": all(_truthy(row.get("fits_l1", "True")) for row in group),
                 "fits_l2": all(_truthy(row.get("fits_l2", "True")) for row in group),
                 "fits_l3": all(_truthy(row.get("fits_l3", "True")) for row in group),
+                "uses_lut": all(_truthy(row.get("uses_lut", "False")) for row in group),
+                "cache_fit_applicable": all(
+                    _truthy(row.get("cache_fit_applicable", "False")) for row in group
+                ),
                 "mean_selected_latency_us": _mean(
                     _float(row, "selected_latency_us") for row in group
                 ),
@@ -323,6 +347,54 @@ def summarize_cache_aware_selection_rows(rows: list[dict[str, str]]) -> list[dic
                     _truthy(row.get("correctness_passed", "True")) for row in group
                 ),
                 "num_rows": len(group),
+            }
+        )
+    return summary
+
+
+def summarize_cache_aware_selection_workload_rows(
+    rows: list[dict[str, str]],
+) -> list[dict[str, Any]]:
+    keys = ("preset", "workload_type")
+    summary = []
+    for key, group in sorted(_group_rows(rows, keys).items()):
+        ratios = [_float(row, "planner_over_oracle") for row in group]
+        exact_matches = [
+            row.get("selected_backend", "") == row.get("oracle_best_backend", "")
+            and str(row.get("selected_block_width", "")) == str(row.get("oracle_best_block_width", ""))
+            for row in group
+        ]
+        backend_matches = [
+            row.get("selected_backend", "") == row.get("oracle_best_backend", "")
+            for row in group
+        ]
+        summary.append(
+            {
+                **dict(zip(keys, key, strict=True)),
+                "mean_planner_over_oracle": _mean(ratios),
+                "median_planner_over_oracle": _percentile(ratios, 0.50),
+                "p90_planner_over_oracle": _percentile(ratios, 0.90),
+                "p95_planner_over_oracle": _percentile(ratios, 0.95),
+                "max_planner_over_oracle": max(
+                    (value for value in ratios if not math.isnan(value)),
+                    default=math.nan,
+                ),
+                "oracle_match_rate_backend_and_block": (
+                    sum(exact_matches) / len(exact_matches) if exact_matches else math.nan
+                ),
+                "oracle_match_rate_backend_only": (
+                    sum(backend_matches) / len(backend_matches) if backend_matches else math.nan
+                ),
+                "selected_backend_distribution": _distribution(
+                    row.get("selected_backend", "") for row in group
+                ),
+                "oracle_backend_distribution": _distribution(
+                    row.get("oracle_best_backend", "") for row in group
+                ),
+                "num_rows": len(group),
+                "correctness_all_true": all(
+                    _truthy(row.get("correctness_passed", "True")) for row in group
+                ),
             }
         )
     return summary
@@ -940,11 +1012,34 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "fits_l1",
                 "fits_l2",
                 "fits_l3",
+                "uses_lut",
+                "cache_fit_applicable",
                 "mean_selected_latency_us",
                 "mean_oracle_best_latency_us",
                 "mean_planner_over_oracle",
                 "correctness_all_true",
                 "num_rows",
+            ],
+        ),
+        (
+            "cache_aware_selection_workload",
+            raw_dir / "cache_aware_selection.csv",
+            summary_dir / "cache_aware_selection_workload_summary.csv",
+            summarize_cache_aware_selection_workload_rows,
+            [
+                "preset",
+                "workload_type",
+                "mean_planner_over_oracle",
+                "median_planner_over_oracle",
+                "p90_planner_over_oracle",
+                "p95_planner_over_oracle",
+                "max_planner_over_oracle",
+                "oracle_match_rate_backend_and_block",
+                "oracle_match_rate_backend_only",
+                "selected_backend_distribution",
+                "oracle_backend_distribution",
+                "num_rows",
+                "correctness_all_true",
             ],
         ),
         (

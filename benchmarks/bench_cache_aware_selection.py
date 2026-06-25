@@ -3,9 +3,16 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import json
 import math
+import os
+import platform
 import statistics
+import subprocess
+import sys
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -23,7 +30,7 @@ from linear_kernel import (
 from linear_kernel.cache_profile import CacheProfile, get_cache_profile
 from linear_kernel.matrix_utils import pack_batch_bits_to_uint16, pack_batch_bits_to_uint32
 
-from ._common import RAW_DIR, ensure_result_dirs, make_batch, time_repeats, write_csv
+from ._common import RAW_DIR, ensure_result_dirs, make_batch, time_repeats
 
 LIGHTWEIGHT_CODE_PROFILES = (
     "bch_255_239_r16",
@@ -44,6 +51,11 @@ LIGHTWEIGHT_WORKLOAD_TYPES = (
 )
 LIGHTWEIGHT_BATCH_SIZES = (1, 64, 1024, 4096)
 LIGHTWEIGHT_BLOCK_WIDTHS = (4, 6, 8, 10)
+PAPER_BATCH_SIZES = (1, 4, 16, 64, 256, 1024, 4096, 16384)
+PAPER_BLOCK_WIDTHS = (4, 6, 8, 10, 12)
+PAPER_SMALL_BATCH_SIZES = (1, 16, 64, 1024, 4096)
+FULL_BATCH_SIZES = (1, 4, 16, 64, 256, 1024, 4096, 16384, 65536)
+FULL_BLOCK_WIDTHS = tuple(range(4, 22, 2))
 RNG_SEED = 20260802
 
 CACHE_AWARE_SELECTION_FIELDNAMES = [
@@ -63,6 +75,8 @@ CACHE_AWARE_SELECTION_FIELDNAMES = [
     "fits_l1",
     "fits_l2",
     "fits_l3",
+    "uses_lut",
+    "cache_fit_applicable",
     "oracle_best_backend",
     "oracle_best_block_width",
     "selected_latency_us",
@@ -72,12 +86,155 @@ CACHE_AWARE_SELECTION_FIELDNAMES = [
 ]
 
 
+def _preset_defaults(preset: str) -> dict[str, Any]:
+    if preset == "lightweight":
+        return {
+            "repeats": 3,
+            "code_profiles": LIGHTWEIGHT_CODE_PROFILES,
+            "cache_profiles": LIGHTWEIGHT_CACHE_PROFILES,
+            "workload_types": LIGHTWEIGHT_WORKLOAD_TYPES,
+            "batch_sizes": LIGHTWEIGHT_BATCH_SIZES,
+            "block_widths": LIGHTWEIGHT_BLOCK_WIDTHS,
+        }
+    if preset == "paper":
+        return {
+            "repeats": 7,
+            "code_profiles": LIGHTWEIGHT_CODE_PROFILES,
+            "cache_profiles": LIGHTWEIGHT_CACHE_PROFILES,
+            "workload_types": LIGHTWEIGHT_WORKLOAD_TYPES,
+            "batch_sizes": PAPER_BATCH_SIZES,
+            "block_widths": PAPER_BLOCK_WIDTHS,
+        }
+    if preset == "paper-small":
+        return {
+            "repeats": 5,
+            "code_profiles": LIGHTWEIGHT_CODE_PROFILES,
+            "cache_profiles": LIGHTWEIGHT_CACHE_PROFILES,
+            "workload_types": LIGHTWEIGHT_WORKLOAD_TYPES,
+            "batch_sizes": PAPER_SMALL_BATCH_SIZES,
+            "block_widths": PAPER_BLOCK_WIDTHS,
+        }
+    if preset == "full":
+        return {
+            "repeats": 10,
+            "code_profiles": LIGHTWEIGHT_CODE_PROFILES,
+            "cache_profiles": LIGHTWEIGHT_CACHE_PROFILES,
+            "workload_types": LIGHTWEIGHT_WORKLOAD_TYPES,
+            "batch_sizes": FULL_BATCH_SIZES,
+            "block_widths": FULL_BLOCK_WIDTHS,
+        }
+    raise ValueError(f"unknown preset: {preset}")
+
+
 def _parse_int_list(value: str) -> tuple[int, ...]:
     return tuple(int(part.strip()) for part in value.split(",") if part.strip())
 
 
 def _parse_str_list(value: str) -> tuple[str, ...]:
     return tuple(part.strip() for part in value.split(",") if part.strip())
+
+
+def _write_or_append_csv(path: Path, rows: list[dict[str, Any]], *, append: bool) -> None:
+    if not rows:
+        raise ValueError(f"no benchmark rows to write: {path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    mode = "a" if append and path.exists() else "w"
+    with path.open(mode, newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        if mode == "w":
+            writer.writeheader()
+        else:
+            with path.open(newline="", encoding="utf-8") as existing:
+                reader = csv.reader(existing)
+                existing_header = next(reader, [])
+            if existing_header != list(rows[0].keys()):
+                raise ValueError(
+                    "cannot append cache-aware selection rows because CSV header "
+                    "does not match current schema"
+                )
+        writer.writerows(rows)
+
+
+def _git_commit_hash() -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:
+        return "unknown"
+
+
+def _git_dirty() -> bool | str:
+    try:
+        output = subprocess.check_output(
+            ["git", "status", "--short"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        )
+        return bool(output.strip())
+    except Exception:
+        return "unknown"
+
+
+def _cpu_model() -> str:
+    processor = platform.processor().strip()
+    if processor:
+        return processor
+    if platform.system().lower() == "windows":
+        try:
+            output = subprocess.check_output(
+                ["wmic", "cpu", "get", "Name"],
+                text=True,
+                stderr=subprocess.DEVNULL,
+            )
+            names = [line.strip() for line in output.splitlines() if line.strip() and line.strip() != "Name"]
+            if names:
+                return names[0]
+        except Exception:
+            pass
+    return "unknown"
+
+
+def _total_ram_bytes() -> int | str:
+    try:
+        import psutil  # type: ignore
+
+        return int(psutil.virtual_memory().total)
+    except Exception:
+        return "unknown"
+
+
+def _physical_cores() -> int | str:
+    try:
+        import psutil  # type: ignore
+
+        cores = psutil.cpu_count(logical=False)
+        return int(cores) if cores is not None else "unknown"
+    except Exception:
+        return "unknown"
+
+
+def write_hardware_profile(path: Path) -> None:
+    """Write reproducibility metadata for CPU-only benchmark runs."""
+    env_keys = ("GF2_L1D_BYTES", "GF2_L2_BYTES", "GF2_L3_BYTES", "GF2_CACHE_LINE_BYTES")
+    profile = {
+        "cpu_model": _cpu_model(),
+        "logical_cores": os.cpu_count() or "unknown",
+        "physical_cores": _physical_cores(),
+        "ram_bytes": _total_ram_bytes(),
+        "os": platform.platform(),
+        "python_version": sys.version.replace("\n", " "),
+        "numpy_version": np.__version__,
+        "commit_hash": _git_commit_hash(),
+        "git_dirty": _git_dirty(),
+        "cache_profile_env_vars": {key: os.environ.get(key, "") for key in env_keys},
+        "selected_cache_profiles": list(LIGHTWEIGHT_CACHE_PROFILES),
+        "gpu_used": False,
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(profile, indent=2, sort_keys=True), encoding="utf-8")
 
 
 def get_selection_cache_profile(name: str) -> CacheProfile:
@@ -420,6 +577,8 @@ def _evaluate_case(
         "fits_l1": selection.fits_l1,
         "fits_l2": selection.fits_l2,
         "fits_l3": selection.fits_l3,
+        "uses_lut": selection.uses_lut,
+        "cache_fit_applicable": selection.cache_fit_applicable,
         "oracle_best_backend": oracle_row["backend"],
         "oracle_best_block_width": oracle_row["block_width"],
         "selected_latency_us": selected_latency,
@@ -464,30 +623,36 @@ def run_cache_aware_selection_rows(
 
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run cache-aware selection benchmark.")
-    parser.add_argument("--preset", choices=("lightweight", "full"), default="lightweight")
+    parser.add_argument(
+        "--preset",
+        choices=("lightweight", "paper", "paper-small", "full"),
+        default="lightweight",
+    )
     parser.add_argument("--repeats", type=int, default=None)
     parser.add_argument("--code-profiles", default=None)
     parser.add_argument("--cache-profiles", default=None)
     parser.add_argument("--workload-types", default=None)
     parser.add_argument("--batch-sizes", default=None)
     parser.add_argument("--block-widths", default=None)
+    parser.add_argument("--append", action="store_true")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
     preset = args.preset
-    repeats = args.repeats if args.repeats is not None else (1 if preset == "lightweight" else 3)
-    code_profiles = _parse_str_list(args.code_profiles) if args.code_profiles else LIGHTWEIGHT_CODE_PROFILES
+    defaults = _preset_defaults(preset)
+    repeats = args.repeats if args.repeats is not None else defaults["repeats"]
+    code_profiles = _parse_str_list(args.code_profiles) if args.code_profiles else defaults["code_profiles"]
     cache_profiles = (
-        _parse_str_list(args.cache_profiles) if args.cache_profiles else LIGHTWEIGHT_CACHE_PROFILES
+        _parse_str_list(args.cache_profiles) if args.cache_profiles else defaults["cache_profiles"]
     )
     workload_types = (
-        _parse_str_list(args.workload_types) if args.workload_types else LIGHTWEIGHT_WORKLOAD_TYPES
+        _parse_str_list(args.workload_types) if args.workload_types else defaults["workload_types"]
     )
-    batch_sizes = _parse_int_list(args.batch_sizes) if args.batch_sizes else LIGHTWEIGHT_BATCH_SIZES
+    batch_sizes = _parse_int_list(args.batch_sizes) if args.batch_sizes else defaults["batch_sizes"]
     block_widths = (
-        _parse_int_list(args.block_widths) if args.block_widths else LIGHTWEIGHT_BLOCK_WIDTHS
+        _parse_int_list(args.block_widths) if args.block_widths else defaults["block_widths"]
     )
 
     ensure_result_dirs()
@@ -501,8 +666,11 @@ def main(argv: list[str] | None = None) -> int:
         repeats=repeats,
     )
     output = RAW_DIR / "cache_aware_selection.csv"
-    write_csv(output, rows)
-    print(f"wrote {output}")
+    _write_or_append_csv(output, rows, append=args.append)
+    write_hardware_profile(RAW_DIR / "hardware_profile.json")
+    verb = "appended" if args.append and output.exists() else "wrote"
+    print(f"{verb} {output}")
+    print(f"wrote {RAW_DIR / 'hardware_profile.json'}")
     return 0
 
 
