@@ -334,6 +334,7 @@ def summarize_code_profile_scaling_rows(rows: list[dict[str, str]]) -> list[dict
 def summarize_candidate_testing_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
     keys = (
         "preset",
+        "target_mode",
         "code_profile",
         "pattern_type",
         "p_chase",
@@ -393,6 +394,9 @@ def summarize_optical_workload_rows(rows: list[dict[str, str]]) -> list[dict[str
                 "num_candidate_tests": int(
                     max(_float(row, "num_candidate_tests", 0.0) for row in group)
                 ),
+                "num_executed_candidate_tests": int(
+                    max(_float(row, "num_executed_candidate_tests", 0.0) for row in group)
+                ),
                 "num_event_updates": int(
                     max(_float(row, "num_event_updates", 0.0) for row in group)
                 ),
@@ -407,6 +411,43 @@ def summarize_optical_workload_rows(rows: list[dict[str, str]]) -> list[dict[str
                 ),
                 "std_latency_per_component_us": _std(
                     _float(row, "latency_per_component_us") for row in group
+                ),
+                "correctness_all_true": all(
+                    _truthy(row.get("correctness_passed", "True")) for row in group
+                ),
+                "notes": next((row.get("notes", "") for row in group), ""),
+                "num_rows": len(group),
+            }
+        )
+    return summary
+
+
+def summarize_optical_workload_breakdown_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    keys = (
+        "preset",
+        "workload_type",
+        "code_profile",
+        "task_kind",
+        "backend_or_method",
+        "unit_type",
+    )
+    summary = []
+    for key, group in sorted(_group_rows(rows, keys).items()):
+        summary.append(
+            {
+                **dict(zip(keys, key, strict=True)),
+                "mean_num_units": _mean(_float(row, "num_units") for row in group),
+                "mean_total_runtime_s": _mean(
+                    _float(row, "total_runtime_s") for row in group
+                ),
+                "mean_latency_per_unit_us": _mean(
+                    _float(row, "latency_per_unit_us") for row in group
+                ),
+                "std_latency_per_unit_us": _std(
+                    _float(row, "latency_per_unit_us") for row in group
+                ),
+                "mean_throughput_Munit_s": _mean(
+                    _float(row, "throughput_Munit_s") for row in group
                 ),
                 "correctness_all_true": all(
                     _truthy(row.get("correctness_passed", "True")) for row in group
@@ -523,7 +564,14 @@ def _best_from_code_profile_scaling(rows: list[dict[str, Any]]) -> list[dict[str
 def _best_from_candidate_testing(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     grouped = _group_rows(
         rows,
-        ("preset", "code_profile", "pattern_type", "candidate_count", "block_width"),
+        (
+            "preset",
+            "target_mode",
+            "code_profile",
+            "pattern_type",
+            "candidate_count",
+            "block_width",
+        ),
     )
     out = []
     for key, group in grouped.items():
@@ -532,8 +580,11 @@ def _best_from_candidate_testing(rows: list[dict[str, Any]]) -> list[dict[str, A
         out.append(
             _best_row(
                 "candidate_testing",
-                key[1],
-                f"preset={key[0]};pattern_type={key[2]};candidate_count={key[3]};block_width={key[4]}",
+                key[2],
+                (
+                    f"preset={key[0]};target_mode={key[1]};pattern_type={key[3]};"
+                    f"candidate_count={key[4]};block_width={key[5]}"
+                ),
                 best["backend"],
                 baseline["backend"] if baseline else "",
                 {
@@ -761,6 +812,7 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
             summarize_candidate_testing_rows,
             [
                 "preset",
+                "target_mode",
                 "code_profile",
                 "pattern_type",
                 "p_chase",
@@ -795,11 +847,34 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "density",
                 "num_syndrome_calls",
                 "num_candidate_tests",
+                "num_executed_candidate_tests",
                 "num_event_updates",
                 "mean_total_runtime_s",
                 "mean_latency_per_component_us",
                 "mean_throughput_Mcomponent_s",
                 "std_latency_per_component_us",
+                "correctness_all_true",
+                "notes",
+                "num_rows",
+            ],
+        ),
+        (
+            "optical_workload_breakdown",
+            raw_dir / "optical_workload_breakdown.csv",
+            summary_dir / "optical_workload_breakdown_summary.csv",
+            summarize_optical_workload_breakdown_rows,
+            [
+                "preset",
+                "workload_type",
+                "code_profile",
+                "task_kind",
+                "backend_or_method",
+                "unit_type",
+                "mean_num_units",
+                "mean_total_runtime_s",
+                "mean_latency_per_unit_us",
+                "std_latency_per_unit_us",
+                "mean_throughput_Munit_s",
                 "correctness_all_true",
                 "notes",
                 "num_rows",

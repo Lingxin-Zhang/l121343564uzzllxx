@@ -49,9 +49,19 @@ class HybridPlanner:
         workload_type = workload.get("type", "")
         if workload_type == "event_update":
             return self.event_update
-        if workload_type == "single" and int(workload.get("hamming_weight", 0)) <= self.sparse_threshold:
-            return self.sparse
-        if int(workload.get("batch_size", 1)) >= self.batch_threshold:
+        if workload_type == "single":
+            if int(workload.get("hamming_weight", 0)) <= self.sparse_threshold:
+                return self.sparse
+            return self.packed_block
+        if workload_type == "batch":
+            batch_size = int(workload.get("batch_size", 1))
+            output_mode = workload.get("output_mode", "unpacked")
+            if batch_size >= self.batch_threshold:
+                if output_mode == "packed":
+                    return self.packed_block
+                # PackedBatch is the current correctness-first vectorized path
+                # for unpacked batch output.
+                return self.packed_batch
             return self.packed_block
         return self.packed_block
 
@@ -66,7 +76,7 @@ class HybridPlanner:
         """Batch computation with a fixed rule-based backend choice."""
         x_batch = require_gf2_batch(x_batch, self.n)
         if x_batch.shape[0] >= self.batch_threshold:
-            return self.packed_block.apply_many(x_batch)
+            return self.packed_batch.apply_many(x_batch)
         return self.packed_block.apply_many(x_batch)
 
     def apply_many_packed(self, x_batch: np.ndarray) -> np.ndarray:

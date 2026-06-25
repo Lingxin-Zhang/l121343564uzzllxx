@@ -32,6 +32,7 @@ FULL_WINDOW_LEN = (4, 8, 16)
 DEFAULT_DENSITY = 0.05
 DEFAULT_BATCH_SIZE = 64
 DEFAULT_BLOCK_WIDTH = 8
+DEFAULT_MAX_CANDIDATE_TESTS_PER_EVENT = 256
 RNG_SEED = 20260723
 
 OPTICAL_FIELDNAMES = [
@@ -45,6 +46,7 @@ OPTICAL_FIELDNAMES = [
     "num_iterations_or_steps",
     "num_syndrome_calls",
     "num_candidate_tests",
+    "num_executed_candidate_tests",
     "num_event_updates",
     "backend_or_method",
     "block_width",
@@ -56,6 +58,21 @@ OPTICAL_FIELDNAMES = [
     "mean",
     "std",
     "repeats",
+    "correctness_passed",
+    "notes",
+]
+
+OPTICAL_BREAKDOWN_FIELDNAMES = [
+    "preset",
+    "workload_type",
+    "code_profile",
+    "task_kind",
+    "backend_or_method",
+    "num_units",
+    "unit_type",
+    "total_runtime_s",
+    "latency_per_unit_us",
+    "throughput_Munit_s",
     "correctness_passed",
     "notes",
 ]
@@ -116,20 +133,26 @@ def _prepare_tasks(
     for index, event in enumerate(events):
         count = _event_component_count(event, batch_size)
         if event.event_type.startswith("candidate_test"):
+            candidate_tests = max(1, event.executed_candidate_tests)
             candidates = make_fixed_weight_patterns(
                 n=n,
                 candidate_weight=2,
-                candidate_count=max(1, min(event.candidate_count, batch_size * 4)),
+                candidate_count=candidate_tests,
                 seed=RNG_SEED + index + n,
             )
             expected = naive.apply_many(candidates)
             tasks.append(
                 {
                     "kind": "candidate_test",
+                    "event_type": event.event_type,
                     "input": candidates,
                     "expected": expected,
                     "expected_packed": _pack_batch(expected),
-                    "component_count": candidates.shape[0],
+                    "component_count": event.component_count,
+                    "num_units": candidates.shape[0],
+                    "unit_type": "candidate",
+                    "intended_candidate_tests": event.intended_candidate_tests,
+                    "executed_candidate_tests": event.executed_candidate_tests,
                 }
             )
         elif event.event_type.startswith("event_update"):
@@ -141,12 +164,15 @@ def _prepare_tasks(
             tasks.append(
                 {
                     "kind": "event_update",
+                    "event_type": event.event_type,
                     "input": flipped,
                     "old": old,
                     "flips": flips,
                     "expected": expected,
                     "expected_packed": _pack_batch(expected),
                     "component_count": count,
+                    "num_units": count,
+                    "unit_type": "update",
                 }
             )
         else:
@@ -155,10 +181,13 @@ def _prepare_tasks(
             tasks.append(
                 {
                     "kind": "syndrome",
+                    "event_type": event.event_type,
                     "input": x_batch,
                     "expected": expected,
                     "expected_packed": _pack_batch(expected),
                     "component_count": count,
+                    "num_units": count,
+                    "unit_type": "component",
                 }
             )
     return tasks
@@ -222,7 +251,38 @@ def evaluate_optical_workload(
     block_width: int,
     repeats: int,
     preset: str,
+    max_candidate_tests_per_event: int | None = None,
 ) -> list[dict[str, Any]]:
+    aggregate_rows, _ = evaluate_optical_workload_with_breakdown(
+        workload_type=workload_type,
+        code_profile=code_profile,
+        num_blocks=num_blocks,
+        window_len=window_len,
+        num_iterations_or_steps=num_iterations_or_steps,
+        density=density,
+        batch_size=batch_size,
+        block_width=block_width,
+        repeats=repeats,
+        preset=preset,
+        max_candidate_tests_per_event=max_candidate_tests_per_event,
+    )
+    return aggregate_rows
+
+
+def evaluate_optical_workload_with_breakdown(
+    *,
+    workload_type: str,
+    code_profile: str,
+    num_blocks: int,
+    window_len: int,
+    num_iterations_or_steps: int,
+    density: float,
+    batch_size: int,
+    block_width: int,
+    repeats: int,
+    preset: str,
+    max_candidate_tests_per_event: int | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     profile = get_code_profile(code_profile)
     matrix = get_profile_matrix(code_profile)
     n, r = matrix.shape
@@ -232,6 +292,7 @@ def evaluate_optical_workload(
         num_blocks=num_blocks,
         window_len=window_len,
         num_iterations_or_steps=num_iterations_or_steps,
+        max_candidate_tests_per_event=max_candidate_tests_per_event,
     )
     naive = NaiveGF2Kernel(matrix)
     packed_batch = PackedBatchGF2Kernel(matrix)
@@ -246,7 +307,7 @@ def evaluate_optical_workload(
         rng=rng,
         naive=naive,
     )
-    total_components = max(1, sum(task["component_count"] for task in tasks))
+    total_units = max(1, sum(task["num_units"] for task in tasks))
     methods = (
         "Naive.apply_many",
         "PackedBatch.apply_many",
@@ -254,6 +315,7 @@ def evaluate_optical_workload(
         "EventUpdate.integrated",
     )
     rows: list[dict[str, Any]] = []
+    breakdown_rows: list[dict[str, Any]] = []
     context = f"{workload_type},{code_profile},blocks={num_blocks},window={window_len}"
     for method in methods:
         _run_method(
@@ -291,14 +353,15 @@ def evaluate_optical_workload(
                 "num_iterations_or_steps": num_iterations_or_steps,
                 "num_syndrome_calls": trace.num_syndrome_calls,
                 "num_candidate_tests": trace.num_candidate_tests,
+                "num_executed_candidate_tests": trace.num_executed_candidate_tests,
                 "num_event_updates": trace.num_event_updates,
                 "backend_or_method": method,
                 "block_width": block_width,
                 "batch_size": batch_size,
                 "density": density,
                 "total_runtime_s": mean,
-                "latency_per_component_us": mean / total_components * 1_000_000.0,
-                "throughput_Mcomponent_s": total_components / mean / 1_000_000.0,
+                "latency_per_component_us": mean / total_units * 1_000_000.0,
+                "throughput_Mcomponent_s": total_units / mean / 1_000_000.0,
                 "mean": mean,
                 "std": std,
                 "repeats": repeats,
@@ -306,7 +369,51 @@ def evaluate_optical_workload(
                 "notes": "trace-level workload only; no BER; no full decoder",
             }
         )
-    return rows
+        for task_kind in ("syndrome", "candidate_test", "event_update"):
+            selected_tasks = [task for task in tasks if task["kind"] == task_kind]
+            if not selected_tasks:
+                continue
+            _run_method(
+                method,
+                selected_tasks,
+                naive=naive,
+                packed_batch=packed_batch,
+                packed_lut=packed_lut,
+                event_kernel=event_kernel,
+                check=True,
+                context=f"{context},{task_kind}",
+            )
+            task_fn = lambda method=method, selected_tasks=selected_tasks: _run_method(
+                method,
+                selected_tasks,
+                naive=naive,
+                packed_batch=packed_batch,
+                packed_lut=packed_lut,
+                event_kernel=event_kernel,
+                check=False,
+                context=f"{context},{task_kind}",
+            )
+            task_samples = time_repeats(task_fn, repeats=repeats, warmups=1)
+            task_mean = statistics.fmean(task_samples)
+            num_units = max(1, sum(int(task["num_units"]) for task in selected_tasks))
+            unit_type = selected_tasks[0]["unit_type"]
+            breakdown_rows.append(
+                {
+                    "preset": preset,
+                    "workload_type": workload_type,
+                    "code_profile": code_profile,
+                    "task_kind": task_kind,
+                    "backend_or_method": method,
+                    "num_units": num_units,
+                    "unit_type": unit_type,
+                    "total_runtime_s": task_mean,
+                    "latency_per_unit_us": task_mean / num_units * 1_000_000.0,
+                    "throughput_Munit_s": num_units / task_mean / 1_000_000.0,
+                    "correctness_passed": True,
+                    "notes": "trace-level task breakdown; no BER; no full decoder",
+                }
+            )
+    return rows, breakdown_rows
 
 
 def run_optical_workload_rows(
@@ -321,15 +428,47 @@ def run_optical_workload_rows(
     batch_size: int,
     block_width: int,
     repeats: int,
+    max_candidate_tests_per_event: int | None = DEFAULT_MAX_CANDIDATE_TESTS_PER_EVENT,
 ) -> list[dict[str, Any]]:
+    rows, _ = run_optical_workload_tables(
+        preset=preset,
+        workload_types=workload_types,
+        code_profiles=code_profiles,
+        num_blocks_values=num_blocks_values,
+        window_len_values=window_len_values,
+        iteration_values=iteration_values,
+        density=density,
+        batch_size=batch_size,
+        block_width=block_width,
+        repeats=repeats,
+        max_candidate_tests_per_event=max_candidate_tests_per_event,
+    )
+    return rows
+
+
+def run_optical_workload_tables(
+    *,
+    preset: str,
+    workload_types: tuple[str, ...],
+    code_profiles: tuple[str, ...],
+    num_blocks_values: tuple[int, ...],
+    window_len_values: tuple[int, ...],
+    iteration_values: tuple[int, ...],
+    density: float,
+    batch_size: int,
+    block_width: int,
+    repeats: int,
+    max_candidate_tests_per_event: int | None = DEFAULT_MAX_CANDIDATE_TESTS_PER_EVENT,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     rows: list[dict[str, Any]] = []
+    breakdown_rows: list[dict[str, Any]] = []
     for workload_type in workload_types:
         for code_profile in code_profiles:
             for num_blocks in num_blocks_values:
                 for window_len in window_len_values:
                     for iteration_count in iteration_values:
-                        rows.extend(
-                            evaluate_optical_workload(
+                        try:
+                            new_rows, new_breakdown_rows = evaluate_optical_workload_with_breakdown(
                                 workload_type=workload_type,
                                 code_profile=code_profile,
                                 num_blocks=num_blocks,
@@ -340,9 +479,22 @@ def run_optical_workload_rows(
                                 block_width=block_width,
                                 repeats=repeats,
                                 preset=preset,
+                                max_candidate_tests_per_event=max_candidate_tests_per_event,
                             )
-                        )
-    return [{field: row.get(field, "") for field in OPTICAL_FIELDNAMES} for row in rows]
+                        except ValueError as exc:
+                            if workload_type == "staircase_like" and "even" in str(exc):
+                                print(f"skipped {workload_type}/{code_profile}: {exc}")
+                                continue
+                            raise
+                        rows.extend(new_rows)
+                        breakdown_rows.extend(new_breakdown_rows)
+    return (
+        [{field: row.get(field, "") for field in OPTICAL_FIELDNAMES} for row in rows],
+        [
+            {field: row.get(field, "") for field in OPTICAL_BREAKDOWN_FIELDNAMES}
+            for row in breakdown_rows
+        ],
+    )
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -357,6 +509,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--density", default=str(DEFAULT_DENSITY))
     parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE)
     parser.add_argument("--block-width", type=int, default=DEFAULT_BLOCK_WIDTH)
+    parser.add_argument(
+        "--max-candidate-tests-per-event",
+        type=int,
+        default=DEFAULT_MAX_CANDIDATE_TESTS_PER_EVENT,
+        help="Cap executed candidate-test masks per trace event; records intended and executed counts.",
+    )
     return parser
 
 
@@ -391,7 +549,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     ensure_result_dirs()
-    rows = run_optical_workload_rows(
+    rows, breakdown_rows = run_optical_workload_tables(
         preset=preset,
         workload_types=workload_types,
         code_profiles=code_profiles,
@@ -402,10 +560,14 @@ def main(argv: list[str] | None = None) -> int:
         batch_size=args.batch_size,
         block_width=args.block_width,
         repeats=repeats,
+        max_candidate_tests_per_event=args.max_candidate_tests_per_event,
     )
     output = RAW_DIR / "optical_workloads.csv"
     write_csv(output, rows)
     print(f"wrote {output}")
+    breakdown_output = RAW_DIR / "optical_workload_breakdown.csv"
+    write_csv(breakdown_output, breakdown_rows)
+    print(f"wrote {breakdown_output}")
     return 0
 
 

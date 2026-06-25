@@ -55,6 +55,7 @@ RNG_SEED = 20260722
 
 CANDIDATE_FIELDNAMES = [
     "preset",
+    "target_mode",
     "code_profile",
     "n",
     "r",
@@ -98,6 +99,28 @@ def _pack_vector(bits: np.ndarray) -> np.uint16 | np.uint32:
     if bits.shape[0] <= 16:
         return pack_bits_to_uint16(bits)
     return pack_bits_to_uint32(bits)
+
+
+def make_target_syndrome(
+    *,
+    matrix: np.ndarray,
+    candidates: np.ndarray,
+    target_mode: str,
+) -> np.ndarray:
+    """Return the target syndrome used for candidate matching."""
+
+    target_mode = target_mode.strip()
+    if target_mode == "zero":
+        return np.zeros(matrix.shape[1], dtype=np.uint8)
+    if target_mode != "known_hit":
+        raise ValueError("target_mode must be zero or known_hit")
+
+    naive = NaiveGF2Kernel(matrix)
+    syndromes = naive.apply_many(candidates)
+    for syndrome in syndromes:
+        if np.any(syndrome):
+            return syndrome.copy()
+    return syndromes[0].copy()
 
 
 def _summary(samples: list[float], candidate_count: int) -> dict[str, float]:
@@ -152,6 +175,7 @@ def evaluate_candidate_backends(
     pattern_type: str,
     p_chase: int,
     candidate_weight: int,
+    target_mode: str = "custom",
     include_debug: bool = True,
 ) -> list[dict[str, Any]]:
     """Evaluate all candidate-testing methods for one candidate matrix."""
@@ -217,6 +241,7 @@ def evaluate_candidate_backends(
         samples = time_repeats(fn, repeats=repeats, warmups=1)
         row = {
             "preset": preset,
+            "target_mode": target_mode,
             "code_profile": code_profile,
             "n": n,
             "r": r,
@@ -291,13 +316,13 @@ def run_candidate_testing_rows(
     candidate_counts: tuple[int, ...],
     block_width: int,
     repeats: int,
+    target_mode: str = "known_hit",
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for profile_name in code_profiles:
         profile = get_code_profile(profile_name)
         matrix = get_profile_matrix(profile_name)
         n, r = matrix.shape
-        target = np.zeros(r, dtype=np.uint8)
         for pattern_type, p_chase, weight, candidates in _candidate_sets(
             n=n,
             pattern_types=pattern_types,
@@ -306,22 +331,31 @@ def run_candidate_testing_rows(
             candidate_counts=candidate_counts,
             seed=RNG_SEED + n + r,
         ):
-            rows.extend(
-                evaluate_candidate_backends(
-                    matrix=matrix,
-                    candidates=candidates,
-                    target_syndrome=target,
-                    block_width=block_width,
-                    batch_size=candidates.shape[0],
-                    repeats=repeats,
-                    preset=preset,
-                    code_profile=profile.profile_name,
-                    pattern_type=pattern_type,
-                    p_chase=p_chase,
-                    candidate_weight=weight,
-                    include_debug=False,
-                )
+            target = make_target_syndrome(
+                matrix=matrix,
+                candidates=candidates,
+                target_mode=target_mode,
             )
+            new_rows = evaluate_candidate_backends(
+                matrix=matrix,
+                candidates=candidates,
+                target_syndrome=target,
+                block_width=block_width,
+                batch_size=candidates.shape[0],
+                repeats=repeats,
+                preset=preset,
+                code_profile=profile.profile_name,
+                pattern_type=pattern_type,
+                p_chase=p_chase,
+                candidate_weight=weight,
+                target_mode=target_mode,
+                include_debug=False,
+            )
+            if target_mode == "known_hit":
+                matched = {int(row["matches_found"]) for row in new_rows}
+                if len(matched) != 1 or next(iter(matched)) < 1:
+                    raise AssertionError("known_hit target did not produce a backend-consistent match")
+            rows.extend(new_rows)
     return [{field: row.get(field, "") for field in CANDIDATE_FIELDNAMES} for row in rows]
 
 
@@ -335,6 +369,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--candidate-weights", default=None)
     parser.add_argument("--candidate-counts", default=None)
     parser.add_argument("--block-width", type=int, default=DEFAULT_BLOCK_WIDTH)
+    parser.add_argument("--target-mode", choices=("zero", "known_hit"), default="known_hit")
     return parser
 
 
@@ -378,6 +413,7 @@ def main(argv: list[str] | None = None) -> int:
         candidate_counts=candidate_counts,
         block_width=args.block_width,
         repeats=repeats,
+        target_mode=args.target_mode,
     )
     output = RAW_DIR / "candidate_testing.csv"
     write_csv(output, rows)

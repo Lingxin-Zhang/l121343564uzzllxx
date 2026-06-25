@@ -117,9 +117,46 @@ def plot_optical_workloads() -> None:
     _save(fig, "experiment_round02_optical_workloads")
 
 
+def plot_optical_workload_breakdown() -> None:
+    rows = _read_csv(RAW_DIR / "optical_workload_breakdown.csv")
+    task_kinds = ["syndrome", "candidate_test", "event_update"]
+    methods = sorted({row["backend_or_method"] for row in rows})
+    grouped: dict[tuple[str, str], list[float]] = defaultdict(list)
+    for row in rows:
+        grouped[(row["task_kind"], row["backend_or_method"])].append(
+            float(row["latency_per_unit_us"])
+        )
+
+    x = np.arange(len(task_kinds), dtype=float)
+    width = 0.78 / max(1, len(methods))
+    fig, ax = plt.subplots(figsize=(7.0, 4.0))
+    for index, method in enumerate(methods):
+        offsets = x - 0.39 + width / 2 + index * width
+        values = [_mean(grouped[(task_kind, method)]) for task_kind in task_kinds]
+        ax.bar(
+            offsets,
+            values,
+            width=width,
+            label=method,
+            color=COLORS[index % len(COLORS)],
+            edgecolor="white",
+            linewidth=0.5,
+        )
+    ax.set_xticks(x)
+    ax.set_xticklabels(task_kinds, rotation=15, ha="right")
+    ax.set_yscale("log")
+    ax.set_xlabel("task_kind")
+    ax.set_ylabel("Latency per task unit (us)")
+    ax.set_title("Trace-level task breakdown diagnostic")
+    ax.grid(True, axis="y", alpha=0.25, linestyle="--")
+    ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=False)
+    _save(fig, "experiment_round02_optical_workload_breakdown")
+
+
 def main() -> None:
     plot_candidate_testing()
     plot_optical_workloads()
+    plot_optical_workload_breakdown()
 
 
 if __name__ == "__main__":

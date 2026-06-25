@@ -74,6 +74,7 @@ def _append_timing_row(
     samples: list[float],
     repeats: int,
     correctness_passed: bool,
+    selected_backend: str = "",
 ) -> None:
     mean = statistics.fmean(samples)
     std = statistics.stdev(samples) if len(samples) > 1 else 0.0
@@ -86,6 +87,7 @@ def _append_timing_row(
             "density": density,
             "flip_count": flip_count,
             "block_width": block_width,
+            "selected_backend": selected_backend,
             "total_runtime_s": mean,
             "latency_per_word_us": mean / batch_size * 1_000_000.0,
             "throughput_Mword_s": batch_size / mean / 1_000_000.0,
@@ -148,6 +150,18 @@ def main() -> None:
                 ),
             ]
             for backend_or_method, fn in methods:
+                selected_backend = ""
+                if backend_or_method == "HybridPlanner.apply_many_packed":
+                    selected_backend = type(
+                        planner.choose_backend(
+                            matrix,
+                            {
+                                "type": "batch",
+                                "batch_size": batch_size,
+                                "output_mode": "packed",
+                            },
+                        )
+                    ).__name__
                 _append_timing_row(
                     rows,
                     matrix_source=args.matrix_source,
@@ -160,6 +174,7 @@ def main() -> None:
                     samples=_time_repeats(fn, args.repeats),
                     repeats=args.repeats,
                     correctness_passed=correctness_passed,
+                    selected_backend=selected_backend,
                 )
 
             old_syndromes = expected
@@ -202,6 +217,11 @@ def main() -> None:
                     ),
                 ]
                 for backend_or_method, fn in update_methods:
+                    selected_backend = ""
+                    if backend_or_method == "HybridPlanner.update_many":
+                        selected_backend = type(
+                            planner.choose_backend(matrix, {"type": "event_update"})
+                        ).__name__
                     _append_timing_row(
                         rows,
                         matrix_source=args.matrix_source,
@@ -214,6 +234,7 @@ def main() -> None:
                         samples=_time_repeats(fn, args.repeats),
                         repeats=args.repeats,
                         correctness_passed=update_correctness_passed,
+                        selected_backend=selected_backend,
                     )
 
     output = RAW_DIR / "planner.csv"

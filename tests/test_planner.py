@@ -6,7 +6,14 @@ import numpy as np
 import pytest
 
 from codes.matrix_sources import get_matrix_source
-from linear_kernel import HybridPlanner, NaiveGF2Kernel
+from linear_kernel import (
+    EventUpdateKernel,
+    HybridPlanner,
+    NaiveGF2Kernel,
+    PackedBatchGF2Kernel,
+    PackedBlockLUTKernel,
+    SparseXorKernel,
+)
 from linear_kernel.matrix_utils import pack_batch_bits_to_uint16
 
 
@@ -25,6 +32,48 @@ def test_planner_apply_matches_naive(candidate_matrix: np.ndarray) -> None:
         x = np.zeros(255, dtype=np.uint8)
         x[rng.choice(255, size=weight, replace=False)] = 1
         np.testing.assert_array_equal(planner.apply(x), naive.apply(x))
+
+
+def test_planner_choose_backend_selects_sparse_for_single_sparse_input(
+    candidate_matrix: np.ndarray,
+) -> None:
+    planner = HybridPlanner(candidate_matrix, sparse_threshold=8)
+
+    backend = planner.choose_backend(
+        candidate_matrix,
+        {"type": "single", "hamming_weight": 2},
+    )
+
+    assert isinstance(backend, SparseXorKernel)
+
+
+def test_planner_choose_backend_selects_event_update(candidate_matrix: np.ndarray) -> None:
+    planner = HybridPlanner(candidate_matrix)
+
+    backend = planner.choose_backend(candidate_matrix, {"type": "event_update"})
+
+    assert isinstance(backend, EventUpdateKernel)
+
+
+def test_planner_choose_backend_respects_batch_output_mode(candidate_matrix: np.ndarray) -> None:
+    planner = HybridPlanner(candidate_matrix, batch_threshold=64)
+
+    packed_backend = planner.choose_backend(
+        candidate_matrix,
+        {"type": "batch", "batch_size": 128, "output_mode": "packed"},
+    )
+    unpacked_backend = planner.choose_backend(
+        candidate_matrix,
+        {"type": "batch", "batch_size": 128, "output_mode": "unpacked"},
+    )
+    small_batch_backend = planner.choose_backend(
+        candidate_matrix,
+        {"type": "batch", "batch_size": 8, "output_mode": "unpacked"},
+    )
+
+    assert isinstance(packed_backend, PackedBlockLUTKernel)
+    assert isinstance(unpacked_backend, PackedBatchGF2Kernel)
+    assert isinstance(small_batch_backend, PackedBlockLUTKernel)
 
 
 def test_planner_apply_many_matches_naive(candidate_matrix: np.ndarray) -> None:
