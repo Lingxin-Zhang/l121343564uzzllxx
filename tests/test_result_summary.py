@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from scripts.summarize_results import (
+    summarize_cache_aware_selection_rows,
     summarize_component_decoder_exactness_rows,
     summarize_component_loop_rows,
     summarize_event_update_rows,
@@ -152,6 +153,44 @@ def test_optical_summary_prefers_executed_unit_metrics() -> None:
     assert summary[0]["mean_aggregate_latency_per_executed_unit_us"] == 27.7777777778
     assert summary[0]["mean_throughput_Mexecuted_unit_s"] == 0.036
     assert summary[0]["executed_candidate_tests"] == 32
+    assert summary[0]["correctness_all_true"] is True
+
+
+def test_cache_aware_selection_summary_preserves_planner_fields() -> None:
+    rows = [
+        {
+            "preset": "unit",
+            "code_profile": "bch_255_239_r16",
+            "n": "255",
+            "r": "16",
+            "cache_profile": "default_cpu_cache",
+            "workload_type": "candidate_test_packed",
+            "batch_size": "64",
+            "density_or_weight": "0.05",
+            "output_mode": "packed",
+            "selected_backend": "PackedBlockLUTKernel",
+            "selected_block_width": "6",
+            "selection_reason": "unit reason",
+            "lut_bytes": "4096",
+            "fits_l1": "True",
+            "fits_l2": "True",
+            "fits_l3": "True",
+            "oracle_best_backend": "PackedBlockLUTKernel",
+            "oracle_best_block_width": "6",
+            "selected_latency_us": "10.0",
+            "oracle_best_latency_us": "8.0",
+            "planner_over_oracle": "1.25",
+            "correctness_passed": "True",
+        }
+    ]
+
+    summary = summarize_cache_aware_selection_rows(rows)
+
+    assert len(summary) == 1
+    assert summary[0]["selected_backend"] == "PackedBlockLUTKernel"
+    assert summary[0]["selected_block_width"] == "6"
+    assert summary[0]["oracle_best_backend"] == "PackedBlockLUTKernel"
+    assert summary[0]["mean_planner_over_oracle"] == 1.25
     assert summary[0]["correctness_all_true"] is True
 
 

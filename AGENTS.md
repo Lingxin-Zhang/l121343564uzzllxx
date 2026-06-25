@@ -38,6 +38,7 @@ Implemented:
 5. `PackedBatchGF2Kernel.apply_many`
 6. `PackedBlockLUTKernel` with packed `uint16` / `uint32` output for `r <= 32`
 7. `HybridPlanner` simple rule-based baseline
+8. `CacheAwarePlanner` simple cache-footprint-aware selection baseline
 
 ## Benchmark Status
 
@@ -62,6 +63,10 @@ Implemented:
 17. `benchmarks/bench_candidate_testing.py`
 18. `benchmarks/bench_optical_workloads.py`
 19. `scripts/plot_experiment_round02_results.py`
+20. `benchmarks/bench_component_decoder_exactness.py`
+21. `benchmarks/bench_cache_aware_selection.py`
+22. `scripts/plot_experiment_round04_results.py`
+23. `scripts/plot_experiment_round06_results.py`
 
 Generated CSV, PNG, and requested PDF figure outputs may be tracked for review.
 

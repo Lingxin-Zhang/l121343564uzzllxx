@@ -286,6 +286,48 @@ def summarize_cache_aware_rows(rows: list[dict[str, str]]) -> list[dict[str, Any
     return summary
 
 
+def summarize_cache_aware_selection_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    keys = (
+        "preset",
+        "code_profile",
+        "cache_profile",
+        "workload_type",
+        "batch_size",
+        "density_or_weight",
+        "output_mode",
+        "selected_backend",
+        "selected_block_width",
+        "oracle_best_backend",
+        "oracle_best_block_width",
+    )
+    summary = []
+    for key, group in sorted(_group_rows(rows, keys).items()):
+        summary.append(
+            {
+                **dict(zip(keys, key, strict=True)),
+                "selection_reason": next((row.get("selection_reason", "") for row in group), ""),
+                "lut_bytes": int(max(_float(row, "lut_bytes", 0.0) for row in group)),
+                "fits_l1": all(_truthy(row.get("fits_l1", "True")) for row in group),
+                "fits_l2": all(_truthy(row.get("fits_l2", "True")) for row in group),
+                "fits_l3": all(_truthy(row.get("fits_l3", "True")) for row in group),
+                "mean_selected_latency_us": _mean(
+                    _float(row, "selected_latency_us") for row in group
+                ),
+                "mean_oracle_best_latency_us": _mean(
+                    _float(row, "oracle_best_latency_us") for row in group
+                ),
+                "mean_planner_over_oracle": _mean(
+                    _float(row, "planner_over_oracle") for row in group
+                ),
+                "correctness_all_true": all(
+                    _truthy(row.get("correctness_passed", "True")) for row in group
+                ),
+                "num_rows": len(group),
+            }
+        )
+    return summary
+
+
 def summarize_code_profile_scaling_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
     keys = (
         "preset",
@@ -872,6 +914,35 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "l2_bytes",
                 "l3_bytes",
                 "cache_line_bytes",
+                "correctness_all_true",
+                "num_rows",
+            ],
+        ),
+        (
+            "cache_aware_selection",
+            raw_dir / "cache_aware_selection.csv",
+            summary_dir / "cache_aware_selection_summary.csv",
+            summarize_cache_aware_selection_rows,
+            [
+                "preset",
+                "code_profile",
+                "cache_profile",
+                "workload_type",
+                "batch_size",
+                "density_or_weight",
+                "output_mode",
+                "selected_backend",
+                "selected_block_width",
+                "oracle_best_backend",
+                "oracle_best_block_width",
+                "selection_reason",
+                "lut_bytes",
+                "fits_l1",
+                "fits_l2",
+                "fits_l3",
+                "mean_selected_latency_us",
+                "mean_oracle_best_latency_us",
+                "mean_planner_over_oracle",
                 "correctness_all_true",
                 "num_rows",
             ],

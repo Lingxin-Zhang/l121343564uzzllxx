@@ -89,6 +89,7 @@ For example, `total_bits = 1,000,000` and `component_n = 255` gives
 - `PackedBatchGF2Kernel` correctness-first `apply_many`
 - `PackedBlockLUTKernel`
 - `HybridPlanner` simple rule-based baseline
+- `CacheAwarePlanner` simple cache-footprint-aware selection baseline
 
 Current `PackedBlockLUTKernel` supports packed output width `r <= 32`: `uint16`
 for `r <= 16` and `uint32` for `17 <= r <= 32`. Wider packed outputs will need
@@ -109,12 +110,15 @@ reproducible rule-based dispatcher baseline, not an optimal scheduler.
 - `benchmarks/bench_event_update.py`
 - `benchmarks/bench_planner.py`
 - `benchmarks/bench_cache_aware.py`
+- `benchmarks/bench_cache_aware_selection.py`
 - `benchmarks/bench_code_profiles.py`
 - `benchmarks/bench_candidate_testing.py`
 - `benchmarks/bench_optical_workloads.py`
 - `scripts/plot_results.py`
 - `scripts/plot_round2_results.py`
 - `scripts/plot_experiment_round02_results.py`
+- `scripts/plot_experiment_round04_results.py`
+- `scripts/plot_experiment_round06_results.py`
 
 The first benchmark group uses a fixed random GF(2) matrix. The component
 syndrome benchmark uses a deterministic BCH-like `(255, 16)` matrix to exercise
