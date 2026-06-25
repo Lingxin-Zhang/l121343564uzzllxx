@@ -109,7 +109,7 @@
 - push 首次尝试失败：`curl 56 Recv failure: Connection was reset`。
 - push 第二次尝试失败：无法连接 `github.com:443`。
 - push 第三次尝试失败：无法连接 `github.com:443`。
-- 当前判断：代码、测试和结果已在本地完成；远程推送受网络连接影响，需要网络恢复后重试。
+- 后续重试已成功 push 到 `origin/main`。
 
 ## CSV 抽查
 
