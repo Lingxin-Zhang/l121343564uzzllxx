@@ -1,0 +1,2 @@
+left_reference,right_reference,left_type,right_type,candidate_transform,shape,num_equal_entries,num_total_entries,match_rate,exact_match,notes
+not_enough_available_references,not_enough_available_references,unavailable,unavailable,not_run,,0,0,0.0,False,pairwise comparison requires at least two available references

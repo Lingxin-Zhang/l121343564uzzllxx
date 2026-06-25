@@ -9,6 +9,6 @@ galois,True,message_one_hot_encoding,"n=255,k=239,r=16",reverse_codeword_positio
 galois,True,message_one_hot_encoding,"n=255,k=239,r=16",reverse_bit_order_inside_each_byte,"(255, 16) vs (255, 16)",2060,4080,0.5049019607843137,False,"source=galois Python package, version=0.4.10, license=MIT, commit=not applicable"
 galois,True,message_one_hot_encoding,"n=255,k=239,r=16",reverse_output_byte_order,"(255, 16) vs (255, 16)",2004,4080,0.49117647058823527,False,"source=galois Python package, version=0.4.10, license=MIT, commit=not applicable"
 galois,True,message_one_hot_encoding,"n=255,k=239,r=16",reverse_output_bit_order,"(255, 16) vs (255, 16)",1996,4080,0.4892156862745098,False,"source=galois Python package, version=0.4.10, license=MIT, commit=not applicable"
-python-bchlib,False,unavailable,"n=255,k=239,r=16",not_run,,0,0,0.0,False,"python-bchlib installed, but no public-safe bit-level BCH(255,239) adapter is implemented"
+python-bchlib,False,unavailable,"n=255,k=239,r=16",not_run,,0,0,0.0,False,"imported bchlib; BCH(t=2,m=8) reports n=255, ecc_bits=16, ecc_bytes=2, prim_poly=285; byte-level message packing and exact BCH(255,239) bit order are not validated, so no public-safe adapter is enabled"
 aff3ct,False,unavailable,"n=255,k=239,r=16",not_run,,0,0,0.0,False,aff3ct path not configured
 linux-kernel,False,unavailable,"n=255,k=239,r=16",not_run,,0,0,0.0,False,linux-kernel path not configured

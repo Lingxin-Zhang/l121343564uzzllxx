@@ -56,6 +56,91 @@ Implemented:
 Generated CSV and PNG figure outputs may be tracked for review. PDF figures are
 local artifacts unless explicitly requested.
 
+## Reference Registry
+
+No external repository is a gold standard. Use references only for parameter
+checks, behavior comparison, code-organization inspiration, or benchmark-design
+inspiration. Do not copy external implementation code.
+
+### BCH Mathematics / Behavior References
+
+1. Linux kernel BCH
+   - Suggested repo/source: torvalds/linux, `lib/bch.c`, `include/linux/bch.h`
+   - Role: mature generic binary BCH implementation; useful for BCH
+     encoding/decoding behavior, syndrome, Berlekamp-Massey, and root finding
+     reference.
+   - Caution: GPL code. Do not copy code into this repository. Only inspect or
+     invoke as external behavior reference.
+
+2. python-bchlib
+   - Suggested repo: jkent/python-bchlib
+   - Role: Python-callable BCH package, useful for small behavior checks if
+     parameters can be aligned.
+   - Caution: parameter convention and bit ordering must be verified. Do not
+     assume it matches BCH(255,239) automatically.
+
+3. galois Python package
+   - Role: clean mathematical BCH construction/reference when installed.
+   - Caution: may use systematic encoding conventions different from OFEC/oFEC
+     code. Record version and parameters.
+
+4. AFF3CT
+   - Suggested repo: aff3ct/aff3ct
+   - Role: communication/FEC simulation framework and possible BCH
+     implementation reference.
+   - Caution: C++ project; do not copy code. Use for architecture, benchmark
+     style, and optional behavior reference.
+
+### oFEC / Chase / Optical FEC Structure References
+
+5. Local OFEC_CNN
+   - Role: user's local oFEC/eBCH implementation; useful for component-code
+     calling patterns and project-specific convention checks.
+   - Caution: user-written code may contain bugs. Do not treat as gold
+     standard. Put concrete local path only in untracked `AGENTS.local.md`.
+
+6. zsr71/oFEC-HUAWEI
+   - Role: public C++ oFEC/Huawei-style reference; useful for oFEC layout,
+     BCH_N/K, Chase-Pyndiah parameters, encoder/decoder organization, and
+     component decoder flow.
+   - Important files to inspect if cloned locally:
+     - `include/newcode/params.hpp`
+     - `include/newcode/bch_255_239.hpp`
+     - `src/chase256.cpp`
+     - `src/ofec_decoder.cpp`
+     - `src/ofec_encoder.cpp`
+   - Caution: not a gold standard; do not copy implementation code.
+
+7. YihanLiu1010/oFEC-Decoder
+   - Role: VHDL oFEC decoder using Chase-Pyndiah; useful for hardware/pipeline
+     organization.
+   - Caution: hardware-oriented; not directly suitable as Python backend
+     reference.
+
+8. zsr71/oFEC-SIM
+   - Role: auxiliary simulation-style oFEC reference.
+   - Caution: use only for high-level organization if useful.
+
+9. vsousa46/Automa-oFEC
+   - Role: auxiliary small oFEC reference.
+   - Caution: low priority; do not rely on it for correctness.
+
+### High-Throughput Communication Implementation References
+
+10. GNU Radio / VOLK
+    - Role: stream/chunk processing and SIMD kernel selection inspiration.
+    - Caution: not BCH/oFEC correctness reference.
+
+### Rules
+
+- References may be cloned only into ignored `external_refs/`.
+- Do not commit `external_refs/`.
+- Do not copy external implementation code into this repository.
+- Record source, URL, commit hash when available, license when known,
+  parameters, and exact-match status.
+- If references disagree, record the disagreement and keep local matrix as
+  placeholder.
+
 ## Subagent Collaboration
 
 Use subagents only when the user explicitly asks for subagents, delegation, or

@@ -1,89 +1,105 @@
 # Latest Review Summary
 
-Current round: Round 11 - BCH Reference Triangulation
+Current round: Round 12 - Reference Registry and BCH Cross-Check
 
 ## Modified Files
 
-- `.gitignore`
 - `AGENTS.md`
-- `README.md`
 - `docs/bch_reference_notes.md`
-- `tools/__init__.py`
 - `tools/verify_bch_references.py`
 - `tests/test_bch_reference_tools.py`
 - `results/raw/bch_reference_check.csv`
+- `results/raw/reference_registry.csv`
+- `results/raw/bch_reference_pairwise_check.csv`
 - refreshed `results/raw/*.csv`
 - refreshed `results/figures/*.png`
 - `review_gpt/latest.md`
-- `review_gpt/round_11_summary.md`
+- `review_gpt/round_12_summary.md`
 
 ## Implementation
 
-- Added `tools/verify_bch_references.py`, an optional/local-friendly reference
-  triangulation tool.
-- The tool compares the current local `make_bch255_t2_syndrome_matrix()` output
-  against available references and writes `results/raw/bch_reference_check.csv`.
-- The tool reports unavailable references gracefully instead of crashing.
-- Added common convention checks:
-  - identity;
-  - reverse codeword position order;
-  - reverse bit order inside each output byte;
-  - reverse output byte order;
-  - reverse output bit order;
-  - drop an eBCH-wide parity row when a 256-row reference appears.
-- Added lightweight tests for CLI help, exact-match comparison, reversed-position
-  detection, and graceful unavailable-reference reporting.
-- Added `docs/bch_reference_notes.md` explaining:
-  - why OFEC_CNN is not treated as the only gold standard;
-  - the difference between an encoding parity matrix and a syndrome contribution
-    matrix;
-  - one-hot probing;
-  - current availability and match status.
-- Added `external_refs/` to `.gitignore`.
-- Updated `AGENTS.md` and `README.md` to clarify external BCH reference policy.
+- Added a full `Reference Registry` section to `AGENTS.md`.
+- Added a machine-readable reference metadata registry in
+  `tools/verify_bch_references.py`.
+- The tool now writes:
+  - `results/raw/bch_reference_check.csv`;
+  - `results/raw/reference_registry.csv`;
+  - `results/raw/bch_reference_pairwise_check.csv`.
+- Added reference-vs-reference comparison for available references.
+- Added tests for registry rows, pairwise exact-match behavior, and CLI
+  generation of all three reports.
+- Updated `docs/bch_reference_notes.md` with registry, pairwise, and
+  python-bchlib API survey notes.
+
+## Reference Registry
+
+`AGENTS.md` now records the reference registry. The generated
+`results/raw/reference_registry.csv` contains 10 entries:
+
+- `linux-kernel-bch`
+- `python-bchlib`
+- `galois`
+- `ofec-cnn-local`
+- `aff3ct`
+- `ofec-huawei`
+- `ofec-decoder-vhdl`
+- `ofec-sim`
+- `automa-ofec`
+- `gnuradio-volk`
+
+No external repository is treated as a gold standard.
 
 ## Reference Availability
 
-OFEC_CNN was used as one optional local reference in this run, not as the only
-standard answer. No external source code was copied into this repository.
+Available in this run:
 
-Available in this environment:
-
-- `ofec`: available through a configured local path; source code was invoked as
-  a behavior reference only.
-- `galois`: available as installed Python package `0.4.10`, license reported as
-  MIT by package metadata.
+- `ofec`: loaded through a temporary local environment variable; not copied.
+- `galois`: installed Python package, version `0.4.10`, metadata reports MIT.
 
 Unavailable or not adapted:
 
-- `python-bchlib`: importable, but this repository does not yet have a
-  public-safe bit-level BCH(255,239) adapter.
+- `python-bchlib`: importable and API-surveyed, but no trusted adapter enabled.
 - `aff3ct`: path not configured.
 - `linux-kernel`: path not configured.
 
-## Reference Result
+## python-bchlib Survey
 
-No exact match was found between the current local matrix and the available
-references under the tested transforms.
-
-Best observed transform for both OFEC_CNN and `galois`:
+`python-bchlib` imports successfully. A `BCH(t=2, m=8)` object reports:
 
 ```text
-candidate_transform = reverse_codeword_positions
-match_rate = 0.5078431372549019
-exact_match = False
+n = 255
+ecc_bits = 16
+ecc_bytes = 2
+prim_poly = 285
 ```
 
-This suggests the current matrix remains a placeholder. Possible convention or
-construction differences include primitive polynomial, bit order, position
-order, output packing, and eBCH-wide parity handling. The current result is not
-strong evidence for any single explanation.
+The public API is byte-oriented, so exact 239-bit message packing, pad-bit
+handling, and bit order are not yet validated. This round does not enable a
+python-bchlib behavior adapter.
+
+## Cross-Check Result
+
+Current local matrix vs references:
+
+- `ofec` and `galois` both have best local-matrix transform
+  `reverse_codeword_positions`.
+- Best match rate is `0.5078431372549019`.
+- No exact match was found against the current placeholder matrix.
+
+Reference-vs-reference:
+
+- `ofec` vs `galois` has an exact identity match.
+- `results/raw/bch_reference_pairwise_check.csv` was generated.
+
+This strengthens evidence that OFEC and `galois` currently agree with each
+other, while the current `make_bch255_t2_syndrome_matrix()` remains a
+placeholder.
 
 ## Verification
 
 ```text
 python -m pytest -q
-168 passed
+171 passed
 ```
 
 ```text
@@ -96,22 +112,19 @@ Completed and refreshed benchmark CSV/PNG outputs.
 python tools/verify_bch_references.py --output results/raw/bch_reference_check.csv
 ```
 
-Completed with the OFEC path supplied through a temporary local environment
-variable, and generated the committed reference-check CSV. The concrete local
-path is not written into tracked files.
+Completed with OFEC path supplied through a temporary local environment
+variable. The concrete local path is not written into tracked files.
 
 ## Known Issues
 
 - Current `make_bch255_t2_syndrome_matrix()` remains a deterministic placeholder.
 - No verified replacement matrix was added.
-- Push to GitHub failed from this environment after repeated attempts because
-  connecting to `github.com:443` timed out or reset. Local commit exists and is
-  one commit ahead of `origin/main`.
+- No external implementation code was copied.
 - No full BCH/eBCH decoder, OFEC decoder, HybridPlanner, BER simulation, paper
   conclusion, or speedup claim was added.
 
 ## Next Step
 
-Add a public-safe adapter for the true systematic BCH parity-contribution matrix
-and compare it against both OFEC_CNN and `galois` before changing the benchmark
-matrix.
+Add a public-safe function that builds the systematic BCH parity-contribution
+matrix matching both OFEC and `galois`, then compare it against the current
+placeholder before deciding whether to switch benchmark input matrices.

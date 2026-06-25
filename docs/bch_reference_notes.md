@@ -26,6 +26,31 @@ parameters, and comparison result recorded.
 - The Python `galois` package can provide a message one-hot encoding reference
   for BCH parameters when installed.
 
+The machine-readable registry is written to
+`results/raw/reference_registry.csv`. It records role, suggested source,
+license status, adapter status, trust level for BCH math, trust level for oFEC
+structure, and notes. This registry is not a ranking of correctness; it is a
+record of how each source may be used and what risks remain.
+
+## Reference-Vs-Reference Cross-Check
+
+The reference checker now writes `results/raw/bch_reference_pairwise_check.csv`.
+This compares available references against each other under the same convention
+transforms used for local-matrix comparison. Unavailable references are recorded
+in the registry and local-vs-reference report, but are skipped for pairwise
+matrix comparison.
+
+In the current local run, OFEC_CNN and `galois` were both available and matched
+each other exactly under the identity transform. That means those two adapters
+currently agree with each other for the generated BCH(255,239) syndrome
+contribution matrix. This does not make either source a gold standard.
+
+`python-bchlib` was importable and its public API was surveyed. A
+`BCH(t=2, m=8)` object reports `n=255`, `ecc_bits=16`, and `ecc_bytes=2`, but
+the API is byte-oriented. The exact 239-bit message packing, pad-bit handling,
+and bit order have not been validated, so this repository does not yet enable a
+python-bchlib behavior adapter.
+
 ## Encoding Parity Matrix vs Syndrome Contribution Matrix
 
 For a systematic encoder, the parity part can be written as:
