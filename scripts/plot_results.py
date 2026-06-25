@@ -75,9 +75,14 @@ def plot_block_width() -> None:
     fig, ax_latency = plt.subplots(figsize=(8.2, 4.8))
 
     block_rows = sorted(by_backend["BlockLUT"], key=lambda row: float(row["block_width"]))
+    packed_block_rows = sorted(
+        by_backend["PackedBlockLUT"], key=lambda row: float(row["block_width"])
+    )
     block_widths = [float(row["block_width"]) for row in block_rows]
     block_latency = [float(row["latency_per_word_us"]) for row in block_rows]
-    table_sizes = [float(row["table_size_bytes"]) for row in block_rows]
+    packed_block_latency = [
+        float(row["latency_per_word_us"]) for row in packed_block_rows
+    ]
 
     (block_line,) = ax_latency.plot(
         block_widths,
@@ -87,8 +92,16 @@ def plot_block_width() -> None:
         label="BlockLUT latency",
         color="tab:blue",
     )
+    (packed_block_line,) = ax_latency.plot(
+        block_widths,
+        packed_block_latency,
+        marker="o",
+        linewidth=2.1,
+        label="PackedBlockLUT latency",
+        color="tab:purple",
+    )
 
-    baseline_lines = [block_line]
+    latency_lines = [block_line, packed_block_line]
     for backend, color in (("Naive", "tab:orange"), ("SparseXor", "tab:green")):
         backend_rows = by_backend[backend]
         baseline = sum(float(row["latency_per_word_us"]) for row in backend_rows) / len(
@@ -101,30 +114,45 @@ def plot_block_width() -> None:
             label=f"{backend} latency baseline",
             color=color,
         )
-        baseline_lines.append(line)
-
-    ax_size = ax_latency.twinx()
-    (size_line,) = ax_size.plot(
-        block_widths,
-        table_sizes,
-        marker="s",
-        linewidth=1.8,
-        linestyle=":",
-        label="BlockLUT table size",
-        color="tab:red",
-    )
-    ax_size.set_yscale("log")
+        latency_lines.append(line)
 
     ax_latency.set_title("GF(2) block-width micro-benchmark")
     ax_latency.set_xlabel("block_width")
     ax_latency.set_ylabel("Latency per word (us)")
-    ax_size.set_ylabel("BlockLUT table_size_bytes")
     ax_latency.grid(True, alpha=0.25)
 
-    lines = baseline_lines + [size_line]
-    labels = [line.get_label() for line in lines]
-    ax_latency.legend(lines, labels, loc="center left", bbox_to_anchor=(1.12, 0.5))
+    ax_latency.legend(
+        latency_lines,
+        [line.get_label() for line in latency_lines],
+        loc="center left",
+        bbox_to_anchor=(1.02, 0.5),
+    )
     _save_figure(fig, "block_width_vs_latency")
+
+
+def plot_block_width_table_size() -> None:
+    rows = _read_csv(RAW_DIR / "block_width.csv")
+    by_backend = _group_by_backend(rows)
+    fig, ax = plt.subplots(figsize=(7.4, 4.6))
+
+    for backend, color in (
+        ("BlockLUT", "tab:blue"),
+        ("PackedBlockLUT", "tab:purple"),
+    ):
+        backend_rows = sorted(
+            by_backend[backend], key=lambda row: float(row["block_width"])
+        )
+        x = [float(row["block_width"]) for row in backend_rows]
+        y = [float(row["table_size_bytes"]) for row in backend_rows]
+        ax.plot(x, y, marker="s", linewidth=1.9, label=backend, color=color)
+
+    ax.set_yscale("log")
+    ax.set_title("GF(2) block-width table size")
+    ax.set_xlabel("block_width")
+    ax.set_ylabel("table_size_bytes")
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=True)
+    _save_figure(fig, "block_width_table_size")
 
 
 def plot_density() -> None:
@@ -155,6 +183,7 @@ def plot_batch() -> None:
 
 def main() -> None:
     plot_block_width()
+    plot_block_width_table_size()
     plot_density()
     plot_batch()
 

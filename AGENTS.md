@@ -27,6 +27,7 @@ Implemented:
 3. `BlockLUTKernel`
 4. `EventUpdateKernel`
 5. `PackedBatchGF2Kernel.apply_many`
+6. `PackedBlockLUTKernel`
 
 Not implemented:
 
@@ -43,20 +44,25 @@ Implemented:
 5. `scripts/run_all_benchmarks.py`
 6. `scripts/run_all_benchmarks.sh`
 
-Generated CSV and figure outputs are local artifacts unless explicitly staged.
+Generated CSV and PNG figure outputs may be tracked for review. PDF figures are
+local artifacts unless explicitly requested.
 
-## 每轮工作流
+## Per-Round Workflow
 
-每轮修改必须遵守：
+Every modification round must follow this workflow:
 
-1. 开始前先确认本轮目标，不要顺手做无关任务。
-2. 修改代码后必须运行相关测试，至少运行 pytest。
-3. 不得编造 benchmark 结果、speedup 数字或论文结论。
-4. 每轮结束必须更新 `review_gpt/latest.md`。
-5. 每轮结束必须新建或更新对应 `round_xx_summary.md`。
-6. `review_gpt` 中只写代码层面的信息：修改文件、实现内容、测试结果、已知问题、下一步建议。
-7. `review_gpt` 中不要写未公开论文故事、投稿 venue、创新点细节或敏感实验构思。
-8. 修改完成后必须 `git commit`。
-9. 修改完成后必须 push 到远程仓库 `Lingxin-Zhang/l121343564uzzllxx`。
-10. 如果无法完成测试或 push，必须在 `review_gpt/latest.md` 中说明原因。
-11. 如果环境中有适合的 agent skill，例如 Python、pytest、Markdown、Git/GitHub 相关 skill，请优先使用。
+1. Confirm the current round goal before making unrelated changes.
+2. Run relevant tests after code changes, at least `pytest`.
+3. Do not invent benchmark results, speedup numbers, or paper conclusions.
+4. Update `review_gpt/latest.md` before ending the round.
+5. Create or update the matching `review_gpt/round_xx_summary.md`.
+6. Keep `review_gpt` code-focused: modified files, implementation details,
+   test results, known issues, and next steps.
+7. Do not write unpublished paper stories, venue details, novelty details, or
+   sensitive experiment ideas in `review_gpt`.
+8. Commit completed changes with `git commit`.
+9. Push completed changes to `Lingxin-Zhang/l121343564uzzllxx`.
+10. If tests or push cannot be completed, document the reason in
+    `review_gpt/latest.md`.
+11. If suitable agent skills are available, such as Python, pytest, Markdown, or
+    Git/GitHub skills, use them when they fit the task.

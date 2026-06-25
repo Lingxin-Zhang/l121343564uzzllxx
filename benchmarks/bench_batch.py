@@ -7,7 +7,12 @@ from typing import Any
 
 import numpy as np
 
-from linear_kernel import BlockLUTKernel, NaiveGF2Kernel, PackedBatchGF2Kernel
+from linear_kernel import (
+    BlockLUTKernel,
+    NaiveGF2Kernel,
+    PackedBatchGF2Kernel,
+    PackedBlockLUTKernel,
+)
 
 from benchmarks._common import (
     RAW_DIR,
@@ -42,10 +47,16 @@ def main() -> None:
 
     naive = NaiveGF2Kernel(matrix)
     block_kernel = BlockLUTKernel(matrix, block_width=args.block_width)
+    packed_block_kernel = PackedBlockLUTKernel(matrix, block_width=args.block_width)
     packed = PackedBatchGF2Kernel(matrix)
     backends = [
         ("Naive.apply_many", naive, 0),
         ("BlockLUT.apply_many", block_kernel, block_lut_table_size_bytes(block_kernel)),
+        (
+            "PackedBlockLUT.apply_many",
+            packed_block_kernel,
+            block_lut_table_size_bytes(packed_block_kernel),
+        ),
         ("PackedBatch.apply_many", packed, 0),
     ]
 

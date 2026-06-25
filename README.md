@@ -42,6 +42,7 @@ The benchmark scripts write CSV files to `results/raw/` and initial figures to
 - `BlockLUTKernel`
 - `EventUpdateKernel`
 - `PackedBatchGF2Kernel` correctness-first `apply_many`
+- `PackedBlockLUTKernel`
 
 ## Benchmark Scripts
 

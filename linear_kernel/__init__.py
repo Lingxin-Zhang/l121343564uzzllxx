@@ -4,6 +4,7 @@ from .block_lut import BlockLUTKernel
 from .event_update import EventUpdateKernel
 from .naive import NaiveGF2Kernel
 from .packed_batch import PackedBatchGF2Kernel
+from .packed_block_lut import PackedBlockLUTKernel
 from .planner import HybridPlanner
 from .sparse_xor import SparseXorKernel
 
@@ -13,5 +14,6 @@ __all__ = [
     "HybridPlanner",
     "NaiveGF2Kernel",
     "PackedBatchGF2Kernel",
+    "PackedBlockLUTKernel",
     "SparseXorKernel",
 ]

@@ -11,6 +11,7 @@ from linear_kernel import (
     BlockLUTKernel,
     NaiveGF2Kernel,
     PackedBatchGF2Kernel,
+    PackedBlockLUTKernel,
     SparseXorKernel,
 )
 
@@ -51,6 +52,14 @@ def main() -> None:
     ]
     block_kernel = BlockLUTKernel(matrix, block_width=args.block_width)
     backends.append(("BlockLUT", block_kernel, block_lut_table_size_bytes(block_kernel)))
+    packed_block_kernel = PackedBlockLUTKernel(matrix, block_width=args.block_width)
+    backends.append(
+        (
+            "PackedBlockLUT",
+            packed_block_kernel,
+            block_lut_table_size_bytes(packed_block_kernel),
+        )
+    )
     backends.append(("PackedBatch", PackedBatchGF2Kernel(matrix), 0))
 
     for density in DENSITIES:

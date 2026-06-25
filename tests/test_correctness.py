@@ -10,7 +10,13 @@ from linear_kernel import (
     EventUpdateKernel,
     NaiveGF2Kernel,
     PackedBatchGF2Kernel,
+    PackedBlockLUTKernel,
     SparseXorKernel,
+)
+from linear_kernel.matrix_utils import (
+    pack_batch_bits_to_uint16,
+    pack_bits_to_uint16,
+    unpack_uint16_to_bits,
 )
 
 
@@ -21,6 +27,7 @@ def test_package_imports() -> None:
         HybridPlanner,
         NaiveGF2Kernel,
         PackedBatchGF2Kernel,
+        PackedBlockLUTKernel,
         SparseXorKernel,
     )
 
@@ -49,6 +56,58 @@ def assert_unpacked_bits(array: np.ndarray, expected_shape: tuple[int, ...]) -> 
     assert array.shape == expected_shape
     assert array.dtype == np.uint8
     assert np.all((array == 0) | (array == 1))
+
+
+def test_pack_bits_to_uint16_roundtrip() -> None:
+    bits = np.array([1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0], dtype=np.uint8)
+
+    packed = pack_bits_to_uint16(bits)
+    unpacked = unpack_uint16_to_bits(packed, width=16)
+
+    assert isinstance(packed, np.uint16)
+    assert_unpacked_bits(unpacked, (16,))
+    np.testing.assert_array_equal(unpacked, bits)
+    assert int(packed) == sum(int(bit) << idx for idx, bit in enumerate(bits))
+
+
+def test_pack_bits_to_uint16_rejects_invalid_width() -> None:
+    with pytest.raises(ValueError, match="at most 16"):
+        pack_bits_to_uint16(np.ones(17, dtype=np.uint8))
+
+    with pytest.raises(ValueError, match="width must be in"):
+        unpack_uint16_to_bits(np.uint16(0), width=17)
+
+
+def test_pack_bits_to_uint16_rejects_non_vector() -> None:
+    with pytest.raises(ValueError, match="must be 1-D"):
+        pack_bits_to_uint16(np.ones((1, 4), dtype=np.uint8))
+
+
+def test_pack_batch_bits_to_uint16_roundtrip() -> None:
+    batch = np.array(
+        [
+            [1, 0, 1, 1],
+            [0, 1, 0, 1],
+            [1, 1, 1, 1],
+        ],
+        dtype=np.uint8,
+    )
+
+    packed = pack_batch_bits_to_uint16(batch)
+    unpacked = np.stack([unpack_uint16_to_bits(value, width=4) for value in packed])
+
+    assert packed.shape == (3,)
+    assert packed.dtype == np.uint16
+    assert_unpacked_bits(unpacked, batch.shape)
+    np.testing.assert_array_equal(unpacked, batch)
+
+
+def test_pack_batch_bits_to_uint16_rejects_invalid_shape() -> None:
+    with pytest.raises(ValueError, match="must be 2-D"):
+        pack_batch_bits_to_uint16(np.ones(4, dtype=np.uint8))
+
+    with pytest.raises(ValueError, match="at most 16"):
+        pack_batch_bits_to_uint16(np.ones((2, 17), dtype=np.uint8))
 
 
 @pytest.mark.parametrize("density", [0.01, 0.05, 0.5])
@@ -148,6 +207,63 @@ def test_block_lut_apply_and_apply_many_match_naive(
         actual = block_lut.apply(x)
         assert_unpacked_bits(actual, (16,))
         np.testing.assert_array_equal(actual, expected)
+
+
+@pytest.mark.parametrize("block_width", [4, 8, 12, 16, 20])
+@pytest.mark.parametrize("density", [0.01, 0.05, 0.5])
+def test_packed_block_lut_apply_and_apply_many_match_naive(
+    random_matrix: np.ndarray,
+    density_batches: dict[float, np.ndarray],
+    density: float,
+    block_width: int,
+) -> None:
+    naive = NaiveGF2Kernel(random_matrix)
+    packed_block_lut = PackedBlockLUTKernel(random_matrix, block_width=block_width)
+    x_batch = density_batches[density]
+    expected_batch = naive.apply_many(x_batch)
+
+    actual_batch = packed_block_lut.apply_many(x_batch)
+
+    assert_unpacked_bits(actual_batch, (1000, 16))
+    np.testing.assert_array_equal(actual_batch, expected_batch)
+
+    for x, expected in zip(x_batch, expected_batch, strict=True):
+        actual = packed_block_lut.apply(x)
+        assert_unpacked_bits(actual, (16,))
+        np.testing.assert_array_equal(actual, expected)
+
+
+@pytest.mark.parametrize("block_width", [4, 8, 12, 16, 20])
+@pytest.mark.parametrize("density", [0.01, 0.05, 0.5])
+def test_packed_block_lut_apply_packed_matches_packed_naive(
+    random_matrix: np.ndarray,
+    density_batches: dict[float, np.ndarray],
+    density: float,
+    block_width: int,
+) -> None:
+    naive = NaiveGF2Kernel(random_matrix)
+    packed_block_lut = PackedBlockLUTKernel(random_matrix, block_width=block_width)
+    x_batch = density_batches[density]
+    expected_batch = naive.apply_many(x_batch)
+
+    actual_packed = packed_block_lut.apply_many_packed(x_batch)
+    expected_packed = pack_batch_bits_to_uint16(expected_batch)
+
+    assert actual_packed.shape == (1000,)
+    assert actual_packed.dtype == np.uint16
+    np.testing.assert_array_equal(actual_packed, expected_packed)
+
+    for x, expected in zip(x_batch, expected_packed, strict=True):
+        actual = packed_block_lut.apply_packed(x)
+        assert isinstance(actual, np.uint16)
+        assert actual == expected
+
+
+def test_packed_block_lut_rejects_output_width_over_16() -> None:
+    matrix = np.zeros((4, 17), dtype=np.uint8)
+
+    with pytest.raises(ValueError, match="output width"):
+        PackedBlockLUTKernel(matrix, block_width=4)
 
 
 @pytest.mark.parametrize("flip_count", [1, 2, 5, 10])
