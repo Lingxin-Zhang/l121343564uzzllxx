@@ -28,6 +28,7 @@ from codes.bch_like import make_bch255_t2_syndrome_matrix  # noqa: E402
 DEFAULT_OUTPUT = ROOT / "results" / "raw" / "bch_reference_check.csv"
 DEFAULT_REGISTRY_OUTPUT = ROOT / "results" / "raw" / "reference_registry.csv"
 DEFAULT_PAIRWISE_OUTPUT = ROOT / "results" / "raw" / "bch_reference_pairwise_check.csv"
+DEFAULT_SUMMARY_OUTPUT = ROOT / "results" / "raw" / "bch_reference_summary.csv"
 DEFAULT_REFERENCES = ("ofec", "galois", "python-bchlib", "aff3ct", "linux-kernel")
 N_BCH = 255
 K_BCH = 239
@@ -83,6 +84,17 @@ class PairwiseComparisonRow:
     match_rate: float
     exact_match: bool
     notes: str
+
+
+@dataclass(frozen=True)
+class ReferenceSummaryRow:
+    num_enabled_references: int
+    available_references: str
+    unavailable_references: str
+    num_pairwise_rows: int
+    any_pairwise_exact_match: bool
+    best_pairwise_match: str
+    current_matrix_status: str
 
 
 def reference_registry_rows() -> list[ReferenceRegistryRow]:
@@ -328,6 +340,7 @@ def compare_reference_pair(
 
 def generate_pairwise_rows(references: list[ReferenceMatrix]) -> list[PairwiseComparisonRow]:
     if len(references) < 2:
+        names = ";".join(reference.name for reference in references) or "none"
         return [
             PairwiseComparisonRow(
                 left_reference="not_enough_available_references",
@@ -340,7 +353,10 @@ def generate_pairwise_rows(references: list[ReferenceMatrix]) -> list[PairwiseCo
                 num_total_entries=0,
                 match_rate=0.0,
                 exact_match=False,
-                notes="pairwise comparison requires at least two available references",
+                notes=(
+                    "pairwise comparison requires at least two available "
+                    f"references; available_count={len(references)}; available={names}"
+                ),
             )
         ]
 
@@ -374,6 +390,40 @@ def generate_unavailable_rows(
             )
         )
     return rows
+
+
+def build_reference_summary(
+    enabled_references: Iterable[str],
+    available_references: list[ReferenceMatrix],
+    unavailable_references: Iterable[str],
+    pairwise_rows: list[PairwiseComparisonRow],
+) -> ReferenceSummaryRow:
+    enabled = tuple(enabled_references)
+    available = tuple(reference.name for reference in available_references)
+    unavailable = tuple(unavailable_references)
+    exact_rows = [row for row in pairwise_rows if row.exact_match]
+    comparable_rows = [
+        row
+        for row in pairwise_rows
+        if row.left_reference != "not_enough_available_references"
+    ]
+    if comparable_rows:
+        best = max(comparable_rows, key=lambda row: row.match_rate)
+        best_pairwise_match = (
+            f"{best.left_reference}|{best.right_reference}|"
+            f"{best.candidate_transform}|{best.match_rate:.6f}"
+        )
+    else:
+        best_pairwise_match = "not_run"
+    return ReferenceSummaryRow(
+        num_enabled_references=len(enabled),
+        available_references=";".join(available) if available else "none",
+        unavailable_references=";".join(unavailable) if unavailable else "none",
+        num_pairwise_rows=len(pairwise_rows),
+        any_pairwise_exact_match=bool(exact_rows),
+        best_pairwise_match=best_pairwise_match,
+        current_matrix_status="placeholder",
+    )
 
 
 def _metadata_note(package_name: str) -> str:
@@ -548,6 +598,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--registry-output", type=Path, default=DEFAULT_REGISTRY_OUTPUT)
     parser.add_argument("--pairwise-output", type=Path, default=DEFAULT_PAIRWISE_OUTPUT)
+    parser.add_argument("--summary-output", type=Path, default=DEFAULT_SUMMARY_OUTPUT)
     parser.add_argument(
         "--reference",
         default=",".join(DEFAULT_REFERENCES),
@@ -570,12 +621,34 @@ def main(argv: list[str] | None = None) -> int:
         rows = generate_unavailable_rows(("none",), {"none": "no references selected"})
     registry_rows = reference_registry_rows()
     pairwise_rows = generate_pairwise_rows(available_references)
+    enabled_references = _enabled_references(args.reference)
+    available_names = tuple(reference.name for reference in available_references)
+    unavailable_names = tuple(
+        row.reference_name for row in rows if not row.reference_available
+    )
+    summary_rows = [
+        build_reference_summary(
+            enabled_references=enabled_references,
+            available_references=available_references,
+            unavailable_references=unavailable_names,
+            pairwise_rows=pairwise_rows,
+        )
+    ]
     _write_dataclass_rows(args.output, rows)
     _write_dataclass_rows(args.registry_output, registry_rows)
     _write_dataclass_rows(args.pairwise_output, pairwise_rows)
+    _write_dataclass_rows(args.summary_output, summary_rows)
+    print(f"enabled references: {','.join(enabled_references)}")
+    print(f"available references: {','.join(available_names) if available_names else 'none'}")
+    print(
+        "unavailable references: "
+        f"{','.join(unavailable_names) if unavailable_names else 'none'}"
+    )
+    print(f"pairwise row count: {len(pairwise_rows)}")
     print(f"wrote {args.output}")
     print(f"wrote {args.registry_output}")
     print(f"wrote {args.pairwise_output}")
+    print(f"wrote {args.summary_output}")
     return 0
 
 

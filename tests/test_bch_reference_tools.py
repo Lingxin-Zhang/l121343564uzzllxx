@@ -10,8 +10,10 @@ import numpy as np
 
 from tools.verify_bch_references import (
     ReferenceMatrix,
+    build_reference_summary,
     compare_candidate,
     compare_reference_pair,
+    generate_pairwise_rows,
     generate_unavailable_rows,
     reference_registry_rows,
 )
@@ -131,10 +133,62 @@ def test_pairwise_comparison_identical_matrices_is_exact_match() -> None:
     assert identity.match_rate == 1.0
 
 
+def test_generate_pairwise_rows_requires_two_references() -> None:
+    matrix = np.array([[1, 0], [0, 1]], dtype=np.uint8)
+    only = ReferenceMatrix(
+        name="only",
+        reference_type="synthetic",
+        parameters="n=2,r=2",
+        matrix=matrix,
+        notes="unit",
+    )
+
+    rows = generate_pairwise_rows([only])
+
+    assert len(rows) == 1
+    assert rows[0].left_reference == "not_enough_available_references"
+    assert "requires at least two" in rows[0].notes
+
+
+def test_summary_row_matches_pairwise_rows() -> None:
+    matrix = np.array([[1, 0], [0, 1]], dtype=np.uint8)
+    left = ReferenceMatrix(
+        name="left",
+        reference_type="synthetic",
+        parameters="n=2,r=2",
+        matrix=matrix,
+        notes="unit",
+    )
+    right = ReferenceMatrix(
+        name="right",
+        reference_type="synthetic",
+        parameters="n=2,r=2",
+        matrix=matrix.copy(),
+        notes="unit",
+    )
+    pairwise_rows = generate_pairwise_rows([left, right])
+
+    summary = build_reference_summary(
+        enabled_references=("left", "right", "missing"),
+        available_references=[left, right],
+        unavailable_references=("missing",),
+        pairwise_rows=pairwise_rows,
+    )
+
+    assert summary.num_enabled_references == 3
+    assert summary.available_references == "left;right"
+    assert summary.unavailable_references == "missing"
+    assert summary.num_pairwise_rows == len(pairwise_rows)
+    assert summary.any_pairwise_exact_match is True
+    assert "left|right|identity|1.000000" == summary.best_pairwise_match
+    assert summary.current_matrix_status == "placeholder"
+
+
 def test_cli_writes_registry_and_pairwise_reports(tmp_path) -> None:
     check_output = tmp_path / "bch_reference_check.csv"
     registry_output = tmp_path / "reference_registry.csv"
     pairwise_output = tmp_path / "bch_reference_pairwise_check.csv"
+    summary_output = tmp_path / "bch_reference_summary.csv"
 
     result = subprocess.run(
         [
@@ -146,6 +200,8 @@ def test_cli_writes_registry_and_pairwise_reports(tmp_path) -> None:
             str(registry_output),
             "--pairwise-output",
             str(pairwise_output),
+            "--summary-output",
+            str(summary_output),
             "--reference",
             "none",
         ],
@@ -158,8 +214,12 @@ def test_cli_writes_registry_and_pairwise_reports(tmp_path) -> None:
     assert check_output.exists()
     assert registry_output.exists()
     assert pairwise_output.exists()
+    assert summary_output.exists()
 
     registry_rows = list(csv.DictReader(registry_output.open(encoding="utf-8")))
     pairwise_rows = list(csv.DictReader(pairwise_output.open(encoding="utf-8")))
+    summary_rows = list(csv.DictReader(summary_output.open(encoding="utf-8")))
     assert registry_rows
     assert pairwise_rows
+    assert summary_rows
+    assert summary_rows[0]["num_pairwise_rows"] == str(len(pairwise_rows))

@@ -1,130 +1,116 @@
 # Latest Review Summary
 
-Current round: Round 12 - Reference Registry and BCH Cross-Check
+Current round: Round 13 - Pairwise Report Fix and Trust Check
 
 ## Modified Files
 
-- `AGENTS.md`
-- `docs/bch_reference_notes.md`
 - `tools/verify_bch_references.py`
 - `tests/test_bch_reference_tools.py`
 - `results/raw/bch_reference_check.csv`
 - `results/raw/reference_registry.csv`
 - `results/raw/bch_reference_pairwise_check.csv`
-- refreshed `results/raw/*.csv`
-- refreshed `results/figures/*.png`
+- `results/raw/bch_reference_summary.csv`
+- refreshed benchmark CSV/PNG outputs
 - `review_gpt/latest.md`
-- `review_gpt/round_12_summary.md`
+- `review_gpt/round_13_summary.md`
 
-## Implementation
+## Issue Investigated
 
-- Added a full `Reference Registry` section to `AGENTS.md`.
-- Added a machine-readable reference metadata registry in
-  `tools/verify_bch_references.py`.
-- The tool now writes:
-  - `results/raw/bch_reference_check.csv`;
-  - `results/raw/reference_registry.csv`;
-  - `results/raw/bch_reference_pairwise_check.csv`.
-- Added reference-vs-reference comparison for available references.
-- Added tests for registry rows, pairwise exact-match behavior, and CLI
-  generation of all three reports.
-- Updated `docs/bch_reference_notes.md` with registry, pairwise, and
-  python-bchlib API survey notes.
+The previous review note said `ofec` vs `galois` had an exact identity match,
+but the tracked `results/raw/bch_reference_pairwise_check.csv` contained only a
+`not_enough_available_references` row. That was an inconsistent artifact state:
+the local-vs-reference CSV and pairwise CSV were not from the same effective
+reference run.
 
-## Reference Registry
+## Tool Fix
 
-`AGENTS.md` now records the reference registry. The generated
-`results/raw/reference_registry.csv` contains 10 entries:
+- Added `results/raw/bch_reference_summary.csv`.
+- Added end-of-run console summary:
+  - enabled references;
+  - available reference names;
+  - unavailable reference names;
+  - pairwise row count.
+- Added `ReferenceSummaryRow` and `build_reference_summary()`.
+- Strengthened tests for:
+  - two synthetic available references producing pairwise rows;
+  - identical pairwise matrices producing `exact_match=True`;
+  - one available reference producing a `not_enough_available_references` row
+    with a clear reason;
+  - summary row consistency with pairwise rows.
 
-- `linux-kernel-bch`
-- `python-bchlib`
-- `galois`
-- `ofec-cnn-local`
-- `aff3ct`
-- `ofec-huawei`
-- `ofec-decoder-vhdl`
-- `ofec-sim`
-- `automa-ofec`
-- `gnuradio-volk`
+## Same-Run Reference Result
 
-No external repository is treated as a gold standard.
+The committed reference CSV files were regenerated in one run with the OFEC path
+provided through a temporary local environment variable. The concrete local path
+is not tracked.
 
-## Reference Availability
-
-Available in this run:
-
-- `ofec`: loaded through a temporary local environment variable; not copied.
-- `galois`: installed Python package, version `0.4.10`, metadata reports MIT.
-
-Unavailable or not adapted:
-
-- `python-bchlib`: importable and API-surveyed, but no trusted adapter enabled.
-- `aff3ct`: path not configured.
-- `linux-kernel`: path not configured.
-
-## python-bchlib Survey
-
-`python-bchlib` imports successfully. A `BCH(t=2, m=8)` object reports:
+Run summary:
 
 ```text
-n = 255
-ecc_bits = 16
-ecc_bytes = 2
-prim_poly = 285
+enabled references: ofec,galois,python-bchlib,aff3ct,linux-kernel
+available references: ofec,galois
+unavailable references: python-bchlib,aff3ct,linux-kernel
+pairwise row count: 5
 ```
 
-The public API is byte-oriented, so exact 239-bit message packing, pad-bit
-handling, and bit order are not yet validated. This round does not enable a
-python-bchlib behavior adapter.
+`bch_reference_check.csv` and `bch_reference_pairwise_check.csv` are from this
+same run.
 
-## Cross-Check Result
+Pairwise CSV status:
 
-Current local matrix vs references:
+- It contains `ofec` vs `galois`.
+- `ofec` vs `galois` identity transform has `exact_match=True`.
+- `num_equal_entries=4080`, `num_total_entries=4080`, `match_rate=1.0`.
 
-- `ofec` and `galois` both have best local-matrix transform
-  `reverse_codeword_positions`.
-- Best match rate is `0.5078431372549019`.
-- No exact match was found against the current placeholder matrix.
+Summary CSV status:
 
-Reference-vs-reference:
+```text
+available_references = ofec;galois
+unavailable_references = python-bchlib;aff3ct;linux-kernel
+num_pairwise_rows = 5
+any_pairwise_exact_match = True
+best_pairwise_match = ofec|galois|identity|1.000000
+current_matrix_status = placeholder
+```
 
-- `ofec` vs `galois` has an exact identity match.
-- `results/raw/bch_reference_pairwise_check.csv` was generated.
+## Matrix Status
 
-This strengthens evidence that OFEC and `galois` currently agree with each
-other, while the current `make_bch255_t2_syndrome_matrix()` remains a
-placeholder.
+Current `make_bch255_t2_syndrome_matrix()` remains a deterministic placeholder.
+The pairwise exact match between OFEC and `galois` does not upgrade the current
+placeholder matrix to verified, because local-vs-reference comparison still does
+not exactly match the placeholder matrix.
 
 ## Verification
 
 ```text
 python -m pytest -q
-171 passed
 ```
 
-```text
-python scripts/run_all_benchmarks.py
-```
-
-Completed and refreshed benchmark CSV/PNG outputs.
+Passed: `173 passed`.
 
 ```text
 python tools/verify_bch_references.py --output results/raw/bch_reference_check.csv
 ```
 
-Completed with OFEC path supplied through a temporary local environment
-variable. The concrete local path is not written into tracked files.
+Passed with OFEC path supplied via temporary environment variable and generated
+all four reference CSV files.
 
-## Known Issues
+```text
+python scripts/run_all_benchmarks.py
+```
 
-- Current `make_bch255_t2_syndrome_matrix()` remains a deterministic placeholder.
-- No verified replacement matrix was added.
-- No external implementation code was copied.
-- No full BCH/eBCH decoder, OFEC decoder, HybridPlanner, BER simulation, paper
+Passed and refreshed benchmark CSV/PNG outputs.
+
+## Guardrails
+
+- OFEC_CNN is not treated as a gold standard.
+- No external code was copied.
+- No new backend, HybridPlanner, full BCH/eBCH decoder, OFEC decoder, paper
   conclusion, or speedup claim was added.
 
 ## Next Step
 
-Add a public-safe function that builds the systematic BCH parity-contribution
-matrix matching both OFEC and `galois`, then compare it against the current
-placeholder before deciding whether to switch benchmark input matrices.
+Use the now-consistent OFEC/galois pairwise reference result to add a separate,
+clearly named verified-candidate matrix generator in a future round, while
+keeping the current placeholder unchanged until that generator has its own
+correctness tests.
