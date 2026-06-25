@@ -44,8 +44,19 @@ def test_candidate_backends_match_naive_and_packed_reference() -> None:
         "PackedBatch.apply_many",
         "PackedBlockLUT.apply_many_packed",
         "EventUpdate.from_zero",
+        "HybridPlanner.apply_many",
+        "HybridPlanner.apply_many_packed",
     }
     assert all(row["correctness_passed"] is True for row in rows)
+    assert all("output_mode" in row for row in rows)
+    assert all("selected_backend" in row for row in rows)
+    assert all("selected_backend_reason" in row for row in rows)
+    packed_planner = next(row for row in rows if row["backend"] == "HybridPlanner.apply_many_packed")
+    unpacked_planner = next(row for row in rows if row["backend"] == "HybridPlanner.apply_many")
+    assert packed_planner["output_mode"] == "packed"
+    assert packed_planner["selected_backend"] == "PackedBlockLUTKernel"
+    assert unpacked_planner["output_mode"] == "unpacked"
+    assert unpacked_planner["selected_backend"]
     naive_syndromes = candidates @ matrix % 2
     expected_matches = int(np.all(naive_syndromes == target, axis=1).sum())
     assert {row["matches_found"] for row in rows} == {expected_matches}
@@ -89,6 +100,31 @@ def test_candidate_zero_target_mode_is_still_available() -> None:
 
     assert rows
     assert {row["target_mode"] for row in rows} == {"zero"}
+
+
+def test_candidate_known_hit_allows_multiple_matching_candidates() -> None:
+    matrix = np.zeros((4, 3), dtype=np.uint8)
+    candidates = make_chase_ii_patterns(n=4, p_chase=2, positions=[0, 1])
+    target = np.zeros(3, dtype=np.uint8)
+
+    rows = evaluate_candidate_backends(
+        matrix=matrix,
+        candidates=candidates,
+        target_syndrome=target,
+        block_width=2,
+        batch_size=4,
+        repeats=1,
+        preset="unit",
+        code_profile="unit_zero_profile",
+        pattern_type="chase_ii_all",
+        p_chase=2,
+        candidate_weight=0,
+        target_mode="known_hit",
+    )
+
+    assert rows
+    assert {row["matches_found"] for row in rows} == {candidates.shape[0]}
+    assert all(row["correctness_passed"] is True for row in rows)
 
 
 def test_candidate_benchmark_correctness_mismatch_fails_fast(monkeypatch: pytest.MonkeyPatch) -> None:

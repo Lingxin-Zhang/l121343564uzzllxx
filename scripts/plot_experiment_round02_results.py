@@ -88,7 +88,7 @@ def plot_optical_workloads() -> None:
     grouped: dict[tuple[str, str], list[float]] = defaultdict(list)
     for row in rows:
         grouped[(row["workload_type"], row["backend_or_method"])].append(
-            float(row["latency_per_component_us"])
+            float(row["aggregate_latency_per_executed_unit_us"])
         )
 
     x = np.arange(len(workload_types), dtype=float)
@@ -110,7 +110,7 @@ def plot_optical_workloads() -> None:
     ax.set_xticklabels(workload_types, rotation=15, ha="right")
     ax.set_yscale("log")
     ax.set_xlabel("workload_type")
-    ax.set_ylabel("Latency per component (us)")
+    ax.set_ylabel("Latency per executed unit (us)")
     ax.set_title("Trace-level workload diagnostic")
     ax.grid(True, axis="y", alpha=0.25, linestyle="--")
     ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=False)

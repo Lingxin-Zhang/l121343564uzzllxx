@@ -44,6 +44,12 @@ OPTICAL_FIELDNAMES = [
     "num_blocks",
     "window_len",
     "num_iterations_or_steps",
+    "intended_syndrome_calls",
+    "executed_syndrome_calls",
+    "intended_candidate_tests",
+    "executed_candidate_tests",
+    "intended_event_updates",
+    "executed_event_updates",
     "num_syndrome_calls",
     "num_candidate_tests",
     "num_executed_candidate_tests",
@@ -53,6 +59,8 @@ OPTICAL_FIELDNAMES = [
     "batch_size",
     "density",
     "total_runtime_s",
+    "aggregate_latency_per_executed_unit_us",
+    "throughput_Mexecuted_unit_s",
     "latency_per_component_us",
     "throughput_Mcomponent_s",
     "mean",
@@ -228,7 +236,7 @@ def _run_method(
             actual = packed_lut.apply_many_packed(task["input"])
             if check:
                 _assert_task_correct(method, actual, task["expected_packed"], context=context)
-        elif method == "EventUpdate.integrated":
+        elif method == "Naive+EventUpdate.integrated":
             if task["kind"] == "event_update":
                 actual = event_kernel.update_many(task["old"], task["flips"])
             else:
@@ -308,11 +316,17 @@ def evaluate_optical_workload_with_breakdown(
         naive=naive,
     )
     total_units = max(1, sum(task["num_units"] for task in tasks))
+    executed_units = max(
+        1,
+        trace.executed_syndrome_calls
+        + trace.executed_candidate_tests
+        + trace.executed_event_updates,
+    )
     methods = (
         "Naive.apply_many",
         "PackedBatch.apply_many",
         "PackedBlockLUT.apply_many_packed",
-        "EventUpdate.integrated",
+        "Naive+EventUpdate.integrated",
     )
     rows: list[dict[str, Any]] = []
     breakdown_rows: list[dict[str, Any]] = []
@@ -351,15 +365,23 @@ def evaluate_optical_workload_with_breakdown(
                 "num_blocks": num_blocks,
                 "window_len": window_len,
                 "num_iterations_or_steps": num_iterations_or_steps,
-                "num_syndrome_calls": trace.num_syndrome_calls,
-                "num_candidate_tests": trace.num_candidate_tests,
+                "intended_syndrome_calls": trace.intended_syndrome_calls,
+                "executed_syndrome_calls": trace.executed_syndrome_calls,
+                "intended_candidate_tests": trace.intended_candidate_tests,
+                "executed_candidate_tests": trace.executed_candidate_tests,
+                "intended_event_updates": trace.intended_event_updates,
+                "executed_event_updates": trace.executed_event_updates,
+                "num_syndrome_calls": trace.intended_syndrome_calls,
+                "num_candidate_tests": trace.intended_candidate_tests,
                 "num_executed_candidate_tests": trace.num_executed_candidate_tests,
-                "num_event_updates": trace.num_event_updates,
+                "num_event_updates": trace.intended_event_updates,
                 "backend_or_method": method,
                 "block_width": block_width,
                 "batch_size": batch_size,
                 "density": density,
                 "total_runtime_s": mean,
+                "aggregate_latency_per_executed_unit_us": mean / executed_units * 1_000_000.0,
+                "throughput_Mexecuted_unit_s": executed_units / mean / 1_000_000.0,
                 "latency_per_component_us": mean / total_units * 1_000_000.0,
                 "throughput_Mcomponent_s": total_units / mean / 1_000_000.0,
                 "mean": mean,

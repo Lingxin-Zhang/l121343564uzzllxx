@@ -341,6 +341,9 @@ def summarize_candidate_testing_rows(rows: list[dict[str, str]]) -> list[dict[st
         "candidate_weight",
         "candidate_count",
         "backend",
+        "output_mode",
+        "selected_backend",
+        "selected_backend_reason",
         "block_width",
     )
     summary = []
@@ -370,6 +373,37 @@ def summarize_candidate_testing_rows(rows: list[dict[str, str]]) -> list[dict[st
     return summary
 
 
+def summarize_component_decoder_exactness_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    keys = (
+        "preset",
+        "code_profile",
+        "test_case",
+        "syndrome_backend",
+        "num_words",
+    )
+    summary = []
+    for key, group in sorted(_group_rows(rows, keys).items()):
+        summary.append(
+            {
+                **dict(zip(keys, key, strict=True)),
+                "exact_mismatch_count": int(
+                    max(_float(row, "exact_mismatch_count", 0.0) for row in group)
+                ),
+                "correctness_all_true": all(
+                    _truthy(row.get("correctness_passed", "True")) for row in group
+                ),
+                "mean_latency_per_word_us": _mean(
+                    _float(row, "latency_per_word_us") for row in group
+                ),
+                "mean_throughput_Mword_s": _mean(
+                    _float(row, "throughput_Mword_s") for row in group
+                ),
+                "num_rows": len(group),
+            }
+        )
+    return summary
+
+
 def summarize_optical_workload_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
     keys = (
         "preset",
@@ -388,6 +422,24 @@ def summarize_optical_workload_rows(rows: list[dict[str, str]]) -> list[dict[str
         summary.append(
             {
                 **dict(zip(keys, key, strict=True)),
+                "intended_syndrome_calls": int(
+                    max(_float(row, "intended_syndrome_calls", 0.0) for row in group)
+                ),
+                "executed_syndrome_calls": int(
+                    max(_float(row, "executed_syndrome_calls", 0.0) for row in group)
+                ),
+                "intended_candidate_tests": int(
+                    max(_float(row, "intended_candidate_tests", 0.0) for row in group)
+                ),
+                "executed_candidate_tests": int(
+                    max(_float(row, "executed_candidate_tests", 0.0) for row in group)
+                ),
+                "intended_event_updates": int(
+                    max(_float(row, "intended_event_updates", 0.0) for row in group)
+                ),
+                "executed_event_updates": int(
+                    max(_float(row, "executed_event_updates", 0.0) for row in group)
+                ),
                 "num_syndrome_calls": int(
                     max(_float(row, "num_syndrome_calls", 0.0) for row in group)
                 ),
@@ -403,14 +455,14 @@ def summarize_optical_workload_rows(rows: list[dict[str, str]]) -> list[dict[str
                 "mean_total_runtime_s": _mean(
                     _float(row, "total_runtime_s") for row in group
                 ),
-                "mean_latency_per_component_us": _mean(
-                    _float(row, "latency_per_component_us") for row in group
+                "mean_aggregate_latency_per_executed_unit_us": _mean(
+                    _float(row, "aggregate_latency_per_executed_unit_us") for row in group
                 ),
-                "mean_throughput_Mcomponent_s": _mean(
-                    _float(row, "throughput_Mcomponent_s") for row in group
+                "mean_throughput_Mexecuted_unit_s": _mean(
+                    _float(row, "throughput_Mexecuted_unit_s") for row in group
                 ),
-                "std_latency_per_component_us": _std(
-                    _float(row, "latency_per_component_us") for row in group
+                "std_aggregate_latency_per_executed_unit_us": _std(
+                    _float(row, "aggregate_latency_per_executed_unit_us") for row in group
                 ),
                 "correctness_all_true": all(
                     _truthy(row.get("correctness_passed", "True")) for row in group
@@ -468,6 +520,7 @@ def summarize_best_backend_rows(summary_by_name: dict[str, list[dict[str, Any]]]
     rows.extend(_best_from_cache_aware(summary_by_name.get("cache_aware", [])))
     rows.extend(_best_from_code_profile_scaling(summary_by_name.get("code_profile_scaling", [])))
     rows.extend(_best_from_candidate_testing(summary_by_name.get("candidate_testing", [])))
+    rows.extend(_best_from_component_decoder_exactness(summary_by_name.get("component_decoder_exactness", [])))
     rows.extend(_best_from_optical_workloads(summary_by_name.get("optical_workloads", [])))
     return rows
 
@@ -616,7 +669,10 @@ def _best_from_optical_workloads(rows: list[dict[str, Any]]) -> list[dict[str, A
     )
     out = []
     for key, group in grouped.items():
-        best = min(group, key=lambda row: float(row["mean_latency_per_component_us"]))
+        best = min(
+            group,
+            key=lambda row: float(row["mean_aggregate_latency_per_executed_unit_us"]),
+        )
         baseline = next((row for row in group if row["backend_or_method"] == "Naive.apply_many"), None)
         out.append(
             _best_row(
@@ -627,14 +683,53 @@ def _best_from_optical_workloads(rows: list[dict[str, Any]]) -> list[dict[str, A
                 baseline["backend_or_method"] if baseline else "",
                 {
                     **best,
-                    "mean_latency_per_word_us": best["mean_latency_per_component_us"],
+                    "mean_latency_per_word_us": best[
+                        "mean_aggregate_latency_per_executed_unit_us"
+                    ],
                 },
-                "mean_throughput_Mcomponent_s",
+                "mean_throughput_Mexecuted_unit_s",
                 (
-                    {**baseline, "mean_latency_per_word_us": baseline["mean_latency_per_component_us"]}
+                    {
+                        **baseline,
+                        "mean_latency_per_word_us": baseline[
+                            "mean_aggregate_latency_per_executed_unit_us"
+                        ],
+                    }
                     if baseline
                     else None
                 ),
+            )
+        )
+    return out
+
+
+def _best_from_component_decoder_exactness(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped = _group_rows(
+        rows,
+        (
+            "preset",
+            "code_profile",
+            "test_case",
+            "num_words",
+        ),
+    )
+    out = []
+    for key, group in grouped.items():
+        best = min(group, key=lambda row: float(row["mean_latency_per_word_us"]))
+        baseline = next(
+            (row for row in group if row["syndrome_backend"] == "NaiveGF2Kernel.apply_many"),
+            None,
+        )
+        out.append(
+            _best_row(
+                "component_decoder_exactness",
+                key[1],
+                f"preset={key[0]};test_case={key[2]};num_words={key[3]}",
+                best["syndrome_backend"],
+                baseline["syndrome_backend"] if baseline else "",
+                best,
+                "mean_throughput_Mword_s",
+                baseline,
             )
         )
     return out
@@ -819,6 +914,9 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "candidate_weight",
                 "candidate_count",
                 "backend",
+                "output_mode",
+                "selected_backend",
+                "selected_backend_reason",
                 "block_width",
                 "mean_latency_per_candidate_us",
                 "mean_throughput_Mcandidate_s",
@@ -826,6 +924,24 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "std_throughput_Mcandidate_s",
                 "matches_found",
                 "correctness_all_true",
+                "num_rows",
+            ],
+        ),
+        (
+            "component_decoder_exactness",
+            raw_dir / "component_decoder_exactness.csv",
+            summary_dir / "component_decoder_exactness_summary.csv",
+            summarize_component_decoder_exactness_rows,
+            [
+                "preset",
+                "code_profile",
+                "test_case",
+                "syndrome_backend",
+                "num_words",
+                "exact_mismatch_count",
+                "correctness_all_true",
+                "mean_latency_per_word_us",
+                "mean_throughput_Mword_s",
                 "num_rows",
             ],
         ),
@@ -845,14 +961,20 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "block_width",
                 "batch_size",
                 "density",
+                "intended_syndrome_calls",
+                "executed_syndrome_calls",
+                "intended_candidate_tests",
+                "executed_candidate_tests",
+                "intended_event_updates",
+                "executed_event_updates",
                 "num_syndrome_calls",
                 "num_candidate_tests",
                 "num_executed_candidate_tests",
                 "num_event_updates",
                 "mean_total_runtime_s",
-                "mean_latency_per_component_us",
-                "mean_throughput_Mcomponent_s",
-                "std_latency_per_component_us",
+                "mean_aggregate_latency_per_executed_unit_us",
+                "mean_throughput_Mexecuted_unit_s",
+                "std_aggregate_latency_per_executed_unit_us",
                 "correctness_all_true",
                 "notes",
                 "num_rows",

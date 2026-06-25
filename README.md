@@ -128,6 +128,7 @@ Candidate-testing diagnostics measure candidate error-pattern syndrome kernels.
 Trace-level workload diagnostics model component-kernel call patterns such as
 row/column batches, sliding-window batches, candidate-test calls, and event
 updates. They are not full decoders, BER simulations, or paper conclusions.
+In known-hit mode, matches_found is guaranteed to be at least one. It may exceed one because different candidate masks can share the same syndrome; this is not treated as a correctness error.
 
 The deterministic BCH-like matrix is still kept as a placeholder. The BCH
 syndrome and component-loop benchmark path can use the separate

@@ -27,6 +27,8 @@ work. It is code-focused and intentionally avoids local machine paths.
   models active staircase components as `active_blocks * (n // 2)`.
 - oFEC-like traces use component syndrome, candidate-test, and event-update
   events, but remain benchmark traces only.
+- HUAWEI-OFEC-Tao is treated as reference-only engineering context. The current
+  `ofec_like` trace is not claimed to reproduce its mini-TPC/OFEC decoder schedule.
 - The local Chase-Pyndiah demo generic-product-code reference uses
   Chase-II-style candidate pattern counts of `2**p_chase` and low-order
   non-Chase-II patterns containing all-zero, single, double, and triple masks.

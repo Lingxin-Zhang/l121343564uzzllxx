@@ -64,6 +64,9 @@ CANDIDATE_FIELDNAMES = [
     "candidate_weight",
     "candidate_count",
     "backend",
+    "output_mode",
+    "selected_backend",
+    "selected_backend_reason",
     "batch_size",
     "block_width",
     "packed_word_bits",
@@ -195,39 +198,85 @@ def evaluate_candidate_backends(
     target_packed = _pack_vector(target_syndrome)
     context = f"{code_profile},{pattern_type},count={candidate_count}"
 
-    specs: list[tuple[str, Callable[[], np.ndarray], np.ndarray, Callable[[np.ndarray], int]]] = [
+    planner_packed = planner.choose_backend(
+        matrix,
+        {"type": "batch", "batch_size": candidate_count, "output_mode": "packed"},
+    )
+    planner_unpacked = planner.choose_backend(
+        matrix,
+        {"type": "batch", "batch_size": candidate_count, "output_mode": "unpacked"},
+    )
+
+    specs: list[
+        tuple[
+            str,
+            str,
+            str,
+            str,
+            Callable[[], np.ndarray],
+            np.ndarray,
+            Callable[[np.ndarray], int],
+        ]
+    ] = [
         (
             "Naive.apply_many",
+            "unpacked",
+            "NaiveGF2Kernel",
+            "direct backend",
             lambda: naive.apply_many(candidates),
             expected,
             lambda actual: _matches_unpacked(actual, target_syndrome),
         ),
         (
             "SparseXor.apply_many",
+            "unpacked",
+            "SparseXorKernel",
+            "direct backend",
             lambda: sparse.apply_many(candidates),
             expected,
             lambda actual: _matches_unpacked(actual, target_syndrome),
         ),
         (
             "PackedBatch.apply_many",
+            "unpacked",
+            "PackedBatchGF2Kernel",
+            "direct backend",
             lambda: packed_batch.apply_many(candidates),
             expected,
             lambda actual: _matches_unpacked(actual, target_syndrome),
         ),
         (
             "PackedBlockLUT.apply_many_packed",
+            "packed",
+            "PackedBlockLUTKernel",
+            "direct backend",
             lambda: packed_lut.apply_many_packed(candidates),
             expected_packed,
             lambda actual: _matches_packed(actual, target_packed),
         ),
         (
             "EventUpdate.from_zero",
+            "unpacked",
+            "EventUpdateKernel",
+            "update from zero syndrome",
             lambda: _event_update_from_zero(event_kernel, candidates),
             expected,
             lambda actual: _matches_unpacked(actual, target_syndrome),
         ),
         (
+            "HybridPlanner.apply_many",
+            "unpacked",
+            type(planner_unpacked).__name__,
+            "HybridPlanner batch unpacked-output rule",
+            lambda: planner.apply_many(candidates),
+            expected,
+            lambda actual: _matches_unpacked(actual, target_syndrome),
+        ),
+        (
             "HybridPlanner.apply_many_packed",
+            "packed",
+            type(planner_packed).__name__,
+            "HybridPlanner batch packed-output rule",
             lambda: planner.apply_many_packed(candidates),
             expected_packed,
             lambda actual: _matches_packed(actual, target_packed),
@@ -235,7 +284,7 @@ def evaluate_candidate_backends(
     ]
 
     rows: list[dict[str, Any]] = []
-    for backend, fn, expected_value, match_fn in specs:
+    for backend, output_mode, selected_backend, selected_backend_reason, fn, expected_value, match_fn in specs:
         actual = fn()
         assert_outputs_match(backend, actual, expected_value, context=context)
         samples = time_repeats(fn, repeats=repeats, warmups=1)
@@ -250,6 +299,9 @@ def evaluate_candidate_backends(
             "candidate_weight": candidate_weight,
             "candidate_count": candidate_count,
             "backend": backend,
+            "output_mode": output_mode,
+            "selected_backend": selected_backend,
+            "selected_backend_reason": selected_backend_reason,
             "batch_size": batch_size,
             "block_width": block_width,
             "packed_word_bits": packed_bits,

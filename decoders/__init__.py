@@ -1,5 +1,5 @@
-"""Decoder placeholder interfaces."""
+"""Decoder helper interfaces."""
 
-from .bdd_lut import BDDLUTDecoder
+from .bdd_lut import BDDLUTDecoder, DecodeResult
 
-__all__ = ["BDDLUTDecoder"]
+__all__ = ["BDDLUTDecoder", "DecodeResult"]

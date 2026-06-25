@@ -65,10 +65,12 @@ def main() -> None:
     run([python, "-m", "benchmarks.bench_code_profiles", "--preset", "lightweight"])
     run([python, "-m", "benchmarks.bench_candidate_testing", "--preset", "lightweight"])
     run([python, "-m", "benchmarks.bench_optical_workloads", "--preset", "lightweight"])
+    run([python, "-m", "benchmarks.bench_component_decoder_exactness", "--preset", "lightweight"])
     run([python, "scripts/summarize_results.py"])
     run([python, "scripts/plot_results.py"])
     run([python, "scripts/plot_round2_results.py"])
     run([python, "scripts/plot_experiment_round02_results.py"])
+    run([python, "scripts/plot_experiment_round04_results.py"])
 
 
 if __name__ == "__main__":

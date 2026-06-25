@@ -49,12 +49,24 @@ class WorkloadTrace:
         return sum(event.component_count for event in self.events if event.event_type.startswith("syndrome_batch"))
 
     @property
+    def intended_syndrome_calls(self) -> int:
+        return self.num_syndrome_calls
+
+    @property
+    def executed_syndrome_calls(self) -> int:
+        return self.num_syndrome_calls
+
+    @property
     def num_candidate_tests(self) -> int:
         return sum(
             event.intended_candidate_tests
             for event in self.events
             if event.event_type.startswith("candidate_test")
         )
+
+    @property
+    def intended_candidate_tests(self) -> int:
+        return self.num_candidate_tests
 
     @property
     def num_executed_candidate_tests(self) -> int:
@@ -65,8 +77,20 @@ class WorkloadTrace:
         )
 
     @property
+    def executed_candidate_tests(self) -> int:
+        return self.num_executed_candidate_tests
+
+    @property
     def num_event_updates(self) -> int:
         return sum(event.component_count for event in self.events if event.event_type.startswith("event_update"))
+
+    @property
+    def intended_event_updates(self) -> int:
+        return self.num_event_updates
+
+    @property
+    def executed_event_updates(self) -> int:
+        return self.num_event_updates
 
 
 def generate_trace(

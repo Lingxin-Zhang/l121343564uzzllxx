@@ -90,6 +90,10 @@ def test_ofec_like_trace_contains_syndrome_candidate_and_event_update() -> None:
     assert candidate_event.executed_candidate_tests == 4 * 256
     assert trace.num_candidate_tests == 4 * 256
     assert trace.num_executed_candidate_tests == 4 * 256
+    assert trace.intended_candidate_tests == 4 * 256
+    assert trace.executed_candidate_tests == 4 * 256
+    assert trace.intended_syndrome_calls == trace.executed_syndrome_calls
+    assert trace.intended_event_updates == trace.executed_event_updates
 
 
 def test_ofec_like_trace_records_candidate_cap_when_used() -> None:
@@ -110,6 +114,9 @@ def test_ofec_like_trace_records_candidate_cap_when_used() -> None:
     assert candidate_event.max_candidate_tests_per_event == 32
     assert trace.num_candidate_tests == 4 * 256
     assert trace.num_executed_candidate_tests == 32
+    assert trace.intended_candidate_tests == 4 * 256
+    assert trace.executed_candidate_tests == 32
+    assert trace.executed_candidate_tests <= trace.intended_candidate_tests
 
 
 def test_evaluate_optical_workload_runs_small_correctness_path() -> None:
@@ -129,6 +136,28 @@ def test_evaluate_optical_workload_runs_small_correctness_path() -> None:
     assert rows
     assert all(row["correctness_passed"] is True for row in rows)
     assert all("BER" not in row for row in rows)
+    assert all("intended_syndrome_calls" in row for row in rows)
+    assert all("executed_syndrome_calls" in row for row in rows)
+    assert all("intended_candidate_tests" in row for row in rows)
+    assert all("executed_candidate_tests" in row for row in rows)
+    assert all("intended_event_updates" in row for row in rows)
+    assert all("executed_event_updates" in row for row in rows)
+    assert all("aggregate_latency_per_executed_unit_us" in row for row in rows)
+    assert all("throughput_Mexecuted_unit_s" in row for row in rows)
+    assert all(
+        int(row["executed_syndrome_calls"]) <= int(row["intended_syndrome_calls"])
+        for row in rows
+    )
+    assert all(
+        int(row["executed_candidate_tests"]) <= int(row["intended_candidate_tests"])
+        for row in rows
+    )
+    assert all(
+        int(row["executed_event_updates"]) <= int(row["intended_event_updates"])
+        for row in rows
+    )
+    assert "Naive+EventUpdate.integrated" in {row["backend_or_method"] for row in rows}
+    assert "EventUpdate.integrated" not in {row["backend_or_method"] for row in rows}
     assert breakdown_rows
     assert {"syndrome", "candidate_test", "event_update"} <= {
         row["task_kind"] for row in breakdown_rows
