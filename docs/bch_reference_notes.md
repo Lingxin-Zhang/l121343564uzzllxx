@@ -146,3 +146,10 @@ the inspected OFEC source directly uses `galois` to build its BCH tables.
 `python-bchlib`, Linux BCH, and AFF3CT adapters are also parked and should not
 block matrix-source aware BCH benchmarking. Public docs should stay focused on
 code behavior, reproducible CSV outputs, and generic GF(2) benchmark wording.
+
+The current benchmark mainline uses `galois_systematic_candidate` for the BCH
+component workload while keeping `placeholder` available as a historical
+structured workload. Event-driven syndrome update now has a batch/vectorized
+`EventUpdateKernel.update_many()` path. `HybridPlanner` is a simple
+workload-aware backend selection baseline for reproducible experiments; it is
+not an optimal scheduler and should not be described as one.

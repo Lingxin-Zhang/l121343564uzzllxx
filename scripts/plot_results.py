@@ -342,6 +342,59 @@ def plot_event_update() -> None:
     _save_figure(fig, "event_update_speedup")
 
 
+def plot_event_update_comparison() -> None:
+    rows = _read_csv(RAW_DIR / "event_update.csv")
+    grouped_rows: dict[str, dict[float, list[float]]] = defaultdict(lambda: defaultdict(list))
+    for row in rows:
+        grouped_rows[row["method"]][float(row["flip_count"])].append(
+            float(row["latency_per_word_us"])
+        )
+
+    fig, ax = plt.subplots(figsize=(7.4, 4.6))
+    for method, by_flip in sorted(grouped_rows.items()):
+        x = []
+        y = []
+        for flip_count, values in sorted(by_flip.items()):
+            x.append(flip_count)
+            y.append(sum(values) / len(values))
+        ax.plot(x, y, marker="o", linewidth=1.9, label=method)
+
+    ax.set_title("GF(2) event-update comparison")
+    ax.set_xlabel("flip_count")
+    ax.set_ylabel("Latency per word (us)")
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=True)
+    _save_figure(fig, "event_update_comparison")
+
+
+def plot_planner_comparison() -> None:
+    rows = _read_csv(RAW_DIR / "planner.csv")
+    grouped_rows: dict[str, dict[float, list[float]]] = defaultdict(lambda: defaultdict(list))
+    for row in rows:
+        label = f"{row['workload_type']}: {row['backend_or_method']}"
+        grouped_rows[label][float(row["batch_size"])].append(
+            float(row["latency_per_word_us"])
+        )
+
+    fig, ax = plt.subplots(figsize=(7.8, 4.8))
+    for label, by_batch in sorted(grouped_rows.items()):
+        x = []
+        y = []
+        for batch_size, values in sorted(by_batch.items()):
+            x.append(batch_size)
+            y.append(sum(values) / len(values))
+        ax.plot(x, y, marker="o", linewidth=1.7, label=label)
+
+    ax.set_xscale("log", base=2)
+    ax.set_yscale("log")
+    ax.set_title("GF(2) planner benchmark")
+    ax.set_xlabel("batch_size")
+    ax.set_ylabel("Latency per word (us)")
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=True)
+    _save_figure(fig, "planner_comparison")
+
+
 def main() -> None:
     plot_block_width()
     plot_block_width_table_size()
@@ -351,6 +404,8 @@ def main() -> None:
     plot_bch_syndrome()
     plot_component_loop()
     plot_event_update()
+    plot_event_update_comparison()
+    plot_planner_comparison()
 
 
 if __name__ == "__main__":

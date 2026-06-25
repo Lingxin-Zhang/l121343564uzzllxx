@@ -65,6 +65,14 @@ def _apply_event_updates(
     )
 
 
+def _apply_event_updates_many(
+    event_kernel: EventUpdateKernel,
+    old_syndromes: np.ndarray,
+    flip_positions: np.ndarray,
+) -> np.ndarray:
+    return event_kernel.update_many(old_syndromes, flip_positions)
+
+
 def check_event_update_correctness(
     matrix_source: str,
     batch_size: int,
@@ -83,9 +91,12 @@ def check_event_update_correctness(
     event_kernel = EventUpdateKernel(matrix)
     old_syndromes = naive.apply_many(x_batch)
     expected = naive.apply_many(x_flipped)
-    actual = _apply_event_updates(event_kernel, old_syndromes, flip_positions)
-    if not np.array_equal(actual, expected):
-        raise AssertionError("EventUpdateKernel output disagrees with from-scratch")
+    actual_loop = _apply_event_updates(event_kernel, old_syndromes, flip_positions)
+    actual_many = _apply_event_updates_many(event_kernel, old_syndromes, flip_positions)
+    if not np.array_equal(actual_loop, expected):
+        raise AssertionError("EventUpdateKernel loop output disagrees with from-scratch")
+    if not np.array_equal(actual_many, expected):
+        raise AssertionError("EventUpdateKernel.update_many output disagrees with from-scratch")
 
     packed_block = PackedBlockLUTKernel(matrix, block_width=block_width)
     expected_packed = pack_batch_bits_to_uint16(expected)
@@ -104,7 +115,7 @@ def _run_from_scratch(
         packed_block.apply_many_packed(x_flipped)
 
 
-def _run_event_update(
+def _run_event_update_loop(
     old_syndromes: np.ndarray,
     flip_positions: np.ndarray,
     iterations: int,
@@ -112,6 +123,16 @@ def _run_event_update(
 ) -> None:
     for _ in range(iterations):
         _apply_event_updates(event_kernel, old_syndromes, flip_positions)
+
+
+def _run_event_update_many(
+    old_syndromes: np.ndarray,
+    flip_positions: np.ndarray,
+    iterations: int,
+    event_kernel: EventUpdateKernel,
+) -> None:
+    for _ in range(iterations):
+        _apply_event_updates_many(event_kernel, old_syndromes, flip_positions)
 
 
 def _time_repeats(fn, repeats: int) -> list[float]:
@@ -160,10 +181,20 @@ def main() -> None:
         x_flipped = _apply_flips(x_batch, flip_positions)
         expected = naive.apply_many(x_flipped)
         expected_packed = pack_batch_bits_to_uint16(expected)
-        actual_update = _apply_event_updates(event_kernel, old_syndromes, flip_positions)
+        actual_loop_update = _apply_event_updates(
+            event_kernel,
+            old_syndromes,
+            flip_positions,
+        )
+        actual_batch_update = _apply_event_updates_many(
+            event_kernel,
+            old_syndromes,
+            flip_positions,
+        )
         actual_from_scratch = packed_block.apply_many_packed(x_flipped)
         correctness_passed = bool(
-            np.array_equal(actual_update, expected)
+            np.array_equal(actual_loop_update, expected)
+            and np.array_equal(actual_batch_update, expected)
             and np.array_equal(actual_from_scratch, expected_packed)
         )
         if not correctness_passed:
@@ -181,8 +212,17 @@ def main() -> None:
                     ),
                 ),
                 (
-                    "event_update.EventUpdateKernel.update",
-                    lambda iterations=iterations, flip_positions=flip_positions: _run_event_update(
+                    "event_update.loop_update",
+                    lambda iterations=iterations, flip_positions=flip_positions: _run_event_update_loop(
+                        old_syndromes,
+                        flip_positions,
+                        iterations,
+                        event_kernel,
+                    ),
+                ),
+                (
+                    "event_update.batch_update_many",
+                    lambda iterations=iterations, flip_positions=flip_positions: _run_event_update_many(
                         old_syndromes,
                         flip_positions,
                         iterations,

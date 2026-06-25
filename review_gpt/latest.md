@@ -1,68 +1,57 @@
 # Latest Review Summary
 
-Current round: Round 15 - Matrix-Source BCH Benchmark and Workloads
+Current round: Round 16 - Batch EventUpdate and HybridPlanner v1
 
 ## Modified Files
 
 - `AGENTS.md`
 - `README.md`
-- `codes/__init__.py`
-- `codes/matrix_sources.py`
-- `benchmarks/_common.py`
-- `benchmarks/bench_bch_syndrome.py`
-- `benchmarks/bench_component_loop.py`
-- `benchmarks/bench_event_update.py`
-- `scripts/run_all_benchmarks.py`
-- `scripts/run_all_benchmarks.sh`
-- `scripts/plot_results.py`
-- `tests/test_matrix_sources.py`
-- `tests/test_event_update_benchmark_logic.py`
 - `docs/bch_reference_notes.md`
-- `results/raw/bch_syndrome.csv`
-- `results/raw/component_loop.csv`
+- `linear_kernel/event_update.py`
+- `linear_kernel/planner.py`
+- `benchmarks/bench_bch_syndrome.py`
+- `benchmarks/bench_event_update.py`
+- `benchmarks/bench_planner.py`
+- `scripts/run_all_benchmarks.py`
+- `scripts/plot_results.py`
+- `tests/test_event_update_many.py`
+- `tests/test_planner.py`
 - `results/raw/event_update.csv`
+- `results/raw/planner.csv`
 - refreshed benchmark CSV/PNG outputs
+- `results/figures/event_update_comparison.png`
+- `results/figures/planner_comparison.png`
 - `review_gpt/latest.md`
-- `review_gpt/round_15_summary.md`
+- `review_gpt/round_16_summary.md`
 
 ## Implementation
 
-- Added `codes.matrix_sources.get_matrix_source()`.
-- Supported matrix sources:
-  - `placeholder`
-  - `galois_systematic_candidate`
-  - `random_fixed`
-- Updated generic benchmark matrix creation to use `random_fixed`.
-- Updated `bench_bch_syndrome.py` with `--matrix-source`, `matrix_source`,
-  and `matrix_shape`.
-- Added `bench_component_loop.py` for repeated chunked component syndrome
-  computation.
-- Added `bench_event_update.py` for sparse bit-flip syndrome update timing.
-- Updated run-all scripts so BCH syndrome runs both `placeholder` and
-  `galois_systematic_candidate`.
-- Added plots:
-  - `results/figures/component_loop_speedup.png`
-  - `results/figures/event_update_speedup.png`
-- Updated BCH syndrome plot to distinguish `matrix_source`.
+- Implemented `EventUpdateKernel.update_many`.
+- `update_many` supports `flip_count=0`, returns a new `np.uint8` array, and
+  validates current-value and position shapes.
+- Updated `bench_event_update.py` to compare:
+  - `from_scratch.PackedBlockLUT.apply_many_packed`
+  - `event_update.loop_update`
+  - `event_update.batch_update_many`
+- Implemented `HybridPlanner` v1 as a simple rule-based workload dispatcher.
+- Added `benchmarks/bench_planner.py`.
+- Hardened `bench_bch_syndrome.py` correctness checking from first chunk only
+  to first, middle, and last chunks.
+- Added event-update comparison and planner comparison plots.
 
 ## Generated Results
 
-- `results/raw/bch_syndrome.csv` was generated with both matrix sources:
-  - `placeholder`: 24 rows
-  - `galois_systematic_candidate`: 24 rows
-- `results/raw/component_loop.csv` was generated.
 - `results/raw/event_update.csv` was generated.
-- `results/figures/component_loop_speedup.png` was generated.
-- `results/figures/event_update_speedup.png` was generated.
-- `results/figures/bch_syndrome_throughput.png` was regenerated with
-  matrix-source aware labels.
+- `results/raw/planner.csv` was generated.
+- `results/figures/event_update_comparison.png` was generated.
+- `results/figures/planner_comparison.png` was generated.
+- Existing benchmark CSV/PNG outputs were refreshed by `run_all_benchmarks.py`.
 
-Correctness status:
+Correctness summary:
 
-- Component-loop CSV has `correctness_passed=True` for all 36 rows.
-- Event-update CSV has `correctness_passed=True` for all 24 rows.
-- Backend outputs are checked against Naive/Packed reference outputs before
-  timing rows are recorded.
+- `event_update.csv` has 36 rows with `correctness_passed=True`.
+- `planner.csv` has 108 rows with `correctness_passed=True`.
+- `planner.csv` contains both `batch_syndrome` and `event_update` workloads.
 
 ## Verification
 
@@ -70,7 +59,7 @@ Correctness status:
 python -m pytest -q
 ```
 
-Passed: `187 passed, 1 skipped`.
+Passed: `204 passed, 1 skipped`.
 
 ```text
 python scripts/run_all_benchmarks.py
@@ -88,7 +77,6 @@ Passed and regenerated figures.
 
 - Full OFEC decoder implemented: no.
 - Full BCH algebraic decoder implemented: no.
-- HybridPlanner implemented: no.
 - BER simulation added: no.
 - Paper conclusion or speedup claim added: no.
 - External code copied: no.
@@ -96,5 +84,5 @@ Passed and regenerated figures.
 
 ## Notes
 
-This is a lightweight reproducible benchmark run. The figures are raw
-measurement artifacts for review, not paper conclusions.
+This is a lightweight reproducible benchmark run. `HybridPlanner` is a simple
+rule baseline, not an optimal scheduler.

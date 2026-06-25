@@ -49,6 +49,37 @@ def _iter_chunks(x_words: np.ndarray, chunk_words: int):
         yield x_words[start : start + chunk_words]
 
 
+def _sample_correctness_chunks(x_words: np.ndarray, chunk_words: int) -> list[np.ndarray]:
+    starts = [0, (x_words.shape[0] // 2 // chunk_words) * chunk_words]
+    last_start = ((x_words.shape[0] - 1) // chunk_words) * chunk_words
+    starts.append(last_start)
+    sampled = []
+    seen = set()
+    for start in starts:
+        start = max(0, min(start, x_words.shape[0] - 1))
+        if start in seen:
+            continue
+        seen.add(start)
+        sampled.append(x_words[start : start + chunk_words])
+    return sampled
+
+
+def _verify_sample_chunks(
+    x_words: np.ndarray,
+    chunk_words: int,
+    naive: NaiveGF2Kernel,
+    backends: list[tuple[str, Callable[[np.ndarray], np.ndarray], int, str]],
+) -> None:
+    for chunk in _sample_correctness_chunks(x_words, chunk_words):
+        expected = naive.apply_many(chunk)
+        expected_packed = pack_batch_bits_to_uint16(expected)
+        for backend_name, fn, _, output_kind in backends:
+            actual = fn(chunk)
+            expected_output = expected_packed if output_kind == "packed" else expected
+            if not np.array_equal(actual, expected_output):
+                raise AssertionError(f"{backend_name} disagrees with Naive")
+
+
 def _run_stream(
     x_words: np.ndarray,
     chunk_words: int,
@@ -121,21 +152,17 @@ def main() -> None:
         if num_words < 1:
             raise ValueError("total_bits must contain at least one component word")
         x_words = make_batch(rng, num_words, args.density, n=component_n)
-        first_chunk = x_words[: args.chunk_words]
-        expected_first = naive.apply_many(first_chunk)
-        expected_first_packed = pack_batch_bits_to_uint16(expected_first)
+        _verify_sample_chunks(
+            x_words=x_words,
+            chunk_words=args.chunk_words,
+            naive=naive,
+            backends=backends,
+        )
 
         for iterations in _parse_int_list(args.iterations):
             processed_bits = num_words * component_n * iterations
             processed_words = num_words * iterations
             for backend_name, fn, table_size_bytes, output_kind in backends:
-                actual_first = fn(first_chunk)
-                expected_output = (
-                    expected_first_packed if output_kind == "packed" else expected_first
-                )
-                if not (actual_first == expected_output).all():
-                    raise AssertionError(f"{backend_name} disagrees with Naive")
-
                 samples = _time_stream(
                     x_words=x_words,
                     chunk_words=args.chunk_words,

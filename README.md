@@ -66,9 +66,14 @@ For example, `total_bits = 1,000,000` and `component_n = 255` gives
 - `EventUpdateKernel`
 - `PackedBatchGF2Kernel` correctness-first `apply_many`
 - `PackedBlockLUTKernel`
+- `HybridPlanner` simple rule-based baseline
 
 Current `PackedBlockLUTKernel` support is limited to output width `r <= 16`.
 Wider packed outputs will need a later `uint32`/`uint64` or multi-word design.
+
+`EventUpdateKernel` supports both single-word `update()` and batch
+`update_many()` for event-driven syndrome updates. `HybridPlanner` is a
+reproducible rule-based dispatcher baseline, not an optimal scheduler.
 
 ## Benchmark Scripts
 
@@ -79,6 +84,7 @@ Wider packed outputs will need a later `uint32`/`uint64` or multi-word design.
 - `benchmarks/bench_bch_syndrome.py`
 - `benchmarks/bench_component_loop.py`
 - `benchmarks/bench_event_update.py`
+- `benchmarks/bench_planner.py`
 - `scripts/plot_results.py`
 
 The first benchmark group uses a fixed random GF(2) matrix. The component
@@ -98,7 +104,12 @@ python -m benchmarks.bench_bch_syndrome --matrix-source galois_systematic_candid
 python -m benchmarks.bench_bch_syndrome --matrix-source placeholder
 python -m benchmarks.bench_component_loop --matrix-source galois_systematic_candidate
 python -m benchmarks.bench_event_update --matrix-source galois_systematic_candidate
+python -m benchmarks.bench_planner --matrix-source galois_systematic_candidate
 ```
+
+`bench_event_update.py` reports from-scratch recomputation, per-word loop
+update, and batch `update_many`. `bench_planner.py` measures the simple
+rule-based dispatcher on batch-syndrome and event-update workloads.
 
 ## Reference Policy
 
@@ -111,10 +122,6 @@ usage as reference-only / reimplemented.
 BCH-like reference checks are optional and may depend on local external
 repositories or installed packages. External code is used only as behavior
 reference, not copied into this repository.
-
-## Not Yet Implemented
-
-- `HybridPlanner`
 
 Do not report performance improvements unless they come from reproducible
 benchmark outputs committed with the relevant code and methodology.

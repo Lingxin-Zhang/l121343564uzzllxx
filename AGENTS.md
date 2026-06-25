@@ -36,10 +36,7 @@ Implemented:
 4. `EventUpdateKernel`
 5. `PackedBatchGF2Kernel.apply_many`
 6. `PackedBlockLUTKernel`
-
-Not implemented:
-
-1. `HybridPlanner`
+7. `HybridPlanner` simple rule-based baseline
 
 ## Benchmark Status
 
@@ -52,9 +49,10 @@ Implemented:
 5. `benchmarks/bench_bch_syndrome.py`
 6. `benchmarks/bench_component_loop.py`
 7. `benchmarks/bench_event_update.py`
-8. `scripts/plot_results.py`
-9. `scripts/run_all_benchmarks.py`
-10. `scripts/run_all_benchmarks.sh`
+8. `benchmarks/bench_planner.py`
+9. `scripts/plot_results.py`
+10. `scripts/run_all_benchmarks.py`
+11. `scripts/run_all_benchmarks.sh`
 
 Generated CSV and PNG figure outputs may be tracked for review. PDF figures are
 local artifacts unless explicitly requested.

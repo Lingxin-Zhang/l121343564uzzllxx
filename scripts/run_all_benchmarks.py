@@ -52,6 +52,15 @@ def main() -> None:
             "galois_systematic_candidate",
         ]
     )
+    run(
+        [
+            python,
+            "-m",
+            "benchmarks.bench_planner",
+            "--matrix-source",
+            "galois_systematic_candidate",
+        ]
+    )
     run([python, "scripts/plot_results.py"])
 
 
