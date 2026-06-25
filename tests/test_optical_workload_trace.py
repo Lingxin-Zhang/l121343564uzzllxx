@@ -92,8 +92,8 @@ def test_ofec_like_trace_contains_syndrome_candidate_and_event_update() -> None:
     assert trace.num_executed_candidate_tests == 4 * 256
     assert trace.intended_candidate_tests == 4 * 256
     assert trace.executed_candidate_tests == 4 * 256
-    assert trace.intended_syndrome_calls == trace.executed_syndrome_calls
-    assert trace.intended_event_updates == trace.executed_event_updates
+    assert trace.intended_syndrome_calls == trace.num_syndrome_calls
+    assert trace.intended_event_updates == trace.num_event_updates
 
 
 def test_ofec_like_trace_records_candidate_cap_when_used() -> None:
@@ -165,3 +165,27 @@ def test_evaluate_optical_workload_runs_small_correctness_path() -> None:
     candidate_rows = [row for row in breakdown_rows if row["task_kind"] == "candidate_test"]
     assert candidate_rows
     assert {row["unit_type"] for row in candidate_rows} == {"candidate"}
+
+
+def test_evaluate_optical_workload_records_batch_capped_executed_counts() -> None:
+    rows, _ = evaluate_optical_workload_with_breakdown(
+        workload_type="staircase_like",
+        code_profile="ebch_256_239_r17",
+        num_blocks=8,
+        window_len=4,
+        num_iterations_or_steps=1,
+        density=0.05,
+        batch_size=4,
+        block_width=4,
+        repeats=1,
+        preset="unit",
+    )
+
+    assert rows
+    for row in rows:
+        assert int(row["intended_syndrome_calls"]) == 4 * 128
+        assert int(row["executed_syndrome_calls"]) == 4
+        assert int(row["executed_syndrome_calls"]) < int(row["intended_syndrome_calls"])
+        assert int(row["intended_event_updates"]) == 4 * 128
+        assert int(row["executed_event_updates"]) == 4
+        assert int(row["executed_event_updates"]) < int(row["intended_event_updates"])

@@ -34,7 +34,7 @@ class TraceEvent:
 
 @dataclass(frozen=True)
 class WorkloadTrace:
-    """A synthetic trace plus aggregate event counts."""
+    """A synthetic trace plus intended aggregate event counts."""
 
     workload_type: str
     profile_name: str
@@ -54,6 +54,7 @@ class WorkloadTrace:
 
     @property
     def executed_syndrome_calls(self) -> int:
+        """Trace-level uncapped alias; benchmarks compute actual executed counts."""
         return self.num_syndrome_calls
 
     @property
@@ -90,6 +91,7 @@ class WorkloadTrace:
 
     @property
     def executed_event_updates(self) -> int:
+        """Trace-level uncapped alias; benchmarks compute actual executed counts."""
         return self.num_event_updates
 
 

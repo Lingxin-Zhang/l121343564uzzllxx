@@ -201,6 +201,21 @@ def _prepare_tasks(
     return tasks
 
 
+def _executed_counts_from_tasks(tasks: list[dict[str, Any]]) -> dict[str, int]:
+    """Return the actual benchmark task units prepared for execution."""
+    return {
+        "executed_syndrome_calls": sum(
+            int(task["num_units"]) for task in tasks if task["kind"] == "syndrome"
+        ),
+        "executed_candidate_tests": sum(
+            int(task["num_units"]) for task in tasks if task["kind"] == "candidate_test"
+        ),
+        "executed_event_updates": sum(
+            int(task["num_units"]) for task in tasks if task["kind"] == "event_update"
+        ),
+    }
+
+
 def _assert_task_correct(
     method: str,
     actual: np.ndarray,
@@ -315,13 +330,15 @@ def evaluate_optical_workload_with_breakdown(
         rng=rng,
         naive=naive,
     )
+    executed_counts = _executed_counts_from_tasks(tasks)
     total_units = max(1, sum(task["num_units"] for task in tasks))
-    executed_units = max(
-        1,
-        trace.executed_syndrome_calls
-        + trace.executed_candidate_tests
-        + trace.executed_event_updates,
-    )
+    executed_units = max(1, sum(executed_counts.values()))
+    if executed_counts["executed_syndrome_calls"] > trace.intended_syndrome_calls:
+        raise AssertionError("executed syndrome calls exceed intended syndrome calls")
+    if executed_counts["executed_candidate_tests"] > trace.intended_candidate_tests:
+        raise AssertionError("executed candidate tests exceed intended candidate tests")
+    if executed_counts["executed_event_updates"] > trace.intended_event_updates:
+        raise AssertionError("executed event updates exceed intended event updates")
     methods = (
         "Naive.apply_many",
         "PackedBatch.apply_many",
@@ -366,14 +383,14 @@ def evaluate_optical_workload_with_breakdown(
                 "window_len": window_len,
                 "num_iterations_or_steps": num_iterations_or_steps,
                 "intended_syndrome_calls": trace.intended_syndrome_calls,
-                "executed_syndrome_calls": trace.executed_syndrome_calls,
+                "executed_syndrome_calls": executed_counts["executed_syndrome_calls"],
                 "intended_candidate_tests": trace.intended_candidate_tests,
-                "executed_candidate_tests": trace.executed_candidate_tests,
+                "executed_candidate_tests": executed_counts["executed_candidate_tests"],
                 "intended_event_updates": trace.intended_event_updates,
-                "executed_event_updates": trace.executed_event_updates,
+                "executed_event_updates": executed_counts["executed_event_updates"],
                 "num_syndrome_calls": trace.intended_syndrome_calls,
                 "num_candidate_tests": trace.intended_candidate_tests,
-                "num_executed_candidate_tests": trace.num_executed_candidate_tests,
+                "num_executed_candidate_tests": executed_counts["executed_candidate_tests"],
                 "num_event_updates": trace.intended_event_updates,
                 "backend_or_method": method,
                 "block_width": block_width,

@@ -44,14 +44,17 @@ def _mean(values: list[float]) -> float:
 
 def plot_component_decoder_exactness() -> None:
     rows = _read_csv(RAW_DIR / "component_decoder_exactness.csv")
-    test_cases = [
+    preferred_cases = [
         "all_zero",
         "all_single_bit_errors",
+        "sampled_double_bit_errors",
         "all_double_bit_errors",
         "sampled_triple_bit_errors",
         "random_error_batch",
         "random_received_batch",
     ]
+    present_cases = {row["test_case"] for row in rows}
+    test_cases = [case for case in preferred_cases if case in present_cases]
     backends = sorted({row["syndrome_backend"] for row in rows})
     grouped: dict[tuple[str, str], list[float]] = defaultdict(list)
     for row in rows:

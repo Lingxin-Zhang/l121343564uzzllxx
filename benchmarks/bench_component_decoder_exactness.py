@@ -28,6 +28,7 @@ FULL_CODE_PROFILES = ("bch_255_239_r16",)
 DEFAULT_TEST_CASES = (
     "all_zero",
     "all_single_bit_errors",
+    "sampled_double_bit_errors",
     "all_double_bit_errors",
     "sampled_triple_bit_errors",
     "random_error_batch",
@@ -42,6 +43,8 @@ COMPONENT_DECODER_FIELDNAMES = [
     "t",
     "test_case",
     "num_words",
+    "double_error_coverage",
+    "num_possible_double_errors",
     "error_weight",
     "syndrome_backend",
     "decoder_backend",
@@ -71,6 +74,8 @@ class ComponentDecoderCase:
     name: str
     words: np.ndarray
     error_weight: str
+    double_error_coverage: str = ""
+    num_possible_double_errors: int = 0
 
 
 def _parse_str_list(value: str) -> tuple[str, ...]:
@@ -134,15 +139,23 @@ def make_component_decoder_cases(
 ) -> list[ComponentDecoderCase]:
     """Create deterministic component decoder exactness test batches."""
     n, _ = matrix.shape
-    double_count = 32385 if preset == "full" and n == 255 else double_sample_size
+    num_possible_double_errors = n * (n - 1) // 2
+    requested_double_count = 32385 if preset == "full" and n == 255 else double_sample_size
+    double_count = min(requested_double_count, num_possible_double_errors)
+    double_coverage = "full" if double_count == num_possible_double_errors else "sampled"
+    double_case_name = (
+        "all_double_bit_errors" if double_coverage == "full" else "sampled_double_bit_errors"
+    )
     triple_count = 4096 if preset == "full" else min(random_batch_size, 2048)
     cases = [
         ComponentDecoderCase("all_zero", np.zeros((1, n), dtype=np.uint8), "0"),
         ComponentDecoderCase("all_single_bit_errors", np.eye(n, dtype=np.uint8), "1"),
         ComponentDecoderCase(
-            "all_double_bit_errors",
+            double_case_name,
             np.stack([_set_positions(n, pair) for pair in _sample_pairs(n, double_count, rng)]),
             "2",
+            double_coverage,
+            num_possible_double_errors,
         ),
         ComponentDecoderCase(
             "sampled_triple_bit_errors",
@@ -272,6 +285,8 @@ def evaluate_component_decoder_case(
                 "t": t,
                 "test_case": case.name,
                 "num_words": words.shape[0],
+                "double_error_coverage": case.double_error_coverage,
+                "num_possible_double_errors": case.num_possible_double_errors,
                 "error_weight": case.error_weight,
                 "syndrome_backend": syndrome_backend,
                 "decoder_backend": "BDDLUTDecoder",

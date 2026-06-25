@@ -380,12 +380,16 @@ def summarize_component_decoder_exactness_rows(rows: list[dict[str, str]]) -> li
         "test_case",
         "syndrome_backend",
         "num_words",
+        "double_error_coverage",
     )
     summary = []
     for key, group in sorted(_group_rows(rows, keys).items()):
         summary.append(
             {
                 **dict(zip(keys, key, strict=True)),
+                "num_possible_double_errors": int(
+                    max(_float(row, "num_possible_double_errors", 0.0) for row in group)
+                ),
                 "exact_mismatch_count": int(
                     max(_float(row, "exact_mismatch_count", 0.0) for row in group)
                 ),
@@ -938,6 +942,8 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "test_case",
                 "syndrome_backend",
                 "num_words",
+                "double_error_coverage",
+                "num_possible_double_errors",
                 "exact_mismatch_count",
                 "correctness_all_true",
                 "mean_latency_per_word_us",
