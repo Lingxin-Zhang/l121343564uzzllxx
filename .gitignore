@@ -29,6 +29,7 @@ AGENTS.local.md
 
 # Local sensitive placeholders
 codes/ebch_like.py
+external_refs/
 
 # Generated experiment outputs
 paper/references/papers/*.pdf

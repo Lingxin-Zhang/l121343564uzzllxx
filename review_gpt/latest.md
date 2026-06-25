@@ -1,100 +1,117 @@
 # Latest Review Summary
 
-Current round: Round 10 - BCH-like Component Syndrome Kernel
+Current round: Round 11 - BCH Reference Triangulation
 
 ## Modified Files
 
 - `.gitignore`
-- `AGENTS.local.md.example`
+- `AGENTS.md`
 - `README.md`
-- `codes/__init__.py`
-- `codes/bch_like.py`
-- `tests/test_bch_like.py`
-- `benchmarks/bench_bch_syndrome.py`
-- `scripts/run_all_benchmarks.py`
-- `scripts/plot_results.py`
-- `results/raw/*.csv`
-- `results/figures/*.png`
+- `docs/bch_reference_notes.md`
+- `tools/__init__.py`
+- `tools/verify_bch_references.py`
+- `tests/test_bch_reference_tools.py`
+- `results/raw/bch_reference_check.csv`
+- refreshed `results/raw/*.csv`
+- refreshed `results/figures/*.png`
+- `review_gpt/latest.md`
+- `review_gpt/round_11_summary.md`
 
 ## Implementation
 
-- Added `codes/bch_like.py`, a clean public reimplementation that generates a
-  deterministic `(255, 16)` BCH-like component syndrome matrix.
-- Added `BCH255_T2_SYNDROME_SPEC` metadata and exports from `codes/__init__.py`.
-- The configured local external reference path was accessible in this
-  environment, but no external code was copied into this repository.
-- Current BCH-like matrix is a deterministic reimplemented component-kernel
-  placeholder, not yet verified against OFEC_CNN.
-- Allowed `codes/bch_like.py` to be tracked while keeping `codes/ebch_like.py`,
-  `paper/`, and `references/` ignored.
-- Replaced the concrete local path in `AGENTS.local.md.example` with a generic
-  placeholder path.
-- Added `benchmarks/bench_bch_syndrome.py` for the component syndrome workload.
-- Added `bch_syndrome_throughput.png` generation in `scripts/plot_results.py`.
-- Added the new benchmark to `scripts/run_all_benchmarks.py`.
+- Added `tools/verify_bch_references.py`, an optional/local-friendly reference
+  triangulation tool.
+- The tool compares the current local `make_bch255_t2_syndrome_matrix()` output
+  against available references and writes `results/raw/bch_reference_check.csv`.
+- The tool reports unavailable references gracefully instead of crashing.
+- Added common convention checks:
+  - identity;
+  - reverse codeword position order;
+  - reverse bit order inside each output byte;
+  - reverse output byte order;
+  - reverse output bit order;
+  - drop an eBCH-wide parity row when a 256-row reference appears.
+- Added lightweight tests for CLI help, exact-match comparison, reversed-position
+  detection, and graceful unavailable-reference reporting.
+- Added `docs/bch_reference_notes.md` explaining:
+  - why OFEC_CNN is not treated as the only gold standard;
+  - the difference between an encoding parity matrix and a syndrome contribution
+    matrix;
+  - one-hot probing;
+  - current availability and match status.
+- Added `external_refs/` to `.gitignore`.
+- Updated `AGENTS.md` and `README.md` to clarify external BCH reference policy.
 
-## Correctness Tests
+## Reference Availability
+
+OFEC_CNN was used as one optional local reference in this run, not as the only
+standard answer. No external source code was copied into this repository.
+
+Available in this environment:
+
+- `ofec`: available through a configured local path; source code was invoked as
+  a behavior reference only.
+- `galois`: available as installed Python package `0.4.10`, license reported as
+  MIT by package metadata.
+
+Unavailable or not adapted:
+
+- `python-bchlib`: importable, but this repository does not yet have a
+  public-safe bit-level BCH(255,239) adapter.
+- `aff3ct`: path not configured.
+- `linux-kernel`: path not configured.
+
+## Reference Result
+
+No exact match was found between the current local matrix and the available
+references under the tested transforms.
+
+Best observed transform for both OFEC_CNN and `galois`:
+
+```text
+candidate_transform = reverse_codeword_positions
+match_rate = 0.5078431372549019
+exact_match = False
+```
+
+This suggests the current matrix remains a placeholder. Possible convention or
+construction differences include primitive polynomial, bit order, position
+order, output packing, and eBCH-wide parity handling. The current result is not
+strong evidence for any single explanation.
+
+## Verification
 
 ```text
 python -m pytest -q
-164 passed
+168 passed
 ```
-
-The new tests check:
-
-- syndrome matrix shape, dtype, bit values, and determinism;
-- zero input gives zero syndrome;
-- `NaiveGF2Kernel`, `PackedBatchGF2Kernel`, `PackedBlockLUT.apply_many`, and
-  `PackedBlockLUT.apply_many_packed` agree for batch sizes `1`, `64`, and
-  `4096` at densities `0.005`, `0.05`, and `0.5`.
-
-## Benchmark / Figures
 
 ```text
 python scripts/run_all_benchmarks.py
 ```
 
-Generated CSV files:
+Completed and refreshed benchmark CSV/PNG outputs.
 
-- `results/raw/block_width.csv`
-- `results/raw/density.csv`
-- `results/raw/batch.csv`
-- `results/raw/stream.csv`
-- `results/raw/bch_syndrome.csv`
+```text
+python tools/verify_bch_references.py --output results/raw/bch_reference_check.csv
+```
 
-Generated PNG figures:
-
-- `results/figures/block_width_vs_latency.png`
-- `results/figures/block_width_table_size.png`
-- `results/figures/density_backend_comparison.png`
-- `results/figures/batch_crossover.png`
-- `results/figures/stream_throughput.png`
-- `results/figures/bch_syndrome_throughput.png`
-
-For `bch_syndrome.csv` in this run, average throughput by backend was:
-
-- `Naive.apply_many`: about `44.02` Mbit/s
-- `PackedBatch.apply_many`: about `43.89` Mbit/s
-- `PackedBlockLUT.apply_many`: about `511.65` Mbit/s
-- `PackedBlockLUT.apply_many_packed`: about `500.15` Mbit/s
-
-The fastest backend by this simple average was `PackedBlockLUT.apply_many`.
-This is a benchmark observation from the generated CSV, not a paper conclusion.
-
-`PackedBlockLUT.apply_many_packed` returns one `uint16` per word and skips
-unpacking to a `(batch, r)` bit matrix. `PackedBlockLUT.apply_many` calls the
-packed path and then unpacks. In this run the two timings were close and not
-strictly ordered for every setting, so the difference should be treated as
-implementation/measurement behavior rather than a stable claim.
+Completed with the OFEC path supplied through a temporary local environment
+variable, and generated the committed reference-check CSV. The concrete local
+path is not written into tracked files.
 
 ## Known Issues
 
-- The BCH-like matrix has not yet been verified against OFEC_CNN.
-- This is not a full BCH/eBCH decoder and does not include algebraic decoding.
-- No HybridPlanner, BER simulation, formal benchmark claim, or paper conclusion
-  was added.
+- Current `make_bch255_t2_syndrome_matrix()` remains a deterministic placeholder.
+- No verified replacement matrix was added.
+- Push to GitHub failed from this environment after repeated attempts because
+  connecting to `github.com:443` timed out or reset. Local commit exists and is
+  one commit ahead of `origin/main`.
+- No full BCH/eBCH decoder, OFEC decoder, HybridPlanner, BER simulation, paper
+  conclusion, or speedup claim was added.
 
 ## Next Step
 
-Add an explicit external-reference verification test only after a public-safe
-way to compare against the local reference implementation is available.
+Add a public-safe adapter for the true systematic BCH parity-contribution matrix
+and compare it against both OFEC_CNN and `galois` before changing the benchmark
+matrix.

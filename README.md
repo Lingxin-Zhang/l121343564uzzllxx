@@ -85,6 +85,10 @@ component-code calling patterns. Do not copy large code blocks. Reimplement
 needed logic here, and mark any reference-derived parameter or calling-pattern
 usage as reference-only / reimplemented.
 
+BCH-like reference checks are optional and may depend on local external
+repositories or installed packages. External code is used only as behavior
+reference, not copied into this repository.
+
 ## Not Yet Implemented
 
 - `HybridPlanner`

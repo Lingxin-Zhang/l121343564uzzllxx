@@ -20,6 +20,9 @@ development notes.
 - Local reference implementations may be consulted only for parameters or
   calling patterns. Do not copy large code blocks; reimplement needed logic in
   this repository.
+- External BCH repositories may be inspected or invoked as optional references,
+  but their code must not be copied. Record source, commit hash, license,
+  parameters, and whether the comparison is exact.
 - Put concrete local reference paths in untracked `AGENTS.local.md`, not in
   committed files.
 
