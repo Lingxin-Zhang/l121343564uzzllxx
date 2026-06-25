@@ -6,7 +6,7 @@ This file is an example. Copy it to `AGENTS.local.md` and keep
 OFEC_CNN local reference path:
 
 ```text
-D:\PKU\OFEC\project\ofec-0.1.0
+D:\path\to\ofec-0.1.0
 ```
 
 Use this project only as a reference for BCH/eBCH parameters and component-code

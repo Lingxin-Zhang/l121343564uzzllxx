@@ -68,7 +68,14 @@ Wider packed outputs will need a later `uint32`/`uint64` or multi-word design.
 - `benchmarks/bench_density.py`
 - `benchmarks/bench_batch.py`
 - `benchmarks/bench_stream.py`
+- `benchmarks/bench_bch_syndrome.py`
 - `scripts/plot_results.py`
+
+The first benchmark group uses a fixed random GF(2) matrix. The component
+syndrome benchmark uses a deterministic BCH-like `(255, 16)` matrix to exercise
+the same kernels on a structured public workload. Current BCH-like matrix is a
+deterministic reimplemented component-kernel placeholder, not yet verified
+against OFEC_CNN.
 
 ## Reference Policy
 

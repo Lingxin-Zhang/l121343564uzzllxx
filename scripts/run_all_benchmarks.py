@@ -20,6 +20,7 @@ def main() -> None:
     run([python, "-m", "benchmarks.bench_density"])
     run([python, "-m", "benchmarks.bench_batch"])
     run([python, "-m", "benchmarks.bench_stream"])
+    run([python, "-m", "benchmarks.bench_bch_syndrome"])
     run([python, "scripts/plot_results.py"])
 
 

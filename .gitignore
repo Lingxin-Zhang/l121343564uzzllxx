@@ -28,7 +28,6 @@ dist/
 AGENTS.local.md
 
 # Local sensitive placeholders
-codes/bch_like.py
 codes/ebch_like.py
 
 # Generated experiment outputs
