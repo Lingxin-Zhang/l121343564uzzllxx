@@ -11,13 +11,13 @@ from typing import Any
 
 import numpy as np
 
+from codes.matrix_sources import N, R, RANDOM_FIXED_SEED, get_matrix_source
+
 ROOT = Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "results" / "raw"
 FIGURE_DIR = ROOT / "results" / "figures"
 
-N = 255
-R = 16
-MATRIX_SEED = 20260628
+MATRIX_SEED = RANDOM_FIXED_SEED
 
 
 def ensure_result_dirs() -> None:
@@ -26,8 +26,7 @@ def ensure_result_dirs() -> None:
 
 
 def make_matrix() -> np.ndarray:
-    rng = np.random.default_rng(MATRIX_SEED)
-    return rng.integers(0, 2, size=(N, R), dtype=np.uint8)
+    return get_matrix_source("random_fixed")
 
 
 def make_batch(

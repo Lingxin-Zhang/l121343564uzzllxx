@@ -35,6 +35,14 @@ bash scripts/run_all_benchmarks.sh
 The benchmark scripts write CSV files to `results/raw/` and initial figures to
 `results/figures/`.
 
+The BCH/component workload benchmarks support named `matrix_source` values:
+
+- `galois_systematic_candidate`: main BCH candidate when `galois` is installed.
+- `placeholder`: deterministic BCH-like structured workload retained for
+  comparison and history.
+- `random_fixed`: deterministic random GF(2) matrix for generic micro-
+  benchmarks.
+
 Benchmark terms:
 
 - `apply(x)` processes one component word, such as one 255-bit input vector.
@@ -69,17 +77,28 @@ Wider packed outputs will need a later `uint32`/`uint64` or multi-word design.
 - `benchmarks/bench_batch.py`
 - `benchmarks/bench_stream.py`
 - `benchmarks/bench_bch_syndrome.py`
+- `benchmarks/bench_component_loop.py`
+- `benchmarks/bench_event_update.py`
 - `scripts/plot_results.py`
 
 The first benchmark group uses a fixed random GF(2) matrix. The component
 syndrome benchmark uses a deterministic BCH-like `(255, 16)` matrix to exercise
-the same kernels on a structured public workload. Current BCH-like matrix is a
-deterministic reimplemented component-kernel placeholder, not yet verified
-against OFEC_CNN.
+the same kernels on a structured public workload.
 
-The deterministic BCH-like matrix is still kept as a placeholder. A separate
-galois-systematic verified-candidate matrix is available for reference checks
-when `galois` is installed.
+The deterministic BCH-like matrix is still kept as a placeholder. The BCH
+syndrome and component-loop benchmark path can use the separate
+galois-systematic verified-candidate matrix when `galois` is installed.
+Benchmark defaults and generated figures are reproducible measurement artifacts;
+they are not paper conclusions.
+
+Examples:
+
+```bash
+python -m benchmarks.bench_bch_syndrome --matrix-source galois_systematic_candidate
+python -m benchmarks.bench_bch_syndrome --matrix-source placeholder
+python -m benchmarks.bench_component_loop --matrix-source galois_systematic_candidate
+python -m benchmarks.bench_event_update --matrix-source galois_systematic_candidate
+```
 
 ## Reference Policy
 

@@ -99,9 +99,10 @@ This candidate is kept separate from the deterministic placeholder returned by
 be described as a verified candidate against available references, not as an
 official OIF/oFEC matrix.
 
-The benchmark default matrix is not changed by this candidate. Replacing the
-benchmark workload with a verified BCH matrix is deferred to a later explicit
-task.
+After the reference-check phase, the benchmark mainline can use this candidate
+through the `galois_systematic_candidate` matrix source. The deterministic
+placeholder remains available through the `placeholder` matrix source for
+comparison and history.
 
 ## One-Hot Probing
 
@@ -138,3 +139,10 @@ The current workflow does not assume OFEC_CNN is the gold standard. If no exact
 match is found across available references and common convention transforms,
 the current matrix remains a placeholder until a public-safe verification path
 is established.
+
+Reference validation work is parked for now. OFEC_CNN and `galois` are
+convention-aligned in the current local inspection, but not independent because
+the inspected OFEC source directly uses `galois` to build its BCH tables.
+`python-bchlib`, Linux BCH, and AFF3CT adapters are also parked and should not
+block matrix-source aware BCH benchmarking. Public docs should stay focused on
+code behavior, reproducible CSV outputs, and generic GF(2) benchmark wording.

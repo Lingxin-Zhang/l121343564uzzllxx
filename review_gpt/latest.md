@@ -1,75 +1,68 @@
 # Latest Review Summary
 
-Current round: Round 14 - Verified-Candidate BCH Matrix and Dependency Check
+Current round: Round 15 - Matrix-Source BCH Benchmark and Workloads
 
 ## Modified Files
 
-- `codes/bch_like.py`
-- `codes/__init__.py`
-- `tools/verify_bch_references.py`
-- `tests/test_bch_reference_tools.py`
-- `tests/test_bch_verified_candidate.py`
-- `docs/bch_reference_notes.md`
+- `AGENTS.md`
 - `README.md`
-- `results/raw/bch_reference_check.csv`
-- `results/raw/reference_registry.csv`
-- `results/raw/bch_reference_pairwise_check.csv`
-- `results/raw/bch_reference_summary.csv`
-- `results/raw/bch_matrix_candidate_check.csv`
-- `results/raw/ofec_dependency_check.csv`
+- `codes/__init__.py`
+- `codes/matrix_sources.py`
+- `benchmarks/_common.py`
+- `benchmarks/bench_bch_syndrome.py`
+- `benchmarks/bench_component_loop.py`
+- `benchmarks/bench_event_update.py`
+- `scripts/run_all_benchmarks.py`
+- `scripts/run_all_benchmarks.sh`
+- `scripts/plot_results.py`
+- `tests/test_matrix_sources.py`
+- `tests/test_event_update_benchmark_logic.py`
+- `docs/bch_reference_notes.md`
+- `results/raw/bch_syndrome.csv`
+- `results/raw/component_loop.csv`
+- `results/raw/event_update.csv`
 - refreshed benchmark CSV/PNG outputs
 - `review_gpt/latest.md`
-- `review_gpt/round_14_summary.md`
+- `review_gpt/round_15_summary.md`
 
 ## Implementation
 
-- Added `make_bch255_t2_syndrome_matrix_galois_systematic()`.
-- The existing `make_bch255_t2_syndrome_matrix()` placeholder was retained.
-- The new candidate uses `galois.BCH(255, 239)` one-hot message encoding,
-  extracts the systematic parity matrix `P`, and returns `[P ; I_16]`.
-- The benchmark default matrix was not changed.
-- No external implementation code was copied.
+- Added `codes.matrix_sources.get_matrix_source()`.
+- Supported matrix sources:
+  - `placeholder`
+  - `galois_systematic_candidate`
+  - `random_fixed`
+- Updated generic benchmark matrix creation to use `random_fixed`.
+- Updated `bench_bch_syndrome.py` with `--matrix-source`, `matrix_source`,
+  and `matrix_shape`.
+- Added `bench_component_loop.py` for repeated chunked component syndrome
+  computation.
+- Added `bench_event_update.py` for sparse bit-flip syndrome update timing.
+- Updated run-all scripts so BCH syndrome runs both `placeholder` and
+  `galois_systematic_candidate`.
+- Added plots:
+  - `results/figures/component_loop_speedup.png`
+  - `results/figures/event_update_speedup.png`
+- Updated BCH syndrome plot to distinguish `matrix_source`.
 
-## Reference Results
+## Generated Results
 
-The reference reports were regenerated in one run with the OFEC path supplied
-through a temporary local environment variable. The concrete local path is not
-tracked.
+- `results/raw/bch_syndrome.csv` was generated with both matrix sources:
+  - `placeholder`: 24 rows
+  - `galois_systematic_candidate`: 24 rows
+- `results/raw/component_loop.csv` was generated.
+- `results/raw/event_update.csv` was generated.
+- `results/figures/component_loop_speedup.png` was generated.
+- `results/figures/event_update_speedup.png` was generated.
+- `results/figures/bch_syndrome_throughput.png` was regenerated with
+  matrix-source aware labels.
 
-Run summary:
+Correctness status:
 
-```text
-enabled references: ofec,galois,python-bchlib,aff3ct,linux-kernel
-available references: ofec,galois
-unavailable references: python-bchlib,aff3ct,linux-kernel
-pairwise row count: 5
-candidate row count: 26
-dependency row count: 6
-```
-
-`bch_reference_check.csv`, `bch_reference_pairwise_check.csv`,
-`bch_reference_summary.csv`, `bch_matrix_candidate_check.csv`, and
-`ofec_dependency_check.csv` are from this same run.
-
-Candidate status:
-
-- `galois_systematic_candidate` exactly matches `galois` under identity.
-- `galois_systematic_candidate` exactly matches `ofec` under identity.
-- `placeholder` remains non-exact against the available references.
-- `make_bch255_t2_syndrome_matrix()` is still a placeholder.
-
-Pairwise status:
-
-- `bch_reference_pairwise_check.csv` contains `ofec` vs `galois`.
-- `ofec` vs `galois` identity transform has `exact_match=True`.
-- `best_pairwise_match = ofec|galois|identity|1.000000`.
-
-Dependency status:
-
-- `ofec_dependency_check.csv` was generated.
-- The inspected OFEC source includes direct `galois` usage in `_ebch_lut.py`.
-- Therefore OFEC_CNN and `galois` are convention-aligned in this run, but they
-  are not independent references.
+- Component-loop CSV has `correctness_passed=True` for all 36 rows.
+- Event-update CSV has `correctness_passed=True` for all 24 rows.
+- Backend outputs are checked against Naive/Packed reference outputs before
+  timing rows are recorded.
 
 ## Verification
 
@@ -77,28 +70,31 @@ Dependency status:
 python -m pytest -q
 ```
 
-Passed: `179 passed, 1 skipped`.
-
-```text
-python tools/verify_bch_references.py --output results/raw/bch_reference_check.csv
-```
-
-Passed with OFEC path supplied via temporary environment variable.
+Passed: `187 passed, 1 skipped`.
 
 ```text
 python scripts/run_all_benchmarks.py
 ```
 
-Passed and refreshed benchmark CSV/PNG outputs.
+Passed and generated CSV/PNG outputs.
 
-## Known Issues
+```text
+python scripts/plot_results.py
+```
 
-- `python-bchlib` is still not enabled as a trusted bit-level adapter.
-- AFF3CT and Linux BCH paths are not configured.
-- OFEC_CNN and `galois` should not be counted as independent references when
-  OFEC source directly builds tables from `galois`.
+Passed and regenerated figures.
 
-## Next Step
+## Guardrails
 
-Add an independent public-safe BCH behavior adapter or dependency-free
-cross-check before replacing any benchmark default workload.
+- Full OFEC decoder implemented: no.
+- Full BCH algebraic decoder implemented: no.
+- HybridPlanner implemented: no.
+- BER simulation added: no.
+- Paper conclusion or speedup claim added: no.
+- External code copied: no.
+- Real local paths committed: no.
+
+## Notes
+
+This is a lightweight reproducible benchmark run. The figures are raw
+measurement artifacts for review, not paper conclusions.

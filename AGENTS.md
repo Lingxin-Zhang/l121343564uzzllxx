@@ -49,9 +49,12 @@ Implemented:
 2. `benchmarks/bench_density.py`
 3. `benchmarks/bench_batch.py`
 4. `benchmarks/bench_stream.py`
-5. `scripts/plot_results.py`
-6. `scripts/run_all_benchmarks.py`
-7. `scripts/run_all_benchmarks.sh`
+5. `benchmarks/bench_bch_syndrome.py`
+6. `benchmarks/bench_component_loop.py`
+7. `benchmarks/bench_event_update.py`
+8. `scripts/plot_results.py`
+9. `scripts/run_all_benchmarks.py`
+10. `scripts/run_all_benchmarks.sh`
 
 Generated CSV and PNG figure outputs may be tracked for review. PDF figures are
 local artifacts unless explicitly requested.

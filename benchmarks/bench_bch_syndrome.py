@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import statistics
 import time
 from collections.abc import Callable
@@ -17,10 +18,11 @@ from benchmarks._common import (
     make_batch,
     write_csv,
 )
-from codes.bch_like import BCH255_T2_SYNDROME_SPEC, make_bch255_t2_syndrome_matrix
+from codes.matrix_sources import get_matrix_source
 from linear_kernel import NaiveGF2Kernel, PackedBatchGF2Kernel, PackedBlockLUTKernel
 from linear_kernel.matrix_utils import pack_batch_bits_to_uint16
 
+DEFAULT_MATRIX_SOURCE = "galois_systematic_candidate"
 TOTAL_BITS = (1_000_000, 10_000_000)
 ITERATIONS = (1, 5, 10)
 DEFAULT_CHUNK_WORDS = 4096
@@ -32,6 +34,14 @@ RNG_SEED = 20260705
 
 def _parse_int_list(value: str) -> tuple[int, ...]:
     return tuple(int(part.strip()) for part in value.split(",") if part.strip())
+
+
+def _write_or_append_csv(output, rows: list[dict[str, Any]], append: bool) -> None:
+    if append and output.exists():
+        with output.open(newline="", encoding="utf-8") as f:
+            existing_rows = list(csv.DictReader(f))
+        rows = [*existing_rows, *rows]
+    write_csv(output, rows)
 
 
 def _iter_chunks(x_words: np.ndarray, chunk_words: int):
@@ -68,17 +78,20 @@ def _time_stream(
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--matrix-source", default=DEFAULT_MATRIX_SOURCE)
     parser.add_argument("--total-bits", default=",".join(str(x) for x in TOTAL_BITS))
     parser.add_argument("--iterations", default=",".join(str(x) for x in ITERATIONS))
     parser.add_argument("--chunk-words", type=int, default=DEFAULT_CHUNK_WORDS)
     parser.add_argument("--density", type=float, default=DEFAULT_DENSITY)
     parser.add_argument("--block-width", type=int, default=DEFAULT_BLOCK_WIDTH)
     parser.add_argument("--repeats", type=int, default=DEFAULT_REPEATS)
+    parser.add_argument("--append", action="store_true")
     args = parser.parse_args()
 
     ensure_result_dirs()
-    matrix = make_bch255_t2_syndrome_matrix()
-    spec = BCH255_T2_SYNDROME_SPEC
+    matrix = get_matrix_source(args.matrix_source)
+    component_n, output_r = matrix.shape
+    matrix_shape = f"{tuple(matrix.shape)}"
     rng = np.random.default_rng(RNG_SEED)
     rows: list[dict[str, Any]] = []
 
@@ -104,16 +117,16 @@ def main() -> None:
     ]
 
     for total_bits in _parse_int_list(args.total_bits):
-        num_words = total_bits // spec.n
+        num_words = total_bits // component_n
         if num_words < 1:
             raise ValueError("total_bits must contain at least one component word")
-        x_words = make_batch(rng, num_words, args.density, n=spec.n)
+        x_words = make_batch(rng, num_words, args.density, n=component_n)
         first_chunk = x_words[: args.chunk_words]
         expected_first = naive.apply_many(first_chunk)
         expected_first_packed = pack_batch_bits_to_uint16(expected_first)
 
         for iterations in _parse_int_list(args.iterations):
-            processed_bits = num_words * spec.n * iterations
+            processed_bits = num_words * component_n * iterations
             processed_words = num_words * iterations
             for backend_name, fn, table_size_bytes, output_kind in backends:
                 actual_first = fn(first_chunk)
@@ -135,10 +148,11 @@ def main() -> None:
                 rows.append(
                     {
                         "backend": backend_name,
-                        "matrix_source": spec.name,
+                        "matrix_source": args.matrix_source,
+                        "matrix_shape": matrix_shape,
                         "total_bits": total_bits,
-                        "component_n": spec.n,
-                        "output_r": spec.r,
+                        "component_n": component_n,
+                        "output_r": output_r,
                         "num_words": num_words,
                         "chunk_words": args.chunk_words,
                         "iterations": iterations,
@@ -155,7 +169,7 @@ def main() -> None:
                 )
 
     output = RAW_DIR / "bch_syndrome.csv"
-    write_csv(output, rows)
+    _write_or_append_csv(output, rows, args.append)
     print(f"wrote {output}")
 
 

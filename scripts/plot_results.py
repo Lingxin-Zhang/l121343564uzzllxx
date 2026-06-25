@@ -210,7 +210,11 @@ def plot_stream() -> None:
 def plot_bch_syndrome() -> None:
     rows = _read_csv(RAW_DIR / "bch_syndrome.csv")
     fig, ax = plt.subplots(figsize=(7.4, 4.6))
-    for backend, backend_rows in sorted(_group_by_backend(rows).items()):
+    grouped_rows: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        matrix_source = row.get("matrix_source", "unknown")
+        grouped_rows[f"{row['backend']} ({matrix_source})"].append(row)
+    for label, backend_rows in sorted(grouped_rows.items()):
         grouped: dict[float, list[dict[str, Any]]] = defaultdict(list)
         for row in backend_rows:
             grouped[float(row["total_bits"])].append(row)
@@ -222,7 +226,7 @@ def plot_bch_syndrome() -> None:
                 sum(float(row["throughput_Mbit_s"]) for row in total_rows)
                 / len(total_rows)
             )
-        ax.plot(x, y, marker="o", linewidth=1.9, label=backend)
+        ax.plot(x, y, marker="o", linewidth=1.9, label=label)
 
     ax.set_xscale("log")
     ax.set_title("GF(2) component syndrome benchmark")
@@ -233,6 +237,111 @@ def plot_bch_syndrome() -> None:
     _save_figure(fig, "bch_syndrome_throughput")
 
 
+def plot_component_loop() -> None:
+    rows = _read_csv(RAW_DIR / "component_loop.csv")
+    baseline_by_group: dict[tuple[str, str, str, str, str], float] = {}
+    for row in rows:
+        if row["backend"] != "Naive.apply_many":
+            continue
+        key = (
+            row["matrix_source"],
+            row["num_words"],
+            row["iterations"],
+            row["density"],
+            row["block_width"],
+        )
+        baseline_by_group[key] = float(row["latency_per_word_us"])
+
+    speedup_by_backend_words: dict[str, dict[float, list[float]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+    for row in rows:
+        key = (
+            row["matrix_source"],
+            row["num_words"],
+            row["iterations"],
+            row["density"],
+            row["block_width"],
+        )
+        baseline = baseline_by_group.get(key)
+        if baseline is None:
+            continue
+        latency = float(row["latency_per_word_us"])
+        if latency <= 0:
+            continue
+        speedup_by_backend_words[row["backend"]][float(row["num_words"])].append(
+            baseline / latency
+        )
+
+    fig, ax = plt.subplots(figsize=(7.4, 4.6))
+    for backend, by_words in sorted(speedup_by_backend_words.items()):
+        x = []
+        y = []
+        for num_words, values in sorted(by_words.items()):
+            x.append(num_words)
+            y.append(sum(values) / len(values))
+        ax.plot(x, y, marker="o", linewidth=1.9, label=backend)
+
+    ax.set_xscale("log", base=2)
+    ax.set_title("GF(2) component-loop benchmark")
+    ax.set_xlabel("num_words")
+    ax.set_ylabel("Relative throughput vs Naive")
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=True)
+    _save_figure(fig, "component_loop_speedup")
+
+
+def plot_event_update() -> None:
+    rows = _read_csv(RAW_DIR / "event_update.csv")
+    baseline_by_group: dict[tuple[str, str, str, str], float] = {}
+    for row in rows:
+        if row["method"] != "from_scratch.PackedBlockLUT.apply_many_packed":
+            continue
+        key = (
+            row["matrix_source"],
+            row["flip_count"],
+            row["iterations"],
+            row["batch_size"],
+        )
+        baseline_by_group[key] = float(row["latency_per_word_us"])
+
+    speedup_by_method_flip: dict[str, dict[float, list[float]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+    for row in rows:
+        key = (
+            row["matrix_source"],
+            row["flip_count"],
+            row["iterations"],
+            row["batch_size"],
+        )
+        baseline = baseline_by_group.get(key)
+        if baseline is None:
+            continue
+        latency = float(row["latency_per_word_us"])
+        if latency <= 0:
+            continue
+        speedup_by_method_flip[row["method"]][float(row["flip_count"])].append(
+            baseline / latency
+        )
+
+    fig, ax = plt.subplots(figsize=(7.4, 4.6))
+    for method, by_flip in sorted(speedup_by_method_flip.items()):
+        x = []
+        y = []
+        for flip_count, values in sorted(by_flip.items()):
+            x.append(flip_count)
+            y.append(sum(values) / len(values))
+        ax.plot(x, y, marker="o", linewidth=1.9, label=method)
+
+    ax.set_title("GF(2) event-update benchmark")
+    ax.set_xlabel("flip_count")
+    ax.set_ylabel("Relative throughput vs from-scratch")
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=True)
+    _save_figure(fig, "event_update_speedup")
+
+
 def main() -> None:
     plot_block_width()
     plot_block_width_table_size()
@@ -240,6 +349,8 @@ def main() -> None:
     plot_batch()
     plot_stream()
     plot_bch_syndrome()
+    plot_component_loop()
+    plot_event_update()
 
 
 if __name__ == "__main__":
