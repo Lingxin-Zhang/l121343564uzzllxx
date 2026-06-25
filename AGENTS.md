@@ -53,9 +53,10 @@ Implemented:
 9. `scripts/plot_results.py`
 10. `scripts/run_all_benchmarks.py`
 11. `scripts/run_all_benchmarks.sh`
+12. `scripts/summarize_results.py`
+13. `scripts/export_paper_figures.py`
 
-Generated CSV and PNG figure outputs may be tracked for review. PDF figures are
-local artifacts unless explicitly requested.
+Generated CSV, PNG, and requested PDF figure outputs may be tracked for review.
 
 ## Reference Registry
 

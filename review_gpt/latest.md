@@ -1,57 +1,80 @@
 # Latest Review Summary
 
-Current round: Round 16 - Batch EventUpdate and HybridPlanner v1
+Current round: Round 17 - Result Freeze and Paper-style Figure/Table Export
 
 ## Modified Files
 
+- `.gitignore`
 - `AGENTS.md`
 - `README.md`
-- `docs/bch_reference_notes.md`
-- `linear_kernel/event_update.py`
-- `linear_kernel/planner.py`
-- `benchmarks/bench_bch_syndrome.py`
-- `benchmarks/bench_event_update.py`
 - `benchmarks/bench_planner.py`
-- `scripts/run_all_benchmarks.py`
-- `scripts/plot_results.py`
-- `tests/test_event_update_many.py`
-- `tests/test_planner.py`
-- `results/raw/event_update.csv`
-- `results/raw/planner.csv`
-- refreshed benchmark CSV/PNG outputs
-- `results/figures/event_update_comparison.png`
-- `results/figures/planner_comparison.png`
+- `docs/bch_reference_notes.md`
+- `scripts/run_all_benchmarks.sh`
+- `scripts/summarize_results.py`
+- `scripts/export_paper_figures.py`
+- `tests/test_result_summary.py`
+- `results/raw/*.csv`
+- `results/summary/*.csv`
+- `results/figures/*.png`
+- `results/figures/*.pdf`
+- `results/paper_figures/*.png`
+- `results/paper_figures/*.pdf`
 - `review_gpt/latest.md`
-- `review_gpt/round_16_summary.md`
+- `review_gpt/round_17_summary.md`
 
 ## Implementation
 
-- Implemented `EventUpdateKernel.update_many`.
-- `update_many` supports `flip_count=0`, returns a new `np.uint8` array, and
-  validates current-value and position shapes.
-- Updated `bench_event_update.py` to compare:
+- Hardened `benchmarks/bench_planner.py` for the event-update workload.
+- The planner event-update benchmark now records:
+  - `from_scratch.Naive.apply_many`
   - `from_scratch.PackedBlockLUT.apply_many_packed`
-  - `event_update.loop_update`
-  - `event_update.batch_update_many`
-- Implemented `HybridPlanner` v1 as a simple rule-based workload dispatcher.
-- Added `benchmarks/bench_planner.py`.
-- Hardened `bench_bch_syndrome.py` correctness checking from first chunk only
-  to first, middle, and last chunks.
-- Added event-update comparison and planner comparison plots.
+  - `HybridPlanner.update_many`
+- Correctness checks compare from-scratch packed and planner update results
+  against the Naive reference.
+- Added `scripts/summarize_results.py` to convert raw benchmark CSV files into
+  review-oriented summary CSV files under `results/summary/`.
+- Added `scripts/export_paper_figures.py` to export compact figure/table-style
+  benchmark views under `results/paper_figures/`.
+- Updated the shell benchmark wrapper to run raw benchmarks, summaries, and
+  paper-style figure export.
+- Updated documentation to describe raw, summary, and paper-style artifact
+  layers without adding paper conclusions.
 
 ## Generated Results
 
-- `results/raw/event_update.csv` was generated.
-- `results/raw/planner.csv` was generated.
-- `results/figures/event_update_comparison.png` was generated.
-- `results/figures/planner_comparison.png` was generated.
-- Existing benchmark CSV/PNG outputs were refreshed by `run_all_benchmarks.py`.
+Summary CSV outputs:
 
-Correctness summary:
+- `results/summary/bch_syndrome_summary.csv`
+- `results/summary/component_loop_summary.csv`
+- `results/summary/event_update_summary.csv`
+- `results/summary/planner_summary.csv`
+- `results/summary/best_backend_by_workload.csv`
 
-- `event_update.csv` has 36 rows with `correctness_passed=True`.
-- `planner.csv` has 108 rows with `correctness_passed=True`.
-- `planner.csv` contains both `batch_syndrome` and `event_update` workloads.
+Paper-style figure outputs:
+
+- `results/paper_figures/fig_bch_syndrome_throughput.png`
+- `results/paper_figures/fig_bch_syndrome_throughput.pdf`
+- `results/paper_figures/fig_component_loop_latency.png`
+- `results/paper_figures/fig_component_loop_latency.pdf`
+- `results/paper_figures/fig_event_update_comparison.png`
+- `results/paper_figures/fig_event_update_comparison.pdf`
+- `results/paper_figures/fig_planner_latency.png`
+- `results/paper_figures/fig_planner_latency.pdf`
+
+The raw benchmark CSV and raw figure outputs were refreshed. These are
+lightweight reproducible benchmark artifacts for review, not paper conclusions.
+
+## Result Notes
+
+- `planner.csv` includes the requested event-update baselines:
+  `from_scratch.Naive.apply_many`,
+  `from_scratch.PackedBlockLUT.apply_many_packed`, and
+  `HybridPlanner.update_many`.
+- `planner_summary.csv` contains 144 summary rows and reports
+  `correctness_all_true=True` for all rows.
+- `event_update_summary.csv` reports `correctness_all_true=True` for all rows.
+- The best-backend summary is derived mechanically from the raw CSV inputs and
+  includes the note: `raw lightweight benchmark result; not a paper conclusion`.
 
 ## Verification
 
@@ -59,19 +82,25 @@ Correctness summary:
 python -m pytest -q
 ```
 
-Passed: `204 passed, 1 skipped`.
+Passed: `208 passed, 1 skipped`.
 
 ```text
 python scripts/run_all_benchmarks.py
 ```
 
-Passed and generated CSV/PNG outputs.
+Passed and regenerated raw CSV/figure outputs.
 
 ```text
-python scripts/plot_results.py
+python scripts/summarize_results.py
 ```
 
-Passed and regenerated figures.
+Passed and generated `results/summary/*.csv`.
+
+```text
+python scripts/export_paper_figures.py
+```
+
+Passed and generated `results/paper_figures/*.png` and `*.pdf`.
 
 ## Guardrails
 
@@ -81,8 +110,4 @@ Passed and regenerated figures.
 - Paper conclusion or speedup claim added: no.
 - External code copied: no.
 - Real local paths committed: no.
-
-## Notes
-
-This is a lightweight reproducible benchmark run. `HybridPlanner` is a simple
-rule baseline, not an optimal scheduler.
+- Reference validation or placeholder matrix status changed: no.

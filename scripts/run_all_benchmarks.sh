@@ -4,3 +4,5 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 python scripts/run_all_benchmarks.py
+python scripts/summarize_results.py
+python scripts/export_paper_figures.py

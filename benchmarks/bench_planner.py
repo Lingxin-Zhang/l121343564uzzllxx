@@ -172,9 +172,12 @@ def main() -> None:
                 )
                 x_flipped = _apply_flips(x_batch, flipped_positions)
                 expected_new = naive.apply_many(x_flipped)
+                expected_new_packed = pack_batch_bits_to_uint16(expected_new)
+                packed_block_new = packed_block.apply_many_packed(x_flipped)
                 planner_updated = planner.update_many(old_syndromes, flipped_positions)
                 update_correctness_passed = bool(
-                    np.array_equal(planner_updated, expected_new)
+                    np.array_equal(packed_block_new, expected_new_packed)
+                    and np.array_equal(planner_updated, expected_new)
                 )
                 if not update_correctness_passed:
                     raise AssertionError("planner event_update correctness failed")
@@ -183,6 +186,12 @@ def main() -> None:
                     (
                         "from_scratch.Naive.apply_many",
                         lambda x_flipped=x_flipped: naive.apply_many(x_flipped),
+                    ),
+                    (
+                        "from_scratch.PackedBlockLUT.apply_many_packed",
+                        lambda x_flipped=x_flipped: packed_block.apply_many_packed(
+                            x_flipped
+                        ),
                     ),
                     (
                         "HybridPlanner.update_many",

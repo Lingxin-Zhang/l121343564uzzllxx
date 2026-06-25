@@ -24,6 +24,8 @@ pytest
 
 ```bash
 python scripts/run_all_benchmarks.py
+python scripts/summarize_results.py
+python scripts/export_paper_figures.py
 ```
 
 On systems with `bash`, the shell wrapper is also available:
@@ -34,6 +36,15 @@ bash scripts/run_all_benchmarks.sh
 
 The benchmark scripts write CSV files to `results/raw/` and initial figures to
 `results/figures/`.
+
+Result processing uses three artifact levels:
+
+- `results/raw/`: direct benchmark measurements.
+- `results/summary/`: compact summary CSV files derived from raw results.
+- `results/paper_figures/`: compact paper-style PNG/PDF exports derived from
+  summary CSV files.
+
+These are reproducible artifacts for review. They are not paper conclusions.
 
 The BCH/component workload benchmarks support named `matrix_source` values:
 
@@ -109,7 +120,9 @@ python -m benchmarks.bench_planner --matrix-source galois_systematic_candidate
 
 `bench_event_update.py` reports from-scratch recomputation, per-word loop
 update, and batch `update_many`. `bench_planner.py` measures the simple
-rule-based dispatcher on batch-syndrome and event-update workloads.
+rule-based dispatcher on batch-syndrome and event-update workloads. The
+planner event-update workload includes both Naive and PackedBlockLUT
+from-scratch baselines plus `HybridPlanner.update_many`.
 
 ## Reference Policy
 

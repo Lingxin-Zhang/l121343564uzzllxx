@@ -153,3 +153,10 @@ structured workload. Event-driven syndrome update now has a batch/vectorized
 `EventUpdateKernel.update_many()` path. `HybridPlanner` is a simple
 workload-aware backend selection baseline for reproducible experiments; it is
 not an optimal scheduler and should not be described as one.
+
+Current result-freeze work is focused on summarizing raw benchmark CSV files
+and exporting compact generic figures from those summaries. The
+`galois_systematic_candidate` source remains the BCH component matrix source
+for this line of experiments. `python-bchlib`, Linux BCH, and AFF3CT remain
+parked as optional future references rather than blockers for result
+summarization or figure export.
