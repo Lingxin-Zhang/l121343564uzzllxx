@@ -77,6 +77,10 @@ the same kernels on a structured public workload. Current BCH-like matrix is a
 deterministic reimplemented component-kernel placeholder, not yet verified
 against OFEC_CNN.
 
+The deterministic BCH-like matrix is still kept as a placeholder. A separate
+galois-systematic verified-candidate matrix is available for reference checks
+when `galois` is installed.
+
 ## Reference Policy
 
 This public repository should only describe generic GF(2) kernel benchmark

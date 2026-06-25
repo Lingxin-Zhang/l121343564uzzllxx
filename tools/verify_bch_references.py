@@ -23,12 +23,17 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from codes.bch_like import make_bch255_t2_syndrome_matrix  # noqa: E402
+from codes.bch_like import (  # noqa: E402
+    make_bch255_t2_syndrome_matrix,
+    make_bch255_t2_syndrome_matrix_galois_systematic,
+)
 
 DEFAULT_OUTPUT = ROOT / "results" / "raw" / "bch_reference_check.csv"
 DEFAULT_REGISTRY_OUTPUT = ROOT / "results" / "raw" / "reference_registry.csv"
 DEFAULT_PAIRWISE_OUTPUT = ROOT / "results" / "raw" / "bch_reference_pairwise_check.csv"
 DEFAULT_SUMMARY_OUTPUT = ROOT / "results" / "raw" / "bch_reference_summary.csv"
+DEFAULT_CANDIDATE_OUTPUT = ROOT / "results" / "raw" / "bch_matrix_candidate_check.csv"
+DEFAULT_DEPENDENCY_OUTPUT = ROOT / "results" / "raw" / "ofec_dependency_check.csv"
 DEFAULT_REFERENCES = ("ofec", "galois", "python-bchlib", "aff3ct", "linux-kernel")
 N_BCH = 255
 K_BCH = 239
@@ -95,6 +100,35 @@ class ReferenceSummaryRow:
     any_pairwise_exact_match: bool
     best_pairwise_match: str
     current_matrix_status: str
+
+
+@dataclass(frozen=True)
+class MatrixCandidateRow:
+    local_matrix_name: str
+    reference_name: str
+    reference_available: bool
+    reference_type: str
+    parameters: str
+    candidate_transform: str
+    shape: str
+    num_equal_entries: int
+    num_total_entries: int
+    match_rate: float
+    exact_match: bool
+    notes: str
+
+
+@dataclass(frozen=True)
+class OFECDependencyRow:
+    module_name: str
+    source_available: bool
+    inspected_file_name: str
+    has_import_galois: bool
+    has_galois_bch: bool
+    has_build_syndrome_lut_tables: bool
+    has_column_syndrome_bits: bool
+    independence_status: str
+    notes: str
 
 
 def reference_registry_rows() -> list[ReferenceRegistryRow]:
@@ -392,6 +426,119 @@ def generate_unavailable_rows(
     return rows
 
 
+def generate_unavailable_candidate_rows(
+    local_matrix_name: str,
+    reference_names: Iterable[str],
+    reason: str,
+) -> list[MatrixCandidateRow]:
+    rows = []
+    for reference_name in reference_names:
+        rows.append(
+            MatrixCandidateRow(
+                local_matrix_name=local_matrix_name,
+                reference_name=reference_name,
+                reference_available=False,
+                reference_type="unavailable",
+                parameters=f"n={N_BCH},k={K_BCH},r={R_BCH}",
+                candidate_transform="not_run",
+                shape="",
+                num_equal_entries=0,
+                num_total_entries=0,
+                match_rate=0.0,
+                exact_match=False,
+                notes=reason,
+            )
+        )
+    return rows
+
+
+def matrix_candidate_rows(
+    local_matrices: dict[str, np.ndarray],
+    available_references: list[ReferenceMatrix],
+    unavailable_reference_names: Iterable[str],
+) -> list[MatrixCandidateRow]:
+    """Compare named local matrices against available references."""
+    rows: list[MatrixCandidateRow] = []
+    unavailable = tuple(unavailable_reference_names)
+    for local_name, local_matrix in local_matrices.items():
+        if available_references:
+            for reference in available_references:
+                comparison_rows = compare_candidate(
+                    reference_name=reference.name,
+                    reference_type=reference.reference_type,
+                    parameters=reference.parameters,
+                    reference_matrix=reference.matrix,
+                    ours_matrix=local_matrix,
+                    notes=reference.notes,
+                )
+                rows.extend(
+                    MatrixCandidateRow(
+                        local_matrix_name=local_name,
+                        reference_name=row.reference_name,
+                        reference_available=row.reference_available,
+                        reference_type=row.reference_type,
+                        parameters=row.parameters,
+                        candidate_transform=row.candidate_transform,
+                        shape=row.shape,
+                        num_equal_entries=row.num_equal_entries,
+                        num_total_entries=row.num_total_entries,
+                        match_rate=row.match_rate,
+                        exact_match=row.exact_match,
+                        notes=row.notes,
+                    )
+                    for row in comparison_rows
+                )
+        if unavailable:
+            rows.extend(
+                generate_unavailable_candidate_rows(
+                    local_matrix_name=local_name,
+                    reference_names=unavailable,
+                    reason="reference not available in this run",
+                )
+            )
+    return rows
+
+
+def _build_local_candidate_matrices() -> tuple[dict[str, np.ndarray], dict[str, str]]:
+    matrices = {"placeholder": make_bch255_t2_syndrome_matrix()}
+    unavailable: dict[str, str] = {}
+    try:
+        matrices[
+            "galois_systematic_candidate"
+        ] = make_bch255_t2_syndrome_matrix_galois_systematic()
+    except RuntimeError as exc:
+        unavailable["galois_systematic_candidate"] = str(exc)
+    return matrices, unavailable
+
+
+def build_matrix_candidate_check_rows(
+    available_references: list[ReferenceMatrix],
+    unavailable_reference_names: Iterable[str],
+    enabled_references: Iterable[str],
+) -> list[MatrixCandidateRow]:
+    local_matrices, unavailable_local_matrices = _build_local_candidate_matrices()
+    rows = matrix_candidate_rows(
+        local_matrices=local_matrices,
+        available_references=available_references,
+        unavailable_reference_names=unavailable_reference_names,
+    )
+    if unavailable_local_matrices:
+        reference_names = tuple(enabled_references) or ("none",)
+        for local_name, reason in unavailable_local_matrices.items():
+            rows.extend(
+                generate_unavailable_candidate_rows(
+                    local_matrix_name=local_name,
+                    reference_names=reference_names,
+                    reason=f"local matrix unavailable: {reason}",
+                )
+            )
+    return rows or generate_unavailable_candidate_rows(
+        local_matrix_name="placeholder",
+        reference_names=("none",),
+        reason="no candidate comparisons were run",
+    )
+
+
 def build_reference_summary(
     enabled_references: Iterable[str],
     available_references: list[ReferenceMatrix],
@@ -520,6 +667,97 @@ def _unsupported_path_reference(name: str, path_value: str | None) -> ReferenceM
     )
 
 
+def _ofec_dependency_unavailable_row(notes: str) -> OFECDependencyRow:
+    return OFECDependencyRow(
+        module_name="ofec.codec._ebch_lut",
+        source_available=False,
+        inspected_file_name="",
+        has_import_galois=False,
+        has_galois_bch=False,
+        has_build_syndrome_lut_tables=False,
+        has_column_syndrome_bits=False,
+        independence_status="unknown_unavailable",
+        notes=notes,
+    )
+
+
+def inspect_ofec_dependency(ofec_path: str | None) -> list[OFECDependencyRow]:
+    """Inspect local OFEC_CNN source files for direct galois dependency tokens."""
+    if not ofec_path:
+        return [
+            _ofec_dependency_unavailable_row(
+                "OFEC path not configured; use --ofec-path or BCH_REF_OFEC_PATH"
+            )
+        ]
+    root = Path(ofec_path)
+    codec_dir = root / "ofec" / "codec"
+    if not codec_dir.exists():
+        return [
+            _ofec_dependency_unavailable_row(
+                "configured OFEC path has no ofec/codec source directory"
+            )
+        ]
+
+    module_files = [
+        "_ebch_lut.py",
+        "_ebch_backends.py",
+        "ebch.py",
+        "bch.py",
+        "encoder.py",
+        "decoder.py",
+    ]
+    rows: list[OFECDependencyRow] = []
+    for file_name in module_files:
+        source = codec_dir / file_name
+        module_name = f"ofec.codec.{source.stem}"
+        if not source.exists():
+            rows.append(
+                OFECDependencyRow(
+                    module_name=module_name,
+                    source_available=False,
+                    inspected_file_name=file_name,
+                    has_import_galois=False,
+                    has_galois_bch=False,
+                    has_build_syndrome_lut_tables=False,
+                    has_column_syndrome_bits=False,
+                    independence_status="unknown_unavailable",
+                    notes="source file not present in configured OFEC path",
+                )
+            )
+            continue
+
+        text = source.read_text(encoding="utf-8", errors="replace")
+        has_import_galois = "import galois" in text or "from galois import" in text
+        has_galois_bch = "galois.BCH" in text or (
+            "from galois import" in text and "BCH(" in text
+        )
+        has_build_syndrome_lut_tables = "build_syndrome_lut_tables" in text
+        has_column_syndrome_bits = "column_syndrome_bits" in text
+        if has_import_galois or has_galois_bch:
+            independence_status = "not_independent_from_galois"
+            notes = (
+                "OFEC_CNN and galois are convention-aligned but not "
+                "independent references."
+            )
+        else:
+            independence_status = "no_direct_galois_usage_found"
+            notes = "No direct galois usage found in inspected files."
+        rows.append(
+            OFECDependencyRow(
+                module_name=module_name,
+                source_available=True,
+                inspected_file_name=file_name,
+                has_import_galois=has_import_galois,
+                has_galois_bch=has_galois_bch,
+                has_build_syndrome_lut_tables=has_build_syndrome_lut_tables,
+                has_column_syndrome_bits=has_column_syndrome_bits,
+                independence_status=independence_status,
+                notes=notes,
+            )
+        )
+    return rows
+
+
 def _enabled_references(value: str) -> tuple[str, ...]:
     parts = tuple(part.strip() for part in value.split(",") if part.strip())
     return parts or DEFAULT_REFERENCES
@@ -599,6 +837,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--registry-output", type=Path, default=DEFAULT_REGISTRY_OUTPUT)
     parser.add_argument("--pairwise-output", type=Path, default=DEFAULT_PAIRWISE_OUTPUT)
     parser.add_argument("--summary-output", type=Path, default=DEFAULT_SUMMARY_OUTPUT)
+    parser.add_argument("--candidate-output", type=Path, default=DEFAULT_CANDIDATE_OUTPUT)
+    parser.add_argument("--dependency-output", type=Path, default=DEFAULT_DEPENDENCY_OUTPUT)
     parser.add_argument(
         "--reference",
         default=",".join(DEFAULT_REFERENCES),
@@ -626,6 +866,12 @@ def main(argv: list[str] | None = None) -> int:
     unavailable_names = tuple(
         row.reference_name for row in rows if not row.reference_available
     )
+    candidate_rows = build_matrix_candidate_check_rows(
+        available_references=available_references,
+        unavailable_reference_names=unavailable_names,
+        enabled_references=enabled_references,
+    )
+    dependency_rows = inspect_ofec_dependency(args.ofec_path)
     summary_rows = [
         build_reference_summary(
             enabled_references=enabled_references,
@@ -638,6 +884,8 @@ def main(argv: list[str] | None = None) -> int:
     _write_dataclass_rows(args.registry_output, registry_rows)
     _write_dataclass_rows(args.pairwise_output, pairwise_rows)
     _write_dataclass_rows(args.summary_output, summary_rows)
+    _write_dataclass_rows(args.candidate_output, candidate_rows)
+    _write_dataclass_rows(args.dependency_output, dependency_rows)
     print(f"enabled references: {','.join(enabled_references)}")
     print(f"available references: {','.join(available_names) if available_names else 'none'}")
     print(
@@ -645,10 +893,14 @@ def main(argv: list[str] | None = None) -> int:
         f"{','.join(unavailable_names) if unavailable_names else 'none'}"
     )
     print(f"pairwise row count: {len(pairwise_rows)}")
+    print(f"candidate row count: {len(candidate_rows)}")
+    print(f"dependency row count: {len(dependency_rows)}")
     print(f"wrote {args.output}")
     print(f"wrote {args.registry_output}")
     print(f"wrote {args.pairwise_output}")
     print(f"wrote {args.summary_output}")
+    print(f"wrote {args.candidate_output}")
+    print(f"wrote {args.dependency_output}")
     return 0
 
 

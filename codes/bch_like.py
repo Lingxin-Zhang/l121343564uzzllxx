@@ -87,6 +87,45 @@ def make_bch255_t2_syndrome_matrix() -> np.ndarray:
     return matrix
 
 
+def make_bch255_t2_syndrome_matrix_galois_systematic() -> np.ndarray:
+    """Return a verified-candidate systematic BCH(255,239) matrix.
+
+    This matrix is built from the Python ``galois`` package by one-hot
+    encoding each message position of ``galois.BCH(255, 239)``. If the
+    resulting systematic codeword is ``c = [u | p]`` and ``p = u P``, this
+    helper returns the syndrome contribution candidate ``A = [P ; I_16]``.
+
+    The result is separate from ``make_bch255_t2_syndrome_matrix()``, which is
+    retained as a deterministic public workload placeholder. This candidate is
+    suitable for reference checks against available implementations; it is not
+    claimed to be an official OIF/oFEC matrix.
+
+    Raises:
+        RuntimeError: If the optional ``galois`` dependency is not installed.
+    """
+    try:
+        import galois
+    except ImportError as exc:
+        raise RuntimeError(
+            "galois is required to build the verified-candidate BCH matrix"
+        ) from exc
+
+    n = 255
+    k = 239
+    r = n - k
+    bch = galois.BCH(n, k)
+    parity_rows = []
+    basis = np.zeros(k, dtype=np.int32)
+    for position in range(k):
+        basis.fill(0)
+        basis[position] = 1
+        codeword = np.asarray(bch.encode(basis), dtype=np.int32)
+        parity_rows.append((codeword[k:] & 1).astype(np.uint8, copy=False))
+    parity_matrix = np.stack(parity_rows, axis=0).astype(np.uint8, copy=False)
+    matrix = np.concatenate([parity_matrix, np.eye(r, dtype=np.uint8)], axis=0)
+    return matrix.astype(np.uint8, copy=False)
+
+
 def make_bch_like_reference_matrix() -> np.ndarray:
     """Compatibility alias for the public deterministic component matrix."""
     return make_bch255_t2_syndrome_matrix()

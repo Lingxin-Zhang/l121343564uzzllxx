@@ -1,0 +1,7 @@
+module_name,source_available,inspected_file_name,has_import_galois,has_galois_bch,has_build_syndrome_lut_tables,has_column_syndrome_bits,independence_status,notes
+ofec.codec._ebch_lut,True,_ebch_lut.py,True,True,True,True,not_independent_from_galois,OFEC_CNN and galois are convention-aligned but not independent references.
+ofec.codec._ebch_backends,True,_ebch_backends.py,False,False,True,True,no_direct_galois_usage_found,No direct galois usage found in inspected files.
+ofec.codec.ebch,True,ebch.py,False,False,False,False,no_direct_galois_usage_found,No direct galois usage found in inspected files.
+ofec.codec.bch,False,bch.py,False,False,False,False,unknown_unavailable,source file not present in configured OFEC path
+ofec.codec.encoder,True,encoder.py,False,False,False,False,no_direct_galois_usage_found,No direct galois usage found in inspected files.
+ofec.codec.decoder,True,decoder.py,False,False,False,False,no_direct_galois_usage_found,No direct galois usage found in inspected files.

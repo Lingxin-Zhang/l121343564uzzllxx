@@ -1,48 +1,40 @@
 # Latest Review Summary
 
-Current round: Round 13 - Pairwise Report Fix and Trust Check
+Current round: Round 14 - Verified-Candidate BCH Matrix and Dependency Check
 
 ## Modified Files
 
+- `codes/bch_like.py`
+- `codes/__init__.py`
 - `tools/verify_bch_references.py`
 - `tests/test_bch_reference_tools.py`
+- `tests/test_bch_verified_candidate.py`
+- `docs/bch_reference_notes.md`
+- `README.md`
 - `results/raw/bch_reference_check.csv`
 - `results/raw/reference_registry.csv`
 - `results/raw/bch_reference_pairwise_check.csv`
 - `results/raw/bch_reference_summary.csv`
+- `results/raw/bch_matrix_candidate_check.csv`
+- `results/raw/ofec_dependency_check.csv`
 - refreshed benchmark CSV/PNG outputs
 - `review_gpt/latest.md`
-- `review_gpt/round_13_summary.md`
+- `review_gpt/round_14_summary.md`
 
-## Issue Investigated
+## Implementation
 
-The previous review note said `ofec` vs `galois` had an exact identity match,
-but the tracked `results/raw/bch_reference_pairwise_check.csv` contained only a
-`not_enough_available_references` row. That was an inconsistent artifact state:
-the local-vs-reference CSV and pairwise CSV were not from the same effective
-reference run.
+- Added `make_bch255_t2_syndrome_matrix_galois_systematic()`.
+- The existing `make_bch255_t2_syndrome_matrix()` placeholder was retained.
+- The new candidate uses `galois.BCH(255, 239)` one-hot message encoding,
+  extracts the systematic parity matrix `P`, and returns `[P ; I_16]`.
+- The benchmark default matrix was not changed.
+- No external implementation code was copied.
 
-## Tool Fix
+## Reference Results
 
-- Added `results/raw/bch_reference_summary.csv`.
-- Added end-of-run console summary:
-  - enabled references;
-  - available reference names;
-  - unavailable reference names;
-  - pairwise row count.
-- Added `ReferenceSummaryRow` and `build_reference_summary()`.
-- Strengthened tests for:
-  - two synthetic available references producing pairwise rows;
-  - identical pairwise matrices producing `exact_match=True`;
-  - one available reference producing a `not_enough_available_references` row
-    with a clear reason;
-  - summary row consistency with pairwise rows.
-
-## Same-Run Reference Result
-
-The committed reference CSV files were regenerated in one run with the OFEC path
-provided through a temporary local environment variable. The concrete local path
-is not tracked.
+The reference reports were regenerated in one run with the OFEC path supplied
+through a temporary local environment variable. The concrete local path is not
+tracked.
 
 Run summary:
 
@@ -51,34 +43,33 @@ enabled references: ofec,galois,python-bchlib,aff3ct,linux-kernel
 available references: ofec,galois
 unavailable references: python-bchlib,aff3ct,linux-kernel
 pairwise row count: 5
+candidate row count: 26
+dependency row count: 6
 ```
 
-`bch_reference_check.csv` and `bch_reference_pairwise_check.csv` are from this
-same run.
+`bch_reference_check.csv`, `bch_reference_pairwise_check.csv`,
+`bch_reference_summary.csv`, `bch_matrix_candidate_check.csv`, and
+`ofec_dependency_check.csv` are from this same run.
 
-Pairwise CSV status:
+Candidate status:
 
-- It contains `ofec` vs `galois`.
+- `galois_systematic_candidate` exactly matches `galois` under identity.
+- `galois_systematic_candidate` exactly matches `ofec` under identity.
+- `placeholder` remains non-exact against the available references.
+- `make_bch255_t2_syndrome_matrix()` is still a placeholder.
+
+Pairwise status:
+
+- `bch_reference_pairwise_check.csv` contains `ofec` vs `galois`.
 - `ofec` vs `galois` identity transform has `exact_match=True`.
-- `num_equal_entries=4080`, `num_total_entries=4080`, `match_rate=1.0`.
+- `best_pairwise_match = ofec|galois|identity|1.000000`.
 
-Summary CSV status:
+Dependency status:
 
-```text
-available_references = ofec;galois
-unavailable_references = python-bchlib;aff3ct;linux-kernel
-num_pairwise_rows = 5
-any_pairwise_exact_match = True
-best_pairwise_match = ofec|galois|identity|1.000000
-current_matrix_status = placeholder
-```
-
-## Matrix Status
-
-Current `make_bch255_t2_syndrome_matrix()` remains a deterministic placeholder.
-The pairwise exact match between OFEC and `galois` does not upgrade the current
-placeholder matrix to verified, because local-vs-reference comparison still does
-not exactly match the placeholder matrix.
+- `ofec_dependency_check.csv` was generated.
+- The inspected OFEC source includes direct `galois` usage in `_ebch_lut.py`.
+- Therefore OFEC_CNN and `galois` are convention-aligned in this run, but they
+  are not independent references.
 
 ## Verification
 
@@ -86,14 +77,13 @@ not exactly match the placeholder matrix.
 python -m pytest -q
 ```
 
-Passed: `173 passed`.
+Passed: `179 passed, 1 skipped`.
 
 ```text
 python tools/verify_bch_references.py --output results/raw/bch_reference_check.csv
 ```
 
-Passed with OFEC path supplied via temporary environment variable and generated
-all four reference CSV files.
+Passed with OFEC path supplied via temporary environment variable.
 
 ```text
 python scripts/run_all_benchmarks.py
@@ -101,16 +91,14 @@ python scripts/run_all_benchmarks.py
 
 Passed and refreshed benchmark CSV/PNG outputs.
 
-## Guardrails
+## Known Issues
 
-- OFEC_CNN is not treated as a gold standard.
-- No external code was copied.
-- No new backend, HybridPlanner, full BCH/eBCH decoder, OFEC decoder, paper
-  conclusion, or speedup claim was added.
+- `python-bchlib` is still not enabled as a trusted bit-level adapter.
+- AFF3CT and Linux BCH paths are not configured.
+- OFEC_CNN and `galois` should not be counted as independent references when
+  OFEC source directly builds tables from `galois`.
 
 ## Next Step
 
-Use the now-consistent OFEC/galois pairwise reference result to add a separate,
-clearly named verified-candidate matrix generator in a future round, while
-keeping the current placeholder unchanged until that generator has its own
-correctness tests.
+Add an independent public-safe BCH behavior adapter or dependency-free
+cross-check before replacing any benchmark default workload.

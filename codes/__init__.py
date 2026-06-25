@@ -10,6 +10,7 @@ from .bch_like import (
     CURRENT_MATRIX_NOTE,
     make_bch_like_reference_matrix,
     make_bch255_t2_syndrome_matrix,
+    make_bch255_t2_syndrome_matrix_galois_systematic,
 )
 
 __all__ = [
@@ -18,4 +19,5 @@ __all__ = [
     "CURRENT_MATRIX_NOTE",
     "make_bch_like_reference_matrix",
     "make_bch255_t2_syndrome_matrix",
+    "make_bch255_t2_syndrome_matrix_galois_systematic",
 ]
