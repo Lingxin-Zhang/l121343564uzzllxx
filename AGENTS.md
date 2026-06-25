@@ -23,8 +23,9 @@ development notes.
 - External BCH repositories may be inspected or invoked as optional references,
   but their code must not be copied. Record source, commit hash, license,
   parameters, and whether the comparison is exact.
-- Put concrete local reference paths in untracked `AGENTS.local.md`, not in
-  committed files.
+- Concrete local reference paths may be recorded in this file when explicitly
+  requested by the project owner. Do not add credentials, private notes, or
+  unpublished data paths.
 
 ## Backend Status
 
@@ -85,6 +86,29 @@ No external repository is a gold standard. Use references only for parameter
 checks, behavior comparison, code-organization inspiration, or benchmark-design
 inspiration. Do not copy external implementation code.
 
+### Local Reference Repository Paths
+
+The following local clones are available for clean-room reference inspection and
+should be preferred over repeated web searches when the same context is needed:
+
+1. Local OFEC/Huawei-style reference clone
+   - Path: `D:\PKU\OFEC\project\ofec-huawei-github`
+   - Observed remote: `https://github.com/Lingxin-Zhang/OFEC_CNN.git`
+   - Use for: local component-code conventions, BCH/eBCH parameter checks,
+     calling patterns, and project-specific reference triangulation.
+   - Caution: do not treat as a gold standard and do not copy implementation
+     code into this repository.
+
+2. Local Chase-Pyndiah demo clone
+   - Path: `D:\PKU\OFEC\project\Chase-Pyndiah-demo`
+   - Observed remote: `https://github.com/kit-cel/Chase-Pyndiah-demo.git`
+   - Use for: clean-room workload-trace design, product-code row/column
+     structure, staircase half-block/window structure, and Chase candidate
+     testing patterns.
+   - Caution: use only for reference inspection and design implications. Do
+     not copy implementation code or implement a full Chase-Pyndiah decoder in
+     this repository.
+
 ### BCH Mathematics / Behavior References
 
 1. Linux kernel BCH
@@ -120,10 +144,9 @@ inspiration. Do not copy external implementation code.
    - Role: user's local oFEC/eBCH implementation; useful for component-code
      calling patterns and project-specific convention checks.
    - Caution: user-written code may contain bugs. Do not treat as gold
-     standard. Put concrete local path only in untracked `AGENTS.local.md`.
-   - Local availability: if present, use the path recorded in untracked
-     `AGENTS.local.md` to avoid repeated web lookup and to keep public files
-     free of machine-specific absolute paths.
+     standard.
+   - Local availability: use `D:\PKU\OFEC\project\ofec-huawei-github` when
+     local reference inspection is useful.
 
 6. zsr71/oFEC-HUAWEI
    - Role: public C++ oFEC/Huawei-style reference; useful for oFEC layout,
@@ -156,8 +179,8 @@ inspiration. Do not copy external implementation code.
    - Caution: use only for reference inspection and clean-room trace design.
      Do not copy implementation code, and do not implement a full
      Chase-Pyndiah decoder in this repository.
-   - Local availability: if present, use the path recorded in untracked
-     `AGENTS.local.md`.
+   - Local availability: use `D:\PKU\OFEC\project\Chase-Pyndiah-demo` when
+     local reference inspection is useful.
 
 8. YihanLiu1010/oFEC-Decoder
    - Role: VHDL oFEC decoder using Chase-Pyndiah; useful for hardware/pipeline
