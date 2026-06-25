@@ -19,6 +19,7 @@ def main() -> None:
     run([python, "-m", "benchmarks.bench_block_width"])
     run([python, "-m", "benchmarks.bench_density"])
     run([python, "-m", "benchmarks.bench_batch"])
+    run([python, "-m", "benchmarks.bench_stream"])
     run([python, "scripts/plot_results.py"])
 
 

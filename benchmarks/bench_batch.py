@@ -25,6 +25,7 @@ from benchmarks._common import (
     time_repeats,
     write_csv,
 )
+from linear_kernel.matrix_utils import pack_batch_bits_to_uint16
 
 BATCH_SIZES = (1, 4, 16, 64, 256, 1024, 4096)
 DEFAULT_DENSITY = 0.05
@@ -50,27 +51,41 @@ def main() -> None:
     packed_block_kernel = PackedBlockLUTKernel(matrix, block_width=args.block_width)
     packed = PackedBatchGF2Kernel(matrix)
     backends = [
-        ("Naive.apply_many", naive, 0),
-        ("BlockLUT.apply_many", block_kernel, block_lut_table_size_bytes(block_kernel)),
+        ("Naive.apply_many", naive.apply_many, 0, "unpacked"),
+        (
+            "BlockLUT.apply_many",
+            block_kernel.apply_many,
+            block_lut_table_size_bytes(block_kernel),
+            "unpacked",
+        ),
         (
             "PackedBlockLUT.apply_many",
-            packed_block_kernel,
+            packed_block_kernel.apply_many,
             block_lut_table_size_bytes(packed_block_kernel),
+            "unpacked",
         ),
-        ("PackedBatch.apply_many", packed, 0),
+        (
+            "PackedBlockLUT.apply_many_packed",
+            packed_block_kernel.apply_many_packed,
+            block_lut_table_size_bytes(packed_block_kernel),
+            "packed",
+        ),
+        ("PackedBatch.apply_many", packed.apply_many, 0, "unpacked"),
     ]
 
     for batch_size in BATCH_SIZES:
         x_batch = make_batch(rng, batch_size, args.density)
         expected = naive.apply_many(x_batch)
+        expected_packed = pack_batch_bits_to_uint16(expected)
 
-        for backend_name, kernel, table_size_bytes in backends:
-            actual = kernel.apply_many(x_batch)
-            if not (actual == expected).all():
+        for backend_name, apply_fn, table_size_bytes, output_kind in backends:
+            actual = apply_fn(x_batch)
+            expected_output = expected_packed if output_kind == "packed" else expected
+            if not (actual == expected_output).all():
                 raise AssertionError(f"{backend_name} disagrees with Naive")
 
             samples = time_repeats(
-                lambda kernel=kernel: kernel.apply_many(x_batch),
+                lambda apply_fn=apply_fn: apply_fn(x_batch),
                 repeats=args.repeats,
             )
             summary = summarize_per_word(samples, batch_size)

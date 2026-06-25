@@ -259,6 +259,30 @@ def test_packed_block_lut_apply_packed_matches_packed_naive(
         assert actual == expected
 
 
+@pytest.mark.parametrize("block_width", [4, 8, 12, 16, 20])
+@pytest.mark.parametrize("density", [0.005, 0.05, 0.5])
+@pytest.mark.parametrize("batch_size", [1, 4, 64, 1024, 4096])
+def test_packed_block_lut_vectorized_apply_many_packed_matches_single_apply(
+    random_matrix: np.ndarray,
+    block_width: int,
+    density: float,
+    batch_size: int,
+) -> None:
+    rng = np.random.default_rng(20260702 + block_width + batch_size)
+    x_batch = (rng.random((batch_size, 255)) < density).astype(np.uint8)
+    packed_block_lut = PackedBlockLUTKernel(random_matrix, block_width=block_width)
+
+    actual = packed_block_lut.apply_many_packed(x_batch)
+    expected = np.array(
+        [packed_block_lut.apply_packed(x) for x in x_batch],
+        dtype=np.uint16,
+    )
+
+    assert actual.shape == (batch_size,)
+    assert actual.dtype == np.uint16
+    np.testing.assert_array_equal(actual, expected)
+
+
 def test_packed_block_lut_rejects_output_width_over_16() -> None:
     matrix = np.zeros((4, 17), dtype=np.uint8)
 

@@ -17,6 +17,11 @@ development notes.
   research materials.
 - Keep public documentation generic and code-focused.
 - Do not reintroduce ignored local `paper/` or `references/` content into git.
+- Local reference implementations may be consulted only for parameters or
+  calling patterns. Do not copy large code blocks; reimplement needed logic in
+  this repository.
+- Put concrete local reference paths in untracked `AGENTS.local.md`, not in
+  committed files.
 
 ## Backend Status
 
@@ -40,9 +45,10 @@ Implemented:
 1. `benchmarks/bench_block_width.py`
 2. `benchmarks/bench_density.py`
 3. `benchmarks/bench_batch.py`
-4. `scripts/plot_results.py`
-5. `scripts/run_all_benchmarks.py`
-6. `scripts/run_all_benchmarks.sh`
+4. `benchmarks/bench_stream.py`
+5. `scripts/plot_results.py`
+6. `scripts/run_all_benchmarks.py`
+7. `scripts/run_all_benchmarks.sh`
 
 Generated CSV and PNG figure outputs may be tracked for review. PDF figures are
 local artifacts unless explicitly requested.

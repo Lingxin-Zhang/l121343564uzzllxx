@@ -25,6 +25,7 @@ dist/
 .vscode/
 *.swp
 *.swo
+AGENTS.local.md
 
 # Local sensitive placeholders
 codes/bch_like.py

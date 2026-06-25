@@ -43,10 +43,12 @@ class PackedBlockLUTKernel:
     def apply_many_packed(self, x_batch: np.ndarray) -> np.ndarray:
         """Apply the backend to a batch and return packed uint16 outputs."""
         x_batch = require_gf2_batch(x_batch, self.n)
-        out = np.empty(x_batch.shape[0], dtype=np.uint16)
-        for index, x in enumerate(x_batch):
-            out[index] = self.apply_packed(x)
-        return out
+        acc = np.zeros(x_batch.shape[0], dtype=np.uint16)
+        for start, end, bit_weights, table in self.blocks:
+            local_bits = x_batch[:, start:end]
+            masks = (local_bits @ bit_weights).astype(np.intp, copy=False)
+            acc ^= table[masks]
+        return acc
 
     def apply_many(self, x_batch: np.ndarray) -> np.ndarray:
         """Apply the backend and return an unpacked GF(2) output matrix."""

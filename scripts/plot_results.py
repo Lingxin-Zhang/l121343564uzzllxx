@@ -181,11 +181,38 @@ def plot_batch() -> None:
     )
 
 
+def plot_stream() -> None:
+    rows = _read_csv(RAW_DIR / "stream.csv")
+    fig, ax = plt.subplots(figsize=(7.4, 4.6))
+    for backend, backend_rows in sorted(_group_by_backend(rows).items()):
+        grouped: dict[float, list[dict[str, Any]]] = defaultdict(list)
+        for row in backend_rows:
+            grouped[float(row["total_bits"])].append(row)
+        x = []
+        y = []
+        for total_bits, total_rows in sorted(grouped.items()):
+            x.append(total_bits)
+            y.append(
+                sum(float(row["throughput_Mbit_s"]) for row in total_rows)
+                / len(total_rows)
+            )
+        ax.plot(x, y, marker="o", linewidth=1.9, label=backend)
+
+    ax.set_xscale("log")
+    ax.set_title("GF(2) stream micro-benchmark")
+    ax.set_xlabel("total_bits")
+    ax.set_ylabel("throughput_Mbit_s")
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=True)
+    _save_figure(fig, "stream_throughput")
+
+
 def main() -> None:
     plot_block_width()
     plot_block_width_table_size()
     plot_density()
     plot_batch()
+    plot_stream()
 
 
 if __name__ == "__main__":
