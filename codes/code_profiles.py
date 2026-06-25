@@ -19,6 +19,7 @@ class CodeProfile:
     matrix_source: str
     matrix_kind: str
     is_synthetic: bool
+    verification_status: str
     notes: str
 
 
@@ -30,6 +31,7 @@ _PROFILES = (
         matrix_source="galois_systematic_candidate",
         matrix_kind="bch_candidate",
         is_synthetic=False,
+        verification_status="verified_candidate",
         notes="BCH(255,239)-candidate matrix from the galois-systematic source.",
     ),
     CodeProfile(
@@ -39,6 +41,7 @@ _PROFILES = (
         matrix_source="galois_systematic_candidate_extended",
         matrix_kind="ebch_like_candidate",
         is_synthetic=False,
+        verification_status="candidate_unverified",
         notes="eBCH-like candidate formed by extending the BCH candidate with one parity-style bit.",
     ),
     CodeProfile(
@@ -48,6 +51,7 @@ _PROFILES = (
         matrix_source="synthetic_seed_20260713",
         matrix_kind="synthetic_bch_like",
         is_synthetic=True,
+        verification_status="synthetic_workload",
         notes="Deterministic synthetic workload; not claimed to be a real BCH matrix.",
     ),
     CodeProfile(
@@ -57,6 +61,7 @@ _PROFILES = (
         matrix_source="synthetic_seed_20260714",
         matrix_kind="synthetic_large",
         is_synthetic=True,
+        verification_status="synthetic_workload",
         notes="Deterministic larger-kernel workload; not claimed to be a real BCH matrix.",
     ),
 )

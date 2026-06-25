@@ -63,7 +63,12 @@ def test_cache_aware_summary_groups_rows() -> None:
 
 
 def test_round2_benchmark_help_runs() -> None:
-    for module in ("benchmarks.bench_cache_aware", "benchmarks.bench_code_profiles"):
+    for module in (
+        "benchmarks.bench_cache_aware",
+        "benchmarks.bench_code_profiles",
+        "benchmarks.bench_candidate_testing",
+        "benchmarks.bench_optical_workloads",
+    ):
         result = subprocess.run(
             [sys.executable, "-m", module, "--help"],
             check=False,
@@ -103,6 +108,62 @@ def test_summarize_results_writes_round2_outputs(tmp_path: Path) -> None:
             }
         ],
     )
+    _write_csv(
+        raw_dir / "candidate_testing.csv",
+        [
+            {
+                "preset": "lightweight",
+                "code_profile": "bch_255_239_r16",
+                "n": "255",
+                "r": "16",
+                "pattern_type": "fixed_weight",
+                "p_chase": "0",
+                "candidate_weight": "2",
+                "candidate_count": "256",
+                "backend": "Naive.apply_many",
+                "batch_size": "256",
+                "block_width": "8",
+                "packed_word_bits": "16",
+                "latency_per_candidate_us": "1.0",
+                "throughput_Mcandidate_s": "1.0",
+                "matches_found": "0",
+                "mean": "0.000256",
+                "std": "0.0",
+                "repeats": "3",
+                "correctness_passed": "True",
+            }
+        ],
+    )
+    _write_csv(
+        raw_dir / "optical_workloads.csv",
+        [
+            {
+                "preset": "lightweight",
+                "workload_type": "product_like",
+                "code_profile": "bch_255_239_r16",
+                "n": "255",
+                "r": "16",
+                "num_blocks": "8",
+                "window_len": "4",
+                "num_iterations_or_steps": "1",
+                "num_syndrome_calls": "16",
+                "num_candidate_tests": "0",
+                "num_event_updates": "0",
+                "backend_or_method": "Naive.apply_many",
+                "block_width": "8",
+                "batch_size": "64",
+                "density": "0.05",
+                "total_runtime_s": "0.001",
+                "latency_per_component_us": "1.0",
+                "throughput_Mcomponent_s": "1.0",
+                "mean": "0.001",
+                "std": "0.0",
+                "repeats": "3",
+                "correctness_passed": "True",
+                "notes": "trace-level workload only; no BER; no full decoder",
+            }
+        ],
+    )
 
     result = subprocess.run(
         [
@@ -120,6 +181,8 @@ def test_summarize_results_writes_round2_outputs(tmp_path: Path) -> None:
 
     assert result.returncode == 0
     assert (summary_dir / "cache_aware_summary.csv").exists()
+    assert (summary_dir / "candidate_testing_summary.csv").exists()
+    assert (summary_dir / "optical_workloads_summary.csv").exists()
 
 
 def _write_csv(path: Path, rows: list[dict[str, str]]) -> None:

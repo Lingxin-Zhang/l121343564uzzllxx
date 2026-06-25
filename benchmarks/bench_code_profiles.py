@@ -26,6 +26,29 @@ FULL_BATCH_SIZES = (1, 4, 16, 64, 256, 1024, 4096, 16384)
 FULL_DENSITIES = (0.005, 0.05, 0.5)
 RNG_SEED = 20260721
 
+CODE_PROFILE_FIELDNAMES = [
+    "preset",
+    "code_profile",
+    "verification_status",
+    "matrix_kind",
+    "is_synthetic",
+    "matrix_shape",
+    "n",
+    "r",
+    "backend",
+    "batch_size",
+    "density",
+    "block_width",
+    "packed_word_bits",
+    "packed_dtype",
+    "latency_per_word_us",
+    "throughput_Mword_s",
+    "mean",
+    "std",
+    "repeats",
+    "correctness_passed",
+]
+
 
 def _parse_int_list(value: str) -> tuple[int, ...]:
     return tuple(int(part.strip()) for part in value.split(",") if part.strip())
@@ -47,6 +70,17 @@ def _pack_expected(bits: np.ndarray) -> np.ndarray:
     if bits.shape[1] <= 16:
         return pack_batch_bits_to_uint16(bits)
     return pack_batch_bits_to_uint32(bits)
+
+
+def assert_backend_correct(
+    backend: str,
+    actual: np.ndarray,
+    expected: np.ndarray,
+    *,
+    context: str,
+) -> None:
+    if not np.array_equal(actual, expected):
+        raise AssertionError(f"code-profile correctness failed for {backend}: {context}")
 
 
 def _summary(samples: list[float], batch_size: int) -> dict[str, float]:
@@ -72,13 +106,20 @@ def _row(
     density: float,
     block_width: int,
     packed_word_bits: int,
+    packed_dtype: str,
+    verification_status: str,
+    matrix_kind: str,
+    is_synthetic: bool,
     samples: list[float],
     repeats: int,
-    correctness_passed: bool,
 ) -> dict[str, Any]:
     return {
         "preset": preset,
         "code_profile": code_profile,
+        "verification_status": verification_status,
+        "matrix_kind": matrix_kind,
+        "is_synthetic": is_synthetic,
+        "matrix_shape": f"{n}x{r}",
         "n": n,
         "r": r,
         "backend": backend,
@@ -86,9 +127,10 @@ def _row(
         "density": density,
         "block_width": block_width,
         "packed_word_bits": packed_word_bits,
+        "packed_dtype": packed_dtype,
         **_summary(samples, batch_size),
         "repeats": repeats,
-        "correctness_passed": correctness_passed,
+        "correctness_passed": True,
     }
 
 
@@ -105,6 +147,7 @@ def _run_profile(
     matrix = get_profile_matrix(profile_name)
     n, r = matrix.shape
     packed_bits = _packed_word_bits(r)
+    packed_dtype = "uint16" if packed_bits == 16 else "uint32"
     naive = NaiveGF2Kernel(matrix)
     sparse = SparseXorKernel(matrix)
     packed_batch = PackedBatchGF2Kernel(matrix)
@@ -132,7 +175,12 @@ def _run_profile(
             ]
             for backend, fn, expected_value in specs:
                 actual = fn()
-                correctness = bool(np.array_equal(actual, expected_value))
+                assert_backend_correct(
+                    backend,
+                    actual,
+                    expected_value,
+                    context=f"{profile.profile_name},batch={batch_size},density={density}",
+                )
                 samples = time_repeats(fn, repeats=repeats, warmups=1)
                 rows.append(
                     _row(
@@ -145,9 +193,12 @@ def _run_profile(
                         density=density,
                         block_width=block_width,
                         packed_word_bits=packed_bits,
+                        packed_dtype=packed_dtype,
+                        verification_status=profile.verification_status,
+                        matrix_kind=profile.matrix_kind,
+                        is_synthetic=profile.is_synthetic,
                         samples=samples,
                         repeats=repeats,
-                        correctness_passed=correctness,
                     )
                 )
     return rows
@@ -198,6 +249,7 @@ def main(argv: list[str] | None = None) -> int:
             )
         )
     output = RAW_DIR / "code_profile_scaling.csv"
+    rows = [{field: row.get(field, "") for field in CODE_PROFILE_FIELDNAMES} for row in rows]
     write_csv(output, rows)
     print(f"wrote {output}")
     return 0

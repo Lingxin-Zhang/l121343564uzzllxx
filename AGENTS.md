@@ -58,6 +58,9 @@ Implemented:
 14. `benchmarks/bench_cache_aware.py`
 15. `benchmarks/bench_code_profiles.py`
 16. `scripts/plot_round2_results.py`
+17. `benchmarks/bench_candidate_testing.py`
+18. `benchmarks/bench_optical_workloads.py`
+19. `scripts/plot_experiment_round02_results.py`
 
 Generated CSV, PNG, and requested PDF figure outputs may be tracked for review.
 
@@ -69,6 +72,12 @@ width, matrix shape, batch size, density, block width, and estimated LUT cache
 footprint. Keep these profiles code-focused and generic. Synthetic profiles
 must be marked as synthetic, and verified-candidate profiles must not be
 described as official standards unless independently verified.
+
+Candidate-testing and trace-level workload benchmarks are kernel benchmarks
+only. They may model candidate error-pattern syndrome calls, row/column
+component-call structure, sliding-window component-call structure, and event
+updates, but they must not be presented as full decoders, BER simulations, or
+paper conclusions.
 
 ## Reference Registry
 

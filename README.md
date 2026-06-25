@@ -33,7 +33,10 @@ Round-specific lightweight diagnostics are also available:
 ```bash
 python -m benchmarks.bench_cache_aware --preset lightweight
 python -m benchmarks.bench_code_profiles --preset lightweight
+python -m benchmarks.bench_candidate_testing --preset lightweight
+python -m benchmarks.bench_optical_workloads --preset lightweight
 python scripts/plot_round2_results.py
+python scripts/plot_experiment_round02_results.py
 ```
 
 On systems with `bash`, the shell wrapper is also available:
@@ -107,8 +110,11 @@ reproducible rule-based dispatcher baseline, not an optimal scheduler.
 - `benchmarks/bench_planner.py`
 - `benchmarks/bench_cache_aware.py`
 - `benchmarks/bench_code_profiles.py`
+- `benchmarks/bench_candidate_testing.py`
+- `benchmarks/bench_optical_workloads.py`
 - `scripts/plot_results.py`
 - `scripts/plot_round2_results.py`
+- `scripts/plot_experiment_round02_results.py`
 
 The first benchmark group uses a fixed random GF(2) matrix. The component
 syndrome benchmark uses a deterministic BCH-like `(255, 16)` matrix to exercise
@@ -117,6 +123,11 @@ the same kernels on a structured public workload.
 Code-profile diagnostics currently include small named GF(2) profiles for
 shape-scaling checks. Some profiles are synthetic and are marked as such in the
 CSV outputs; they are benchmark workloads, not standards claims.
+
+Candidate-testing diagnostics measure candidate error-pattern syndrome kernels.
+Trace-level workload diagnostics model component-kernel call patterns such as
+row/column batches, sliding-window batches, candidate-test calls, and event
+updates. They are not full decoders, BER simulations, or paper conclusions.
 
 The deterministic BCH-like matrix is still kept as a placeholder. The BCH
 syndrome and component-loop benchmark path can use the separate

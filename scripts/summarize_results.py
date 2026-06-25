@@ -236,7 +236,9 @@ def summarize_planner_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
 def summarize_cache_aware_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
     keys = (
         "preset",
+        "cache_profile",
         "code_profile",
+        "matrix_shape",
         "n",
         "r",
         "backend",
@@ -262,9 +264,19 @@ def summarize_cache_aware_rows(rows: list[dict[str, str]]) -> list[dict[str, Any
                     _float(row, "throughput_Mword_s") for row in group
                 ),
                 "lut_bytes": int(max(_float(row, "lut_bytes", 0.0) for row in group)),
+                "num_blocks": int(max(_float(row, "num_blocks", 0.0) for row in group)),
+                "entries_per_block": int(
+                    max(_float(row, "entries_per_block", 0.0) for row in group)
+                ),
                 "fits_l1": all(_truthy(row.get("fits_l1", "True")) for row in group),
                 "fits_l2": all(_truthy(row.get("fits_l2", "True")) for row in group),
                 "fits_l3": all(_truthy(row.get("fits_l3", "True")) for row in group),
+                "l1d_bytes": int(max(_float(row, "l1d_bytes", 0.0) for row in group)),
+                "l2_bytes": int(max(_float(row, "l2_bytes", 0.0) for row in group)),
+                "l3_bytes": int(max(_float(row, "l3_bytes", 0.0) for row in group)),
+                "cache_line_bytes": int(
+                    max(_float(row, "cache_line_bytes", 0.0) for row in group)
+                ),
                 "correctness_all_true": all(
                     _truthy(row.get("correctness_passed", "True")) for row in group
                 ),
@@ -278,6 +290,10 @@ def summarize_code_profile_scaling_rows(rows: list[dict[str, str]]) -> list[dict
     keys = (
         "preset",
         "code_profile",
+        "verification_status",
+        "matrix_kind",
+        "is_synthetic",
+        "matrix_shape",
         "n",
         "r",
         "backend",
@@ -305,9 +321,97 @@ def summarize_code_profile_scaling_rows(rows: list[dict[str, str]]) -> list[dict
                 "packed_word_bits": int(
                     max(_float(row, "packed_word_bits", 0.0) for row in group)
                 ),
+                "packed_dtype": next((row.get("packed_dtype", "") for row in group), ""),
                 "correctness_all_true": all(
                     _truthy(row.get("correctness_passed", "True")) for row in group
                 ),
+                "num_rows": len(group),
+            }
+        )
+    return summary
+
+
+def summarize_candidate_testing_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    keys = (
+        "preset",
+        "code_profile",
+        "pattern_type",
+        "p_chase",
+        "candidate_weight",
+        "candidate_count",
+        "backend",
+        "block_width",
+    )
+    summary = []
+    for key, group in sorted(_group_rows(rows, keys).items()):
+        summary.append(
+            {
+                **dict(zip(keys, key, strict=True)),
+                "mean_latency_per_candidate_us": _mean(
+                    _float(row, "latency_per_candidate_us") for row in group
+                ),
+                "mean_throughput_Mcandidate_s": _mean(
+                    _float(row, "throughput_Mcandidate_s") for row in group
+                ),
+                "std_latency_per_candidate_us": _std(
+                    _float(row, "latency_per_candidate_us") for row in group
+                ),
+                "std_throughput_Mcandidate_s": _std(
+                    _float(row, "throughput_Mcandidate_s") for row in group
+                ),
+                "matches_found": int(max(_float(row, "matches_found", 0.0) for row in group)),
+                "correctness_all_true": all(
+                    _truthy(row.get("correctness_passed", "True")) for row in group
+                ),
+                "num_rows": len(group),
+            }
+        )
+    return summary
+
+
+def summarize_optical_workload_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    keys = (
+        "preset",
+        "workload_type",
+        "code_profile",
+        "num_blocks",
+        "window_len",
+        "num_iterations_or_steps",
+        "backend_or_method",
+        "block_width",
+        "batch_size",
+        "density",
+    )
+    summary = []
+    for key, group in sorted(_group_rows(rows, keys).items()):
+        summary.append(
+            {
+                **dict(zip(keys, key, strict=True)),
+                "num_syndrome_calls": int(
+                    max(_float(row, "num_syndrome_calls", 0.0) for row in group)
+                ),
+                "num_candidate_tests": int(
+                    max(_float(row, "num_candidate_tests", 0.0) for row in group)
+                ),
+                "num_event_updates": int(
+                    max(_float(row, "num_event_updates", 0.0) for row in group)
+                ),
+                "mean_total_runtime_s": _mean(
+                    _float(row, "total_runtime_s") for row in group
+                ),
+                "mean_latency_per_component_us": _mean(
+                    _float(row, "latency_per_component_us") for row in group
+                ),
+                "mean_throughput_Mcomponent_s": _mean(
+                    _float(row, "throughput_Mcomponent_s") for row in group
+                ),
+                "std_latency_per_component_us": _std(
+                    _float(row, "latency_per_component_us") for row in group
+                ),
+                "correctness_all_true": all(
+                    _truthy(row.get("correctness_passed", "True")) for row in group
+                ),
+                "notes": next((row.get("notes", "") for row in group), ""),
                 "num_rows": len(group),
             }
         )
@@ -322,6 +426,8 @@ def summarize_best_backend_rows(summary_by_name: dict[str, list[dict[str, Any]]]
     rows.extend(_best_from_bch(summary_by_name.get("bch_syndrome", [])))
     rows.extend(_best_from_cache_aware(summary_by_name.get("cache_aware", [])))
     rows.extend(_best_from_code_profile_scaling(summary_by_name.get("code_profile_scaling", [])))
+    rows.extend(_best_from_candidate_testing(summary_by_name.get("candidate_testing", [])))
+    rows.extend(_best_from_optical_workloads(summary_by_name.get("optical_workloads", [])))
     return rows
 
 
@@ -409,6 +515,75 @@ def _best_from_code_profile_scaling(rows: list[dict[str, Any]]) -> list[dict[str
                 best,
                 "mean_throughput_Mword_s",
                 baseline,
+            )
+        )
+    return out
+
+
+def _best_from_candidate_testing(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped = _group_rows(
+        rows,
+        ("preset", "code_profile", "pattern_type", "candidate_count", "block_width"),
+    )
+    out = []
+    for key, group in grouped.items():
+        best = min(group, key=lambda row: float(row["mean_latency_per_candidate_us"]))
+        baseline = next((row for row in group if row["backend"] == "Naive.apply_many"), None)
+        out.append(
+            _best_row(
+                "candidate_testing",
+                key[1],
+                f"preset={key[0]};pattern_type={key[2]};candidate_count={key[3]};block_width={key[4]}",
+                best["backend"],
+                baseline["backend"] if baseline else "",
+                {
+                    **best,
+                    "mean_latency_per_word_us": best["mean_latency_per_candidate_us"],
+                },
+                "mean_throughput_Mcandidate_s",
+                (
+                    {**baseline, "mean_latency_per_word_us": baseline["mean_latency_per_candidate_us"]}
+                    if baseline
+                    else None
+                ),
+            )
+        )
+    return out
+
+
+def _best_from_optical_workloads(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped = _group_rows(
+        rows,
+        (
+            "preset",
+            "workload_type",
+            "code_profile",
+            "num_blocks",
+            "window_len",
+            "num_iterations_or_steps",
+        ),
+    )
+    out = []
+    for key, group in grouped.items():
+        best = min(group, key=lambda row: float(row["mean_latency_per_component_us"]))
+        baseline = next((row for row in group if row["backend_or_method"] == "Naive.apply_many"), None)
+        out.append(
+            _best_row(
+                "optical_workloads",
+                key[2],
+                f"preset={key[0]};workload_type={key[1]};num_blocks={key[3]};window_len={key[4]};steps={key[5]}",
+                best["backend_or_method"],
+                baseline["backend_or_method"] if baseline else "",
+                {
+                    **best,
+                    "mean_latency_per_word_us": best["mean_latency_per_component_us"],
+                },
+                "mean_throughput_Mcomponent_s",
+                (
+                    {**baseline, "mean_latency_per_word_us": baseline["mean_latency_per_component_us"]}
+                    if baseline
+                    else None
+                ),
             )
         )
     return out
@@ -524,7 +699,9 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
             summarize_cache_aware_rows,
             [
                 "preset",
+                "cache_profile",
                 "code_profile",
+                "matrix_shape",
                 "n",
                 "r",
                 "backend",
@@ -536,9 +713,15 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "std_latency_per_word_us",
                 "std_throughput_Mword_s",
                 "lut_bytes",
+                "num_blocks",
+                "entries_per_block",
                 "fits_l1",
                 "fits_l2",
                 "fits_l3",
+                "l1d_bytes",
+                "l2_bytes",
+                "l3_bytes",
+                "cache_line_bytes",
                 "correctness_all_true",
                 "num_rows",
             ],
@@ -551,6 +734,10 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
             [
                 "preset",
                 "code_profile",
+                "verification_status",
+                "matrix_kind",
+                "is_synthetic",
+                "matrix_shape",
                 "n",
                 "r",
                 "backend",
@@ -562,7 +749,59 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "std_latency_per_word_us",
                 "std_throughput_Mword_s",
                 "packed_word_bits",
+                "packed_dtype",
                 "correctness_all_true",
+                "num_rows",
+            ],
+        ),
+        (
+            "candidate_testing",
+            raw_dir / "candidate_testing.csv",
+            summary_dir / "candidate_testing_summary.csv",
+            summarize_candidate_testing_rows,
+            [
+                "preset",
+                "code_profile",
+                "pattern_type",
+                "p_chase",
+                "candidate_weight",
+                "candidate_count",
+                "backend",
+                "block_width",
+                "mean_latency_per_candidate_us",
+                "mean_throughput_Mcandidate_s",
+                "std_latency_per_candidate_us",
+                "std_throughput_Mcandidate_s",
+                "matches_found",
+                "correctness_all_true",
+                "num_rows",
+            ],
+        ),
+        (
+            "optical_workloads",
+            raw_dir / "optical_workloads.csv",
+            summary_dir / "optical_workloads_summary.csv",
+            summarize_optical_workload_rows,
+            [
+                "preset",
+                "workload_type",
+                "code_profile",
+                "num_blocks",
+                "window_len",
+                "num_iterations_or_steps",
+                "backend_or_method",
+                "block_width",
+                "batch_size",
+                "density",
+                "num_syndrome_calls",
+                "num_candidate_tests",
+                "num_event_updates",
+                "mean_total_runtime_s",
+                "mean_latency_per_component_us",
+                "mean_throughput_Mcomponent_s",
+                "std_latency_per_component_us",
+                "correctness_all_true",
+                "notes",
                 "num_rows",
             ],
         ),

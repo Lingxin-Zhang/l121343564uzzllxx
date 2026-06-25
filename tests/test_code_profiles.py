@@ -45,3 +45,13 @@ def test_code_profile_names_are_stable() -> None:
 def test_unknown_code_profile_raises_clear_error() -> None:
     with pytest.raises(ValueError, match="unknown code profile"):
         get_code_profile("missing")
+
+
+def test_code_profile_verification_status_is_explicit() -> None:
+    assert get_code_profile("bch_255_239_r16").verification_status == "verified_candidate"
+    assert get_code_profile("ebch_256_239_r17").verification_status == "candidate_unverified"
+    assert (
+        get_code_profile("synthetic_bch_like_127_r14").verification_status
+        == "synthetic_workload"
+    )
+    assert get_code_profile("synthetic_511_r32").verification_status == "synthetic_workload"
