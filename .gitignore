@@ -37,8 +37,6 @@ references/papers/*.pdf
 references/papers/**/*.pdf
 paper/
 references/
-results/raw/*.csv
-results/figures/*.png
 results/figures/*.pdf
 paper/draft/*.aux
 paper/draft/*.bbl
