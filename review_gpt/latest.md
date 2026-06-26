@@ -89,16 +89,24 @@ Results:
 - `scripts/export_final_paper_figures.py`: completed
 - Full test suite: `298 passed, 1 skipped, 27 warnings`
 
-## Push Status
+## Push / Remote Artifact Status
 
-Local commit was created. Initial push attempts failed because the local
-environment could not connect to GitHub over HTTPS:
+The Round 8.1 commit has been pushed and remote `origin/main` was confirmed at:
 
 ```text
-Failed to connect to github.com port 443
+5ced7b8f74d333b0710bdf2ce8d8ee9527e6f706
 ```
 
-The local branch is ahead of `origin/main` until a later push succeeds.
+Remote GitHub artifact verification:
+
+| File | Local rows | GitHub blob SHA match | GitHub size |
+|---|---:|---|---:|
+| `results/raw/cache_aware.csv` | 9216 | yes | 2199418 bytes |
+| `results/summary/cache_aware_summary.csv` | 9216 | yes | 1650238 bytes |
+
+The GitHub Contents API blob SHA matched the local `HEAD` blob SHA for both
+files, so the files on GitHub are the same non-empty 9216-row CSVs checked
+locally.
 
 ## Claim Boundaries
 

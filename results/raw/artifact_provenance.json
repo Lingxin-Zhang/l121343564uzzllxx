@@ -3,7 +3,7 @@
   "current_commit_hash": "5c00b5b",
   "git_dirty": true,
   "generated_after_commit": true,
-  "dirty_reason": "Generated artifact files and review notes may be present before final commit.",
+  "dirty_reason": "Generated artifact files and review notes were present before the Round 8.1 commit; remote artifact verification was performed after the commit reached origin/main.",
   "dirty_paths_summary": [
     "M results/paper_figures_final/fig_cache_aware_planner_oracle.pdf",
     " M results/paper_figures_final/fig_cache_memory_tradeoff.pdf",
@@ -28,5 +28,22 @@
     "review_gpt"
   ],
   "hardware_profile_path": "results/raw/hardware_profile.json",
-  "notes": "No local absolute paths are required to interpret these artifacts."
+  "remote_verification": {
+    "remote": "origin/main",
+    "verified_commit_hash": "5ced7b8f74d333b0710bdf2ce8d8ee9527e6f706",
+    "method": "git ls-remote plus GitHub Contents API blob SHA comparison",
+    "files": {
+      "results/raw/cache_aware.csv": {
+        "rows": 9216,
+        "github_size_bytes": 2199418,
+        "blob_sha_match": true
+      },
+      "results/summary/cache_aware_summary.csv": {
+        "rows": 9216,
+        "github_size_bytes": 1650238,
+        "blob_sha_match": true
+      }
+    }
+  },
+  "notes": "No local absolute paths are required to interpret these artifacts. Dirty paths describe pre-commit generated artifacts, not uncommitted required work."
 }
