@@ -1,0 +1,29 @@
+{
+  "code_commit_hash": "d469995",
+  "current_commit_hash": "d469995",
+  "git_dirty": true,
+  "generated_after_commit": true,
+  "dirty_reason": "Generated artifact files and review notes may be present before final commit.",
+  "dirty_paths_summary": [
+    "M review_gpt/latest.md",
+    "?? results/paper_figures_final/",
+    "?? results/raw/artifact_provenance.json",
+    "?? results/summary/final_claim_audit.csv",
+    "?? results/summary/final_exactness_table.csv",
+    "?? results/summary/final_representative_table.csv",
+    "?? review_gpt/experiment_round_08_summary.md",
+    "?? review_gpt/final_experiment_artifact_index.md",
+    "?? review_gpt/round08_experiment_closeout_discussion.md",
+    "?? review_gpt/round_18_skill_and_figure_redesign_plan.md",
+    "?? review_gpt/round_23_summary.md",
+    "?? scripts/export_final_paper_figures.py",
+    "?? tests/test_final_paper_export.py"
+  ],
+  "generated_artifact_dirs": [
+    "results/summary",
+    "results/paper_figures_final",
+    "review_gpt"
+  ],
+  "hardware_profile_path": "results/raw/hardware_profile.json",
+  "notes": "No local absolute paths are required to interpret these artifacts."
+}

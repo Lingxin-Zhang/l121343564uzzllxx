@@ -1,0 +1,9 @@
+experiment,profile_or_workload,best_or_selected_backend,reference_backend,latency_or_throughput_metric,speedup_or_planner_oracle_ratio,correctness,source_csv
+Component exactness,all_double_bit_errors,HybridPlanner.apply_many_packed,NaiveGF2Kernel.apply_many,exact_mismatch_count=0; num_words=32385,decision-preserving exactness,True,results/summary/component_decoder_exactness_summary.csv
+Candidate testing,synthetic_bch_like_127_r14 candidates=4096,PackedBlockLUT.apply_many_packed,Naive.apply_many,0.177957590251 us/candidate,candidate-heavy syndrome cost,True,results/summary/candidate_testing_summary.csv
+Event update,flip_count=1,EventUpdate.update_many,from_scratch.PackedBlockLUT,0.0222763674174 us/word; x21.4478538876,low-flip update,True,results/summary/event_update_summary.csv
+CacheAwarePlanner,paper workload set,CacheAwarePlanner,measured oracle,mean planner/oracle=1.041; max=2.517,near-oracle backend choice,True,results/summary/cache_aware_selection_workload_summary.csv
+BCH syndrome throughput,total_bits=1000000; iter=5,PackedBlockLUT.apply_many_packed,Naive.apply_many,607.386281141 Mbit/s,component-kernel scaling,True,results/summary/bch_syndrome_summary.csv
+Component loop scaling,num_words=65536; iter=1,PackedBlockLUT.apply_many_packed,Naive.apply_many,545.769843239 Mbit/s,component-kernel scaling,True,results/summary/component_loop_summary.csv
+Long-stream cache width,ebch_256_239_r17 bits=1342177280,L3 width 14,L1 width 8,L3/L1=0.649321376106; L2/L1=0.696637028246,cache-width trade-off,True,results/summary/long_stream_cache_width_replication_summary.csv
+Cache/memory trade-off,bch_255_239_r16 batch=4096 density=0.05,PackedBlockLUT width 20,other block widths,0.41522739837 us/word; LUT=25231360 bytes,block-width memory trade-off,True,results/summary/cache_aware_summary.csv
