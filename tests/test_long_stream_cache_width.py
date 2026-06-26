@@ -7,6 +7,7 @@ from pathlib import Path
 from benchmarks.bench_long_stream_cache_width import (
     LONG_STREAM_CACHE_WIDTH_FIELDNAMES,
     cache_level_from_fit,
+    main as long_stream_cache_width_main,
     run_long_stream_cache_width_rows,
 )
 from scripts.plot_experiment_round09_results import plot_long_stream_cache_width
@@ -95,6 +96,36 @@ def test_long_stream_cache_width_can_sweep_code_profiles() -> None:
     }
     assert {row["matrix_shape"] for row in rows} == {"255x16", "256x17"}
     assert {row["packed_word_bits"] for row in rows} == {16, 32}
+
+
+def test_long_stream_cache_width_cli_writes_custom_output(tmp_path: Path) -> None:
+    output = tmp_path / "custom_long_stream.csv"
+
+    exit_code = long_stream_cache_width_main(
+        [
+            "--preset",
+            "lightweight",
+            "--total-bits",
+            "4096",
+            "--iterations",
+            "1",
+            "--block-widths",
+            "6",
+            "--repeats",
+            "1",
+            "--chunk-words",
+            "32",
+            "--output",
+            str(output),
+        ]
+    )
+
+    assert exit_code == 0
+    assert output.exists()
+    with output.open(newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    assert len(rows) == 1
+    assert rows[0]["block_width"] == "6"
 
 
 def test_long_stream_cache_width_summary_compares_l2_l3_against_l1() -> None:

@@ -7,6 +7,7 @@ import csv
 import statistics
 import time
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -363,6 +364,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--l2-kb", type=int, default=None)
     parser.add_argument("--l3-mb", type=int, default=None)
     parser.add_argument("--cache-line", type=int, default=None)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=RAW_DIR / "long_stream_cache_width.csv",
+        help="Output CSV path. Defaults to results/raw/long_stream_cache_width.csv.",
+    )
     parser.add_argument("--append", action="store_true")
     return parser
 
@@ -418,7 +425,7 @@ def main(argv: list[str] | None = None) -> int:
         l3_bytes=args.l3_mb * 1024 * 1024 if args.l3_mb is not None else None,
         cache_line_bytes=args.cache_line,
     )
-    output = RAW_DIR / "long_stream_cache_width.csv"
+    output = args.output
     _write_or_append_csv(output, rows, append=args.append)
     print(f"{'appended' if args.append else 'wrote'} {output}")
     return 0
