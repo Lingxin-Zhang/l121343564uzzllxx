@@ -54,6 +54,7 @@ LONG_STREAM_CACHE_WIDTH_FIELDNAMES = [
     "block_width",
     "packed_word_bits",
     "lut_bytes",
+    "stream_input_bits",
     "stream_input_bytes",
     "lut_over_l1",
     "lut_over_l2",
@@ -267,7 +268,8 @@ def run_long_stream_cache_width_rows(
 
         for total_bits in total_bits_values:
             num_words = max(1, int(total_bits) // component_n)
-            stream_input_bytes = int(num_words * component_n)
+            stream_input_bits = int(num_words * component_n)
+            stream_input_bytes = (stream_input_bits + 7) // 8
             x_words = make_batch(rng, num_words, density, n=component_n)
             for block_width in block_widths:
                 lut_info = estimate_block_lut_bytes(
@@ -318,6 +320,7 @@ def run_long_stream_cache_width_rows(
                             "block_width": int(block_width),
                             "packed_word_bits": packed_bits,
                             "lut_bytes": lut_bytes,
+                            "stream_input_bits": stream_input_bits,
                             "stream_input_bytes": stream_input_bytes,
                             "lut_over_l1": lut_bytes / cache_profile.l1d_bytes,
                             "lut_over_l2": lut_bytes / cache_profile.l2_bytes,

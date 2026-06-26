@@ -307,6 +307,84 @@ def test_summarize_results_cli_writes_summary_files(tmp_path: Path) -> None:
     assert (summary_dir / "component_loop_summary.csv").exists()
 
 
+def test_summarize_results_cli_writes_long_stream_replication_summary(tmp_path: Path) -> None:
+    raw_dir = tmp_path / "raw"
+    summary_dir = tmp_path / "summary"
+    raw_dir.mkdir()
+    _write_csv(
+        raw_dir / "long_stream_cache_width_replication.csv",
+        [
+            {
+                "preset": "unit",
+                "code_profile": "bch_255_239_r16",
+                "matrix_kind": "bch_candidate",
+                "verification_status": "verified_candidate",
+                "matrix_source": "galois_systematic_candidate",
+                "total_bits": "4096",
+                "num_words": "16",
+                "iterations": "1",
+                "density": "0.05",
+                "block_width": "8",
+                "cache_level": "L1",
+                "latency_per_word_us": "10.0",
+                "latency_cv": "0.01",
+                "lut_bytes": "16128",
+                "stream_input_bits": "4080",
+                "stream_input_bytes": "510",
+                "lut_over_l1": "0.49",
+                "lut_over_l2": "0.015",
+                "lut_over_l3": "0.001",
+                "correctness_passed": "True",
+            },
+            {
+                "preset": "unit",
+                "code_profile": "bch_255_239_r16",
+                "matrix_kind": "bch_candidate",
+                "verification_status": "verified_candidate",
+                "matrix_source": "galois_systematic_candidate",
+                "total_bits": "4096",
+                "num_words": "16",
+                "iterations": "1",
+                "density": "0.05",
+                "block_width": "12",
+                "cache_level": "L2",
+                "latency_per_word_us": "7.0",
+                "latency_cv": "0.01",
+                "lut_bytes": "172048",
+                "stream_input_bits": "4080",
+                "stream_input_bytes": "510",
+                "lut_over_l1": "5.25",
+                "lut_over_l2": "0.16",
+                "lut_over_l3": "0.01",
+                "correctness_passed": "True",
+            },
+        ],
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/summarize_results.py",
+            "--raw-dir",
+            str(raw_dir),
+            "--summary-dir",
+            str(summary_dir),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    summary_path = summary_dir / "long_stream_cache_width_replication_summary.csv"
+    assert summary_path.exists()
+    with summary_path.open(newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    assert len(rows) == 1
+    assert rows[0]["stream_input_bits"] == "4080"
+    assert rows[0]["stream_input_bytes"] == "510"
+
+
 def test_summary_and_export_help_run() -> None:
     for script in ("scripts/summarize_results.py", "scripts/export_paper_figures.py"):
         result = subprocess.run(

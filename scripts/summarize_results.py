@@ -33,6 +33,7 @@ LONG_STREAM_CACHE_WIDTH_SUMMARY_FIELDNAMES = [
     "best_latency_per_word_us",
     "best_latency_cv",
     "best_lut_bytes",
+    "stream_input_bits",
     "stream_input_bytes",
     "best_lut_over_l1",
     "best_lut_over_l2",
@@ -155,6 +156,26 @@ def _ratio(numerator: float, denominator: float) -> float:
     if math.isnan(numerator) or math.isnan(denominator) or denominator == 0:
         return math.nan
     return numerator / denominator
+
+
+def _long_stream_input_bits(row: dict[str, str]) -> int:
+    """Return stream input bits, accepting legacy rows with misnamed bytes.
+
+    Older long-stream CSV files used `stream_input_bytes` to store the number
+    of input bits. New rows store both `stream_input_bits` and true
+    `stream_input_bytes`.
+    """
+
+    if str(row.get("stream_input_bits", "")).strip():
+        return int(_float(row, "stream_input_bits", 0.0))
+    if str(row.get("stream_input_bytes", "")).strip():
+        return int(_float(row, "stream_input_bytes", 0.0))
+    return int(_float(row, "num_words", 0.0) * _float(row, "component_n", 0.0))
+
+
+def _long_stream_input_bytes(row: dict[str, str]) -> int:
+    stream_input_bits = _long_stream_input_bits(row)
+    return (stream_input_bits + 7) // 8
 
 
 def summarize_bch_syndrome_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
@@ -537,7 +558,8 @@ def summarize_long_stream_cache_width_rows(rows: list[dict[str, str]]) -> list[d
                 "best_latency_per_word_us": _float(best, "latency_per_word_us"),
                 "best_latency_cv": _float(best, "latency_cv"),
                 "best_lut_bytes": int(_float(best, "lut_bytes", 0.0)),
-                "stream_input_bytes": int(_float(best, "stream_input_bytes", 0.0)),
+                "stream_input_bits": _long_stream_input_bits(best),
+                "stream_input_bytes": _long_stream_input_bytes(best),
                 "best_lut_over_l1": _float(best, "lut_over_l1"),
                 "best_lut_over_l2": _float(best, "lut_over_l2"),
                 "best_lut_over_l3": _float(best, "lut_over_l3"),

@@ -31,6 +31,8 @@ REQUIRED_FIELDS = {
     "block_width",
     "packed_word_bits",
     "lut_bytes",
+    "stream_input_bits",
+    "stream_input_bytes",
     "fits_l1",
     "fits_l2",
     "fits_l3",
@@ -73,6 +75,8 @@ def test_long_stream_cache_width_rows_are_correct_and_complete() -> None:
         assert row["component_n"] == 255
         assert row["output_r"] == 16
         assert row["num_words"] == 16
+        assert row["stream_input_bits"] == row["num_words"] * row["component_n"]
+        assert row["stream_input_bytes"] == (row["stream_input_bits"] + 7) // 8
         assert row["correctness_passed"] is True
         assert row["latency_per_word_us"] > 0
         assert row["throughput_Mbit_s"] > 0
@@ -126,6 +130,8 @@ def test_long_stream_cache_width_cli_writes_custom_output(tmp_path: Path) -> Non
         rows = list(csv.DictReader(f))
     assert len(rows) == 1
     assert rows[0]["block_width"] == "6"
+    assert rows[0]["stream_input_bits"] == "4080"
+    assert rows[0]["stream_input_bytes"] == "510"
 
 
 def test_long_stream_cache_width_summary_compares_l2_l3_against_l1() -> None:
@@ -141,6 +147,8 @@ def test_long_stream_cache_width_summary_compares_l2_l3_against_l1() -> None:
     row = summary[0]
     assert row["best_block_width"] == 12
     assert row["best_cache_level"] == "L2"
+    assert row["stream_input_bits"] == 4080
+    assert row["stream_input_bytes"] == 510
     assert row["best_l1_block_width"] == 8
     assert row["best_l2_block_width"] == 12
     assert row["l2_better_than_l1"] is True
@@ -245,6 +253,8 @@ def _row(
         "block_width": str(block_width),
         "packed_word_bits": "16",
         "lut_bytes": str(block_width * 1000),
+        "stream_input_bits": str(max(1, total_bits // 255) * 255),
+        "stream_input_bytes": str((max(1, total_bits // 255) * 255 + 7) // 8),
         "fits_l1": str(fits_l1),
         "fits_l2": str(fits_l2),
         "fits_l3": str(fits_l3),
