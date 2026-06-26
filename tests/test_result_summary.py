@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from scripts.summarize_results import (
+    summarize_cache_aware_rows,
     summarize_cache_aware_selection_rows,
     summarize_cache_aware_selection_workload_rows,
     summarize_component_decoder_exactness_rows,
@@ -16,6 +17,69 @@ from scripts.summarize_results import (
     summarize_event_update_rows,
     summarize_optical_workload_rows,
 )
+
+
+def test_cache_aware_summary_preserves_block_width_and_correctness_fields() -> None:
+    rows = [
+        {
+            "preset": "unit",
+            "cache_profile": "generic_desktop",
+            "code_profile": "bch_255_239_r16",
+            "matrix_shape": "255x16",
+            "n": "255",
+            "r": "16",
+            "backend": "PackedBlockLUT.apply_many_packed",
+            "block_width": "8",
+            "batch_size": "4096",
+            "density": "0.05",
+            "latency_per_word_us": "0.25",
+            "throughput_Mword_s": "4.0",
+            "lut_bytes": "16128",
+            "num_blocks": "32",
+            "entries_per_block": "256",
+            "fits_l1": "True",
+            "fits_l2": "True",
+            "fits_l3": "True",
+            "l1d_bytes": "32768",
+            "l2_bytes": "1048576",
+            "l3_bytes": "16777216",
+            "cache_line_bytes": "64",
+            "correctness_passed": "True",
+        }
+    ]
+
+    summary = summarize_cache_aware_rows(rows)
+
+    assert summary == [
+        {
+            "preset": "unit",
+            "cache_profile": "generic_desktop",
+            "code_profile": "bch_255_239_r16",
+            "matrix_shape": "255x16",
+            "n": "255",
+            "r": "16",
+            "backend": "PackedBlockLUT.apply_many_packed",
+            "block_width": "8",
+            "batch_size": "4096",
+            "density": "0.05",
+            "mean_latency_per_word_us": 0.25,
+            "mean_throughput_Mword_s": 4.0,
+            "std_latency_per_word_us": 0.0,
+            "std_throughput_Mword_s": 0.0,
+            "lut_bytes": 16128,
+            "num_blocks": 32,
+            "entries_per_block": 256,
+            "fits_l1": True,
+            "fits_l2": True,
+            "fits_l3": True,
+            "l1d_bytes": 32768,
+            "l2_bytes": 1048576,
+            "l3_bytes": 16777216,
+            "cache_line_bytes": 64,
+            "correctness_all_true": True,
+            "num_rows": 1,
+        }
+    ]
 
 
 def test_component_loop_summary_computes_mean_and_relative_to_naive() -> None:

@@ -34,6 +34,22 @@ COLORS = {
 }
 
 
+def require_rows(
+    rows: list[dict[str, str]],
+    *,
+    source_name: str,
+    purpose: str,
+) -> list[dict[str, str]]:
+    """Return rows or fail loudly before an empty table/figure is exported."""
+
+    if not rows:
+        raise ValueError(
+            f"{source_name} has no rows for {purpose}. "
+            "Restore the required artifact or rerun the targeted benchmark."
+        )
+    return rows
+
+
 def read_csv(path: Path) -> list[dict[str, str]]:
     if not path.exists():
         return []
@@ -127,8 +143,17 @@ def _plot_lines(ax: plt.Axes, groups: dict[str, list[tuple[float, float]]]) -> N
 
 
 def build_final_exactness_table(summary_dir: Path, output_dir: Path) -> list[dict[str, Any]]:
-    rows = read_csv(summary_dir / "component_decoder_exactness_summary.csv")
+    rows = require_rows(
+        read_csv(summary_dir / "component_decoder_exactness_summary.csv"),
+        source_name="component_decoder_exactness_summary.csv",
+        purpose="final_exactness_table",
+    )
     selected = [row for row in rows if row.get("preset") == "full"]
+    require_rows(
+        selected,
+        source_name="component_decoder_exactness_summary.csv",
+        purpose="final_exactness_table full preset rows",
+    )
     out = [
         {
             "test_case": row["test_case"],
@@ -276,7 +301,11 @@ def _best_by_latency(rows: Iterable[dict[str, str]], metric: str) -> dict[str, s
 
 def build_final_representative_table(summary_dir: Path, output_dir: Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    exact = read_csv(summary_dir / "component_decoder_exactness_summary.csv")
+    exact = require_rows(
+        read_csv(summary_dir / "component_decoder_exactness_summary.csv"),
+        source_name="component_decoder_exactness_summary.csv",
+        purpose="final_representative_table component exactness row",
+    )
     double_rows = [
         r
         for r in exact
@@ -299,13 +328,23 @@ def build_final_representative_table(summary_dir: Path, output_dir: Path) -> lis
             )
         )
 
+    candidate_summary = require_rows(
+        read_csv(summary_dir / "candidate_testing_summary.csv"),
+        source_name="candidate_testing_summary.csv",
+        purpose="final_representative_table candidate row",
+    )
     candidates = [
         r
-        for r in read_csv(summary_dir / "candidate_testing_summary.csv")
+        for r in candidate_summary
         if r["preset"] == "full"
         and r["target_mode"] == "known_hit"
         and r["backend"] == "PackedBlockLUT.apply_many_packed"
     ]
+    for profile_name in ("bch_255_239_r16", "ebch_256_239_r17"):
+        profile_candidates = [r for r in candidates if r["code_profile"] == profile_name]
+        if profile_candidates:
+            candidates = profile_candidates
+            break
     best_candidate = _best_by_latency(candidates, "mean_latency_per_candidate_us")
     if best_candidate:
         rows.append(
@@ -321,9 +360,14 @@ def build_final_representative_table(summary_dir: Path, output_dir: Path) -> lis
             )
         )
 
+    event_summary = require_rows(
+        read_csv(summary_dir / "event_update_summary.csv"),
+        source_name="event_update_summary.csv",
+        purpose="final_representative_table event update row",
+    )
     events = [
         r
-        for r in read_csv(summary_dir / "event_update_summary.csv")
+        for r in event_summary
         if r["method"] == "event_update.batch_update_many" and r["flip_count"] == "1"
     ]
     best_event = _best_by_latency(events, "mean_latency_per_word_us")
@@ -341,9 +385,14 @@ def build_final_representative_table(summary_dir: Path, output_dir: Path) -> lis
             )
         )
 
+    planner_summary = require_rows(
+        read_csv(summary_dir / "cache_aware_selection_workload_summary.csv"),
+        source_name="cache_aware_selection_workload_summary.csv",
+        purpose="final_representative_table planner row",
+    )
     planner = [
         r
-        for r in read_csv(summary_dir / "cache_aware_selection_workload_summary.csv")
+        for r in planner_summary
         if r["preset"] == "paper"
     ]
     if planner:
@@ -376,7 +425,11 @@ def build_final_representative_table(summary_dir: Path, output_dir: Path) -> lis
             "num_words",
         ),
     ):
-        source_rows = read_csv(summary_dir / path)
+        source_rows = require_rows(
+            read_csv(summary_dir / path),
+            source_name=path,
+            purpose=f"final_representative_table {experiment}",
+        )
         best = max(source_rows, key=lambda r: _float(r, metric)) if source_rows else None
         if best:
             rows.append(
@@ -392,7 +445,11 @@ def build_final_representative_table(summary_dir: Path, output_dir: Path) -> lis
                 )
             )
 
-    long_rows = read_csv(summary_dir / "long_stream_cache_width_replication_summary.csv")
+    long_rows = require_rows(
+        read_csv(summary_dir / "long_stream_cache_width_replication_summary.csv"),
+        source_name="long_stream_cache_width_replication_summary.csv",
+        purpose="final_representative_table long-stream cache-width row",
+    )
     ebch = next((r for r in long_rows if r["code_profile"] == "ebch_256_239_r17"), None)
     if ebch:
         rows.append(
@@ -410,11 +467,8 @@ def build_final_representative_table(summary_dir: Path, output_dir: Path) -> lis
 
     cache_rows = [
         r
-        for r in read_csv(summary_dir / "cache_aware_summary.csv")
-        if r["backend"] == "PackedBlockLUT.apply_many_packed"
-        and r["code_profile"] == "bch_255_239_r16"
-        and r["batch_size"] == "4096"
-        and r["density"] == "0.05"
+        for r in _cache_memory_tradeoff_rows(summary_dir)
+        if r["code_profile"] == "bch_255_239_r16"
     ]
     cache_best = _best_by_latency(cache_rows, "mean_latency_per_word_us")
     if cache_best:
@@ -471,18 +525,8 @@ def _representative(
 
 
 def plot_cache_memory_tradeoff(summary_dir: Path, figure_dir: Path) -> None:
-    cache_rows = [
-        r
-        for r in read_csv(summary_dir / "cache_aware_summary.csv")
-        if r["backend"] == "PackedBlockLUT.apply_many_packed"
-        and r["cache_profile"] == "generic_desktop"
-        and r["batch_size"] == "4096"
-        and r["density"] == "0.05"
-        and r["code_profile"] in {"bch_255_239_r16", "ebch_256_239_r17"}
-    ]
-    long_rows = read_csv(summary_dir / "long_stream_cache_width_summary.csv") + read_csv(
-        summary_dir / "long_stream_cache_width_replication_summary.csv"
-    )
+    cache_rows = _cache_memory_tradeoff_rows(summary_dir)
+    long_rows = _long_stream_rows(summary_dir)
 
     fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.35))
     ax = axes[0]
@@ -558,12 +602,57 @@ def plot_cache_memory_tradeoff(summary_dir: Path, figure_dir: Path) -> None:
     save_figure(fig, figure_dir, "fig_cache_memory_tradeoff")
 
 
+def _cache_memory_tradeoff_rows(summary_dir: Path) -> list[dict[str, str]]:
+    all_rows = require_rows(
+        read_csv(summary_dir / "cache_aware_summary.csv"),
+        source_name="cache_aware_summary.csv",
+        purpose="fig_cache_memory_tradeoff",
+    )
+    rows = [
+        r
+        for r in all_rows
+        if r["backend"] == "PackedBlockLUT.apply_many_packed"
+        and r["cache_profile"] == "generic_desktop"
+        and r["batch_size"] == "4096"
+        and r["density"] == "0.05"
+        and r["code_profile"] in {"bch_255_239_r16", "ebch_256_239_r17"}
+    ]
+    return require_rows(
+        rows,
+        source_name="cache_aware_summary.csv",
+        purpose=(
+            "fig_cache_memory_tradeoff PackedBlockLUT rows "
+            "(bch/eBCH, batch=4096, density=0.05)"
+        ),
+    )
+
+
+def _long_stream_rows(summary_dir: Path) -> list[dict[str, str]]:
+    rows = read_csv(summary_dir / "long_stream_cache_width_summary.csv") + read_csv(
+        summary_dir / "long_stream_cache_width_replication_summary.csv"
+    )
+    return require_rows(
+        rows,
+        source_name="long_stream_cache_width*_summary.csv",
+        purpose="fig_cache_memory_tradeoff long-stream panel",
+    )
+
+
 def plot_cache_aware_planner(summary_dir: Path, figure_dir: Path) -> None:
     rows = [
         r
-        for r in read_csv(summary_dir / "cache_aware_selection_workload_summary.csv")
+        for r in require_rows(
+            read_csv(summary_dir / "cache_aware_selection_workload_summary.csv"),
+            source_name="cache_aware_selection_workload_summary.csv",
+            purpose="fig_cache_aware_planner_oracle",
+        )
         if r["preset"] == "paper"
     ]
+    require_rows(
+        rows,
+        source_name="cache_aware_selection_workload_summary.csv",
+        purpose="fig_cache_aware_planner_oracle paper preset",
+    )
     rows = sorted(rows, key=lambda r: r["workload_type"])
     labels = [_workload_label(r["workload_type"]) for r in rows]
     x = list(range(len(rows)))
@@ -622,7 +711,11 @@ def _workload_label(value: str) -> str:
 def plot_candidate_testing(summary_dir: Path, figure_dir: Path) -> None:
     rows = [
         r
-        for r in read_csv(summary_dir / "candidate_testing_summary.csv")
+        for r in require_rows(
+            read_csv(summary_dir / "candidate_testing_summary.csv"),
+            source_name="candidate_testing_summary.csv",
+            purpose="fig_candidate_testing",
+        )
         if r["preset"] == "full"
         and r["target_mode"] == "known_hit"
         and r["code_profile"] == "bch_255_239_r16"
@@ -632,6 +725,11 @@ def plot_candidate_testing(summary_dir: Path, figure_dir: Path) -> None:
             "HybridPlanner.apply_many_packed",
         }
     ]
+    require_rows(
+        rows,
+        source_name="candidate_testing_summary.csv",
+        purpose="fig_candidate_testing full bch_255_239_r16 rows",
+    )
     by_backend: dict[str, dict[float, list[float]]] = defaultdict(lambda: defaultdict(list))
     for row in rows:
         by_backend[row["backend"]][_float(row, "candidate_count")].append(
@@ -657,7 +755,11 @@ def plot_candidate_testing(summary_dir: Path, figure_dir: Path) -> None:
 def plot_event_update(summary_dir: Path, figure_dir: Path) -> None:
     rows = [
         r
-        for r in read_csv(summary_dir / "event_update_summary.csv")
+        for r in require_rows(
+            read_csv(summary_dir / "event_update_summary.csv"),
+            source_name="event_update_summary.csv",
+            purpose="fig_event_update_comparison",
+        )
         if r["iterations"] == "10"
         and r["method"]
         in {
@@ -666,6 +768,11 @@ def plot_event_update(summary_dir: Path, figure_dir: Path) -> None:
             "event_update.loop_update",
         }
     ]
+    require_rows(
+        rows,
+        source_name="event_update_summary.csv",
+        purpose="fig_event_update_comparison iterations=10 rows",
+    )
     by_method: dict[str, list[tuple[float, float]]] = defaultdict(list)
     for row in rows:
         by_method[row["method"]].append(
@@ -685,11 +792,20 @@ def plot_component_kernel_scaling(summary_dir: Path, figure_dir: Path) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.45))
     syndrome = [
         r
-        for r in read_csv(summary_dir / "bch_syndrome_summary.csv")
+        for r in require_rows(
+            read_csv(summary_dir / "bch_syndrome_summary.csv"),
+            source_name="bch_syndrome_summary.csv",
+            purpose="fig_component_kernel_scaling syndrome panel",
+        )
         if r["matrix_source"] == "galois_systematic_candidate"
         and r["iterations"] == "10"
         and r["backend"] in {"Naive.apply_many", "PackedBlockLUT.apply_many_packed", "PackedBatch.apply_many"}
     ]
+    require_rows(
+        syndrome,
+        source_name="bch_syndrome_summary.csv",
+        purpose="fig_component_kernel_scaling syndrome plotted rows",
+    )
     groups: dict[str, list[tuple[float, float]]] = defaultdict(list)
     for row in syndrome:
         groups[row["backend"]].append(
@@ -706,10 +822,19 @@ def plot_component_kernel_scaling(summary_dir: Path, figure_dir: Path) -> None:
 
     component = [
         r
-        for r in read_csv(summary_dir / "component_loop_summary.csv")
+        for r in require_rows(
+            read_csv(summary_dir / "component_loop_summary.csv"),
+            source_name="component_loop_summary.csv",
+            purpose="fig_component_kernel_scaling component-loop panel",
+        )
         if r["iterations"] == "10"
         and r["backend"] in {"Naive.apply_many", "PackedBlockLUT.apply_many_packed", "PackedBatch.apply_many"}
     ]
+    require_rows(
+        component,
+        source_name="component_loop_summary.csv",
+        purpose="fig_component_kernel_scaling component-loop plotted rows",
+    )
     groups = defaultdict(list)
     for row in component:
         groups[row["backend"]].append(
@@ -838,6 +963,7 @@ def export_all(
     setup_style()
     final_summary_dir.mkdir(parents=True, exist_ok=True)
     figure_dir.mkdir(parents=True, exist_ok=True)
+    validate_inputs(raw_dir, summary_dir)
 
     build_final_exactness_table(summary_dir, final_summary_dir)
     build_final_claim_audit(final_summary_dir)
@@ -850,6 +976,45 @@ def export_all(
     plot_component_kernel_scaling(summary_dir, figure_dir)
     write_figure_manifest(figure_dir)
     write_artifact_provenance(provenance_output)
+
+
+def validate_inputs(raw_dir: Path, summary_dir: Path) -> None:
+    require_rows(
+        read_csv(raw_dir / "cache_aware.csv"),
+        source_name="cache_aware.csv",
+        purpose="final cache/memory trade-off evidence",
+    )
+    _cache_memory_tradeoff_rows(summary_dir)
+    _long_stream_rows(summary_dir)
+    require_rows(
+        [
+            row
+            for row in read_csv(summary_dir / "cache_aware_selection_workload_summary.csv")
+            if row.get("preset") == "paper"
+        ],
+        source_name="cache_aware_selection_workload_summary.csv",
+        purpose="fig_cache_aware_planner_oracle paper preset",
+    )
+    require_rows(
+        [
+            row
+            for row in read_csv(summary_dir / "candidate_testing_summary.csv")
+            if row.get("preset") == "full"
+        ],
+        source_name="candidate_testing_summary.csv",
+        purpose="fig_candidate_testing full preset",
+    )
+    for filename, purpose in (
+        ("event_update_summary.csv", "fig_event_update_comparison"),
+        ("bch_syndrome_summary.csv", "fig_component_kernel_scaling syndrome panel"),
+        ("component_loop_summary.csv", "fig_component_kernel_scaling component-loop panel"),
+        ("component_decoder_exactness_summary.csv", "final_exactness_table"),
+    ):
+        require_rows(
+            read_csv(summary_dir / filename),
+            source_name=filename,
+            purpose=purpose,
+        )
 
 
 def build_arg_parser() -> argparse.ArgumentParser:

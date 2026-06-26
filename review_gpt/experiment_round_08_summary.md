@@ -84,3 +84,23 @@ python scripts/export_final_paper_figures.py
 ```
 
 Final verification commands are recorded in `review_gpt/latest.md`.
+
+## Round 8.1 Addendum
+
+Round 8.1 fixed the data-quality issue found after Round 08 review:
+
+- `results/raw/cache_aware.csv` and
+  `results/summary/cache_aware_summary.csv` are non-empty in the current
+  checked-out artifacts.
+- Both contain 9216 rows.
+- Both include BCH/eBCH PackedBlockLUT packed-output rows for block widths
+  `4,6,8,10,12,14,16,18,20` at `batch_size=4096`, `density=0.05`.
+- Correctness fields are all true.
+- No targeted cache-aware rerun was needed.
+- `scripts/export_final_paper_figures.py` now fails loudly if key data sources
+  or plotted row subsets are empty.
+- The final representative Candidate testing row now prioritizes BCH/eBCH
+  profiles and currently uses `bch_255_239_r16`, not a synthetic profile.
+
+Round 8.1 preserves the same scope boundaries: no new `BCH(511,484,r27)`, no
+BER, no full decoder, no broad full sweep, and no stronger L2/L3 claim.
