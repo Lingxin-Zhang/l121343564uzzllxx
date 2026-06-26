@@ -67,6 +67,8 @@ Implemented:
 21. `benchmarks/bench_cache_aware_selection.py`
 22. `scripts/plot_experiment_round04_results.py`
 23. `scripts/plot_experiment_round06_results.py`
+24. `benchmarks/bench_long_stream_cache_width.py`
+25. `scripts/plot_experiment_round09_results.py`
 
 Generated CSV, PNG, and requested PDF figure outputs may be tracked for review.
 
@@ -84,6 +86,13 @@ only. They may model candidate error-pattern syndrome calls, row/column
 component-call structure, sliding-window component-call structure, and event
 updates, but they must not be presented as full decoders, BER simulations, or
 paper conclusions.
+
+Long-stream cache-width diagnostics may compare block widths that fit L1, L2,
+or L3 cache footprints. Treat L2/L3 performance conclusions as supported only
+when the committed CSV shows a 20x long-bitstream run, correctness passes, the
+winning cache-level ratio is at most `0.8` versus the best L1 width, and both
+compared latency CV values are stable. Otherwise describe the result as a
+diagnostic observation, not as a paper-level claim.
 
 ## Reference Registry
 

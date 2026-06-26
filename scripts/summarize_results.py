@@ -14,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "results" / "raw"
 SUMMARY_DIR = ROOT / "results" / "summary"
 NOTES = "raw lightweight benchmark result; not a paper conclusion"
+LONG_STREAM_20X_BITS = 1_342_177_280
+STRONG_CACHE_WIDTH_RATIO = 0.8
+STABLE_CACHE_WIDTH_MAX_CV = 0.10
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
@@ -392,6 +395,188 @@ def summarize_cache_aware_selection_workload_rows(
                     row.get("oracle_best_backend", "") for row in group
                 ),
                 "num_rows": len(group),
+                "correctness_all_true": all(
+                    _truthy(row.get("correctness_passed", "True")) for row in group
+                ),
+            }
+        )
+    return summary
+
+
+def summarize_long_stream_cache_width_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    keys = (
+        "preset",
+        "code_profile",
+        "matrix_kind",
+        "verification_status",
+        "matrix_source",
+        "total_bits",
+        "num_words",
+        "iterations",
+        "density",
+    )
+    summary = []
+    for key, group in sorted(_group_rows(rows, keys).items()):
+        best = min(group, key=lambda row: _float(row, "latency_per_word_us"))
+        l1_rows = [row for row in group if row.get("cache_level") == "L1"]
+        l2_rows = [row for row in group if row.get("cache_level") == "L2"]
+        l3_rows = [row for row in group if row.get("cache_level") == "L3"]
+        l2_l3_rows = [row for row in group if row.get("cache_level") in {"L2", "L3"}]
+        best_l1 = (
+            min(l1_rows, key=lambda row: _float(row, "latency_per_word_us"))
+            if l1_rows
+            else None
+        )
+        best_l2 = (
+            min(l2_rows, key=lambda row: _float(row, "latency_per_word_us"))
+            if l2_rows
+            else None
+        )
+        best_l3 = (
+            min(l3_rows, key=lambda row: _float(row, "latency_per_word_us"))
+            if l3_rows
+            else None
+        )
+        best_l2_l3 = (
+            min(l2_l3_rows, key=lambda row: _float(row, "latency_per_word_us"))
+            if l2_l3_rows
+            else None
+        )
+        best_l1_latency = (
+            _float(best_l1, "latency_per_word_us") if best_l1 is not None else math.nan
+        )
+        best_l1_cv = _float(best_l1, "latency_cv") if best_l1 is not None else math.nan
+        best_l2_latency = (
+            _float(best_l2, "latency_per_word_us") if best_l2 is not None else math.nan
+        )
+        best_l2_cv = _float(best_l2, "latency_cv") if best_l2 is not None else math.nan
+        best_l3_latency = (
+            _float(best_l3, "latency_per_word_us") if best_l3 is not None else math.nan
+        )
+        best_l3_cv = _float(best_l3, "latency_cv") if best_l3 is not None else math.nan
+        best_l2_l3_latency = (
+            _float(best_l2_l3, "latency_per_word_us")
+            if best_l2_l3 is not None
+            else math.nan
+        )
+        is_20x_long_stream = int(_float(best, "total_bits", 0.0)) >= LONG_STREAM_20X_BITS
+        l2_ratio = _ratio(best_l2_latency, best_l1_latency)
+        l3_ratio = _ratio(best_l3_latency, best_l1_latency)
+        l2_stable = (
+            not math.isnan(best_l1_cv)
+            and not math.isnan(best_l2_cv)
+            and best_l1_cv <= STABLE_CACHE_WIDTH_MAX_CV
+            and best_l2_cv <= STABLE_CACHE_WIDTH_MAX_CV
+        )
+        l3_stable = (
+            not math.isnan(best_l1_cv)
+            and not math.isnan(best_l3_cv)
+            and best_l1_cv <= STABLE_CACHE_WIDTH_MAX_CV
+            and best_l3_cv <= STABLE_CACHE_WIDTH_MAX_CV
+        )
+        summary.append(
+            {
+                **dict(zip(keys, key, strict=True)),
+                "is_20x_long_stream": is_20x_long_stream,
+                "best_block_width": int(_float(best, "block_width", 0.0)),
+                "best_cache_level": best.get("cache_level", ""),
+                "best_latency_per_word_us": _float(best, "latency_per_word_us"),
+                "best_latency_cv": _float(best, "latency_cv"),
+                "best_lut_bytes": int(_float(best, "lut_bytes", 0.0)),
+                "stream_input_bytes": int(_float(best, "stream_input_bytes", 0.0)),
+                "best_lut_over_l1": _float(best, "lut_over_l1"),
+                "best_lut_over_l2": _float(best, "lut_over_l2"),
+                "best_lut_over_l3": _float(best, "lut_over_l3"),
+                "best_l1_block_width": (
+                    int(_float(best_l1, "block_width", 0.0)) if best_l1 is not None else 0
+                ),
+                "best_l1_latency_per_word_us": best_l1_latency,
+                "best_l1_latency_cv": best_l1_cv,
+                "best_l1_lut_bytes": (
+                    int(_float(best_l1, "lut_bytes", 0.0)) if best_l1 is not None else 0
+                ),
+                "best_l2_block_width": (
+                    int(_float(best_l2, "block_width", 0.0)) if best_l2 is not None else 0
+                ),
+                "best_l2_latency_per_word_us": best_l2_latency,
+                "best_l2_latency_cv": best_l2_cv,
+                "best_l2_lut_bytes": (
+                    int(_float(best_l2, "lut_bytes", 0.0)) if best_l2 is not None else 0
+                ),
+                "best_l2_over_best_l1": l2_ratio,
+                "l2_better_than_l1": (
+                    best_l2_latency < best_l1_latency
+                    if not math.isnan(best_l2_latency) and not math.isnan(best_l1_latency)
+                    else False
+                ),
+                "l2_at_least_20pct_faster_than_l1": (
+                    l2_ratio <= STRONG_CACHE_WIDTH_RATIO
+                    if not math.isnan(best_l2_latency) and not math.isnan(best_l1_latency)
+                    else False
+                ),
+                "l2_stable_cv": l2_stable,
+                "l2_strong_20x_claim": (
+                    is_20x_long_stream
+                    and l2_stable
+                    and not math.isnan(l2_ratio)
+                    and l2_ratio <= STRONG_CACHE_WIDTH_RATIO
+                ),
+                "best_l3_block_width": (
+                    int(_float(best_l3, "block_width", 0.0)) if best_l3 is not None else 0
+                ),
+                "best_l3_latency_per_word_us": best_l3_latency,
+                "best_l3_latency_cv": best_l3_cv,
+                "best_l3_lut_bytes": (
+                    int(_float(best_l3, "lut_bytes", 0.0)) if best_l3 is not None else 0
+                ),
+                "best_l3_over_best_l1": l3_ratio,
+                "l3_better_than_l1": (
+                    best_l3_latency < best_l1_latency
+                    if not math.isnan(best_l3_latency) and not math.isnan(best_l1_latency)
+                    else False
+                ),
+                "l3_at_least_20pct_faster_than_l1": (
+                    l3_ratio <= STRONG_CACHE_WIDTH_RATIO
+                    if not math.isnan(best_l3_latency) and not math.isnan(best_l1_latency)
+                    else False
+                ),
+                "l3_stable_cv": l3_stable,
+                "l3_strong_20x_claim": (
+                    is_20x_long_stream
+                    and l3_stable
+                    and not math.isnan(l3_ratio)
+                    and l3_ratio <= STRONG_CACHE_WIDTH_RATIO
+                ),
+                "best_l2_l3_block_width": (
+                    int(_float(best_l2_l3, "block_width", 0.0))
+                    if best_l2_l3 is not None
+                    else 0
+                ),
+                "best_l2_l3_cache_level": (
+                    best_l2_l3.get("cache_level", "") if best_l2_l3 is not None else ""
+                ),
+                "best_l2_l3_latency_per_word_us": best_l2_l3_latency,
+                "best_l2_l3_lut_bytes": (
+                    int(_float(best_l2_l3, "lut_bytes", 0.0))
+                    if best_l2_l3 is not None
+                    else 0
+                ),
+                "best_l2_l3_lut_over_l1": (
+                    _float(best_l2_l3, "lut_over_l1") if best_l2_l3 is not None else math.nan
+                ),
+                "best_l2_l3_lut_over_l2": (
+                    _float(best_l2_l3, "lut_over_l2") if best_l2_l3 is not None else math.nan
+                ),
+                "best_l2_l3_lut_over_l3": (
+                    _float(best_l2_l3, "lut_over_l3") if best_l2_l3 is not None else math.nan
+                ),
+                "best_l2_l3_over_best_l1": _ratio(best_l2_l3_latency, best_l1_latency),
+                "l2_l3_better_than_l1": (
+                    best_l2_l3_latency < best_l1_latency
+                    if not math.isnan(best_l2_l3_latency) and not math.isnan(best_l1_latency)
+                    else False
+                ),
+                "num_widths": len(group),
                 "correctness_all_true": all(
                     _truthy(row.get("correctness_passed", "True")) for row in group
                 ),
@@ -1039,6 +1224,66 @@ def summarize_all(raw_dir: Path, summary_dir: Path) -> None:
                 "selected_backend_distribution",
                 "oracle_backend_distribution",
                 "num_rows",
+                "correctness_all_true",
+            ],
+        ),
+        (
+            "long_stream_cache_width",
+            raw_dir / "long_stream_cache_width.csv",
+            summary_dir / "long_stream_cache_width_summary.csv",
+            summarize_long_stream_cache_width_rows,
+            [
+                "preset",
+                "code_profile",
+                "matrix_kind",
+                "verification_status",
+                "matrix_source",
+                "total_bits",
+                "num_words",
+                "iterations",
+                "density",
+                "is_20x_long_stream",
+                "best_block_width",
+                "best_cache_level",
+                "best_latency_per_word_us",
+                "best_latency_cv",
+                "best_lut_bytes",
+                "stream_input_bytes",
+                "best_lut_over_l1",
+                "best_lut_over_l2",
+                "best_lut_over_l3",
+                "best_l1_block_width",
+                "best_l1_latency_per_word_us",
+                "best_l1_latency_cv",
+                "best_l1_lut_bytes",
+                "best_l2_block_width",
+                "best_l2_latency_per_word_us",
+                "best_l2_latency_cv",
+                "best_l2_lut_bytes",
+                "best_l2_over_best_l1",
+                "l2_better_than_l1",
+                "l2_at_least_20pct_faster_than_l1",
+                "l2_stable_cv",
+                "l2_strong_20x_claim",
+                "best_l3_block_width",
+                "best_l3_latency_per_word_us",
+                "best_l3_latency_cv",
+                "best_l3_lut_bytes",
+                "best_l3_over_best_l1",
+                "l3_better_than_l1",
+                "l3_at_least_20pct_faster_than_l1",
+                "l3_stable_cv",
+                "l3_strong_20x_claim",
+                "best_l2_l3_block_width",
+                "best_l2_l3_cache_level",
+                "best_l2_l3_latency_per_word_us",
+                "best_l2_l3_lut_bytes",
+                "best_l2_l3_lut_over_l1",
+                "best_l2_l3_lut_over_l2",
+                "best_l2_l3_lut_over_l3",
+                "best_l2_l3_over_best_l1",
+                "l2_l3_better_than_l1",
+                "num_widths",
                 "correctness_all_true",
             ],
         ),

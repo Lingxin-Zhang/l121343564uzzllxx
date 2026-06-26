@@ -35,8 +35,10 @@ python -m benchmarks.bench_cache_aware --preset lightweight
 python -m benchmarks.bench_code_profiles --preset lightweight
 python -m benchmarks.bench_candidate_testing --preset lightweight
 python -m benchmarks.bench_optical_workloads --preset lightweight
+python -m benchmarks.bench_long_stream_cache_width --preset lightweight
 python scripts/plot_round2_results.py
 python scripts/plot_experiment_round02_results.py
+python scripts/plot_experiment_round09_results.py
 ```
 
 On systems with `bash`, the shell wrapper is also available:
@@ -76,6 +78,8 @@ Benchmark terms:
   from the stream.
 - `chunk_words` is the number of component words processed per chunk to avoid
   excessive memory use.
+- `block_width` is the number of input bits grouped into one LUT lookup for a
+  block-LUT backend.
 
 For example, `total_bits = 1,000,000` and `component_n = 255` gives
 `num_words = 3921`, so the stream input has shape `(3921, 255)`.
@@ -114,11 +118,13 @@ reproducible rule-based dispatcher baseline, not an optimal scheduler.
 - `benchmarks/bench_code_profiles.py`
 - `benchmarks/bench_candidate_testing.py`
 - `benchmarks/bench_optical_workloads.py`
+- `benchmarks/bench_long_stream_cache_width.py`
 - `scripts/plot_results.py`
 - `scripts/plot_round2_results.py`
 - `scripts/plot_experiment_round02_results.py`
 - `scripts/plot_experiment_round04_results.py`
 - `scripts/plot_experiment_round06_results.py`
+- `scripts/plot_experiment_round09_results.py`
 
 The first benchmark group uses a fixed random GF(2) matrix. The component
 syndrome benchmark uses a deterministic BCH-like `(255, 16)` matrix to exercise
@@ -133,6 +139,13 @@ Trace-level workload diagnostics model component-kernel call patterns such as
 row/column batches, sliding-window batches, candidate-test calls, and event
 updates. They are not full decoders, BER simulations, or paper conclusions.
 In known-hit mode, matches_found is guaranteed to be at least one. It may exceed one because different candidate masks can share the same syndrome; this is not treated as a correctness error.
+
+Long-stream cache-width diagnostics compare `PackedBlockLUTKernel` block widths
+whose LUT footprints fit different cache levels. L2/L3 conclusions should only
+be treated as strong when the summary CSV marks a 20x long-bitstream run,
+correctness passes, the relevant cache level is at least 20% lower latency than
+the best L1-fitting width, and latency CV is stable. Otherwise the result is a
+diagnostic measurement, not a paper claim.
 
 The deterministic BCH-like matrix is still kept as a placeholder. The BCH
 syndrome and component-loop benchmark path can use the separate

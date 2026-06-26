@@ -1,173 +1,136 @@
 # Latest Review Summary
 
-Current round: supplemental overnight experiment after Round 7.
+Current round: Round 9 long-stream cache-width diagnostic cleanup.
 
 ## Goal
 
-Run paper-targeted heavier validation because Round 7 finished early. This
-round only refreshes experiment artifacts, summaries, figures, and review notes.
-It does not implement new algorithms and does not add BER, a full OFEC decoder,
-a full BCH algebraic decoder, or paper conclusions.
+Add a reproducible long-stream diagnostic for `PackedBlockLUTKernel`
+`block_width` choices and tighten the claim gate for L2/L3 cache-width
+conclusions. This round is code/result-review focused only: no BER, no full
+decoder, no new algorithmic backend, and no paper conclusion was added.
 
 ## Skills Used
 
-- `research-experiment-driver`: used to keep the overnight run focused on
-  paper-targeted validation rather than a broad full sweep.
-- `results-analysis`: used to audit CSV row counts, correctness flags, exact
-  mismatch counts, and planner summary metrics.
-- `paper-figures-advise`: used to keep regenerated figures tied to paper-facing
-  chart needs.
-- `superpowers:verification-before-completion`: used before reporting test,
-  benchmark, summary, figure, commit, and push status.
+- `results-analysis`: used to audit raw/summary CSV row counts, correctness
+  flags, latency ratios, and strong-claim gates.
+- `superpowers:verification-before-completion`: used before reporting the
+  verification state.
 
-## Commands Run
+## Modified Files
 
-Preflight:
+- `benchmarks/bench_long_stream_cache_width.py`
+- `scripts/summarize_results.py`
+- `scripts/plot_experiment_round09_results.py`
+- `tests/test_long_stream_cache_width.py`
+- `README.md`
+- `AGENTS.md`
+- `results/raw/long_stream_cache_width.csv`
+- `results/summary/long_stream_cache_width_summary.csv`
+- `results/figures/experiment_round09_long_stream_cache_width.png`
+- `results/figures/experiment_round09_long_stream_cache_width.pdf`
+- `results/logs/round09_long_stream_cache_width.log`
+- `review_gpt/latest.md`
+- `review_gpt/experiment_round_09_cache_width_summary.md`
+- `review_gpt/round_20_summary.md`
 
-```bash
-python -m pytest -q
-git status --short
-```
+## Benchmark Command
 
-Log: `results/logs/overnight_preflight.log`
-
-Clean Round 7 planner rerun:
-
-```bash
-python -m benchmarks.bench_cache_aware_selection --preset lightweight
-python -m benchmarks.bench_cache_aware_selection --preset paper --append
-```
-
-Log: `results/logs/overnight_cache_aware_selection.log`
-
-Core paper-targeted benchmarks:
+The committed long-stream result was generated with:
 
 ```bash
-python -m benchmarks.bench_cache_aware --preset full --repeats 7
-python -m benchmarks.bench_component_decoder_exactness --preset full --repeats 7
-python -m benchmarks.bench_candidate_testing --preset full --repeats 7
+python -m benchmarks.bench_long_stream_cache_width --preset paper --code-profiles bch_255_239_r16,ebch_256_239_r17 --total-bits 1342177280 --iterations 1,5 --block-widths 6,8,10,12,14,16 --repeats 5
 ```
 
-Logs:
+Log: `results/logs/round09_long_stream_cache_width.log`
 
-- `results/logs/overnight_cache_aware_full.log`
-- `results/logs/overnight_component_decoder_exactness_full.log`
-- `results/logs/overnight_candidate_testing_full.log`
+This is a 20x long-bitstream diagnostic relative to the earlier
+`67,108,864`-bit stream scale. It processes approximately `1.342G` input bits
+per condition before iteration multiplication.
 
-Component-kernel scaling supplements:
+## Result Summary
 
-```bash
-python -m benchmarks.bench_bch_syndrome --matrix-source galois_systematic_candidate --total-bits 1000000,10000000,50000000 --iterations 1,5,10 --repeats 5
-python -m benchmarks.bench_component_loop --matrix-source galois_systematic_candidate --num-words 4096,16384,65536,262144 --iterations 1,5,10 --repeats 5
-python -m benchmarks.bench_event_update --matrix-source galois_systematic_candidate --flip-counts 1,2,4,8,16 --iterations 1,5,10 --repeats 5
-```
+Raw CSV:
 
-Logs:
+- `results/raw/long_stream_cache_width.csv`
+- Rows: 24
+- `correctness_passed=True`: 24/24
 
-- `results/logs/overnight_bch_syndrome.log`
-- `results/logs/overnight_component_loop.log`
-- `results/logs/overnight_event_update.log`
+Summary CSV:
 
-Summary and figure regeneration:
+- `results/summary/long_stream_cache_width_summary.csv`
+- Rows: 4
+- `is_20x_long_stream=True`: 4/4
+- `l2_strong_20x_claim=True`: 0/4
+- `l3_strong_20x_claim=True`: 1/4
 
-```bash
-python scripts/summarize_results.py
-python scripts/plot_results.py
-python scripts/plot_experiment_round07_results.py
-python scripts/export_paper_figures.py
-```
+Strong L2/L3 gate used by the summary:
 
-Log: `results/logs/overnight_summary_and_figures.log`
+1. `total_bits >= 1,342,177,280`;
+2. compared result has `correctness_all_true=True`;
+3. best L2 or L3 latency ratio versus best L1 latency is `<= 0.8`;
+4. both compared latency CV values are `<= 0.10`.
 
-Acceptance:
+## Key Observations
 
-```bash
-python -m pytest -q
-```
+| Code profile | Iterations | Best L1 width | Best L2 ratio vs L1 | L2 strong 20x | Best L3 ratio vs L1 | L3 strong 20x |
+|---|---:|---:|---:|---|---:|---|
+| `bch_255_239_r16` | 1 | 8 | 0.895 | False | 0.972 | False |
+| `bch_255_239_r16` | 5 | 8 | 0.898 | False | 0.951 | False |
+| `ebch_256_239_r17` | 1 | 8 | 0.807 | False | 0.712 | False |
+| `ebch_256_239_r17` | 5 | 8 | 0.937 | False | 0.797 | True |
 
-Plus CSV/figure audit. Log: `results/logs/overnight_acceptance.log`
+Interpretation for review:
 
-## Outputs Refreshed
-
-- `results/raw/cache_aware_selection.csv`
-- `results/raw/cache_aware.csv`
-- `results/raw/candidate_testing.csv`
-- `results/raw/component_decoder_exactness.csv`
-- `results/raw/bch_syndrome.csv`
-- `results/raw/component_loop.csv`
-- `results/raw/event_update.csv`
-- `results/raw/hardware_profile.json`
-- `results/summary/*.csv`
-- `results/figures/*.png`
-- `results/figures/*.pdf`
-- `results/paper_figures/*.png`
-- `results/paper_figures/*.pdf`
-- `results/logs/overnight_*.log`
-
-## Artifact Audit
-
-| Artifact | Rows | Bad correctness | Notes |
-|---|---:|---:|---|
-| `cache_aware_selection.csv` | 450 | 0 | lightweight + paper presets |
-| `cache_aware.csv` | 9216 | 0 | full preset, repeats 7 |
-| `candidate_testing.csv` | 784 | 0 | full preset, repeats 7 |
-| `component_decoder_exactness.csv` | 24 | 0 | full preset, repeats 7 |
-| `bch_syndrome.csv` | 36 | 0 | focused scaling, repeats 5 |
-| `component_loop.csv` | 48 | 0 | focused scaling, repeats 5 |
-| `event_update.csv` | 45 | 0 | flip counts through 16, repeats 5 |
-
-`component_decoder_exactness.csv` has `exact_mismatch_count=0` for all rows.
-The full double-bit case is labeled `all_double_bit_errors` with
-`double_error_coverage=full`.
-
-## Planner Summary After Overnight Rerun
-
-Paper preset workload metrics from
-`results/summary/cache_aware_selection_workload_summary.csv`:
-
-| Workload | Mean planner/oracle | p90 | Max | Correctness |
-|---|---:|---:|---:|---|
-| `candidate_test_packed` | 1.018 | 1.062 | 1.268 | True |
-| `component_decode_batch` | 1.063 | 1.169 | 2.246 | True |
-| `dense_batch` | 1.121 | 1.363 | 2.517 | True |
-| `event_update` | 1.001 | 1.000 | 1.090 | True |
-| `sparse_single` | 1.000 | 1.000 | 1.000 | True |
-
-These results remain near the Round 7 calibrated quality. They are suitable as
-paper-level validation data for planner behavior, with the caveat that exact
-backend+block oracle match remains timing-sensitive.
+- L2 widths often beat the best L1 width, but none reached the requested
+  stable 20% gap in the 20x long-stream run.
+- L3 has one supported condition under this gate:
+  `ebch_256_239_r17`, `iterations=5`, `block_width=16`, ratio `0.797`.
+- The `ebch_256_239_r17`, `iterations=1` L3 row is faster by more than 20%,
+  but it is not marked strong because the best L1 comparison CV is high.
+- Therefore any L3-related paper wording must be condition-specific, not
+  universal.
 
 ## Figure Status
 
 Regenerated:
 
-- `results/figures/experiment_round07_cache_aware_calibration.png`
-- `results/figures/experiment_round07_cache_aware_calibration.pdf`
-- `results/figures/bch_syndrome_throughput.png`
-- `results/figures/component_loop_speedup.png`
-- `results/figures/event_update_comparison.png`
-- `results/paper_figures/fig_bch_syndrome_throughput.png`
-- `results/paper_figures/fig_component_loop_latency.png`
-- `results/paper_figures/fig_event_update_comparison.png`
-- `results/paper_figures/fig_planner_latency.png`
+- `results/figures/experiment_round09_long_stream_cache_width.png`
+- `results/figures/experiment_round09_long_stream_cache_width.pdf`
 
-The `results/paper_figures/` outputs are better suited for paper drafting than
-the older diagnostic figures, but captions and final figure selection should
-still be reviewed before manuscript use.
+The right panel now separates L2/L1 and L3/L1 ratios and shows the 0.8 gate,
+instead of merging L2 and L3 into one bar.
 
-## Skipped Items
+## Verification
 
-- `scripts/run_all_benchmarks.py` was intentionally not run because it is broad
-  and less targeted than the selected paper-facing experiments.
-- No extra full sweep beyond the specified targeted commands.
-- No `BCH(511,484,r27)` candidate profile was added.
-- No BER/full-decoder experiments were run.
+Commands run:
 
-## Known Notes
+```bash
+python scripts/summarize_results.py
+python scripts/plot_experiment_round09_results.py
+python -m pytest tests/test_long_stream_cache_width.py tests/test_result_summary.py -q
+python -m pytest -q
+```
 
-- `results/raw/hardware_profile.json` may still record `git_dirty=True`
-  because result/log files were generated during the run. The code was the
-  committed Round 7 code at experiment start.
-- `review_gpt/round_18_skill_and_figure_redesign_plan.md` remains untracked and
-  was not staged.
-- `paper/`, `references/`, and `external_refs/` were not committed.
+Result:
+
+- `14 passed, 4 warnings`
+- Full test suite: `293 passed, 1 skipped, 26 warnings`
+- CSV audit confirmed 24/24 raw rows have `correctness_passed=True`.
+
+## Known Issues / Limits
+
+- This is still a Python microbenchmark, so cache behavior is diagnostic rather
+  than a hardware-counter proof.
+- No L2 condition currently satisfies the requested stable 20% gate.
+- The only L3 strong condition is for the candidate eBCH-like `r=17` profile at
+  `iterations=5`; do not generalize it to every code profile or every workload.
+- `review_gpt/round_18_skill_and_figure_redesign_plan.md` remains unrelated and
+  untracked.
+
+## Next Steps
+
+- If stronger L2 evidence is needed, run a targeted L2-only sweep with
+  additional widths around the L2 footprint boundary and larger repeat counts.
+- If stronger L3 evidence is needed, repeat the one passing eBCH condition on a
+  second machine or with hardware-counter profiling.
+- Keep all L2/L3 wording tied to `long_stream_cache_width_summary.csv`.
