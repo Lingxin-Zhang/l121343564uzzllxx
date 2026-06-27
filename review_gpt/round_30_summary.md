@@ -17,7 +17,8 @@ Review bundle:
 
 The bundle contains the external backend/runner files, paired real-OFEC BER
 CSVs/diffs/timing, h16/h18 MC-core follow-up CSVs, high-repeat Fig. 2/Fig. 3
-CSVs, generated PNG/PDF figures, plot scripts, tests, and these review notes.
+CSVs, generated PNG/PDF figures, plot scripts, tests, these review notes, and
+`review_gpt/round_30_completion_audit.md`.
 
 ## Implementation Delta
 

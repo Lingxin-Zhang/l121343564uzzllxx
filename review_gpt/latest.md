@@ -23,6 +23,14 @@ runner files, paired real-OFEC BER CSVs/diffs/timing, h16/h18 MC-core
 follow-up CSVs, high-repeat Fig. 2/Fig. 3 CSVs, generated PNG/PDF figures, plot
 scripts, tests, and these review notes.
 
+Completion audit:
+
+- `review_gpt/round_30_completion_audit.md`
+- The audit marks the h16/h18 follow-up, Fig. 2/Fig. 3 high-repeat outputs,
+  accepted paired BER points, and review bundle as proven.
+- It does not mark the original h=10 formal one-hour, `max_blocks=500000`
+  sweep as complete, because current accepted h10 CSVs do not prove that gate.
+
 ## Parallel Injection Gate
 
 The external runner now supports point-level process parallelism. Each worker
