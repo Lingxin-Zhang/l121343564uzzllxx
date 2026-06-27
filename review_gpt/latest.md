@@ -133,10 +133,9 @@ question:
 - h=20 and h=22 already have zero observed errors at `13.9 dB`, so they look
   too strong/left-shifted for placing the low-BER waterfall region around
   `14.0 dB`;
-- the current best candidate for the next formal sweep is h=18, with h=15 as
-  a close backup. h=18 is preferred because the finite positive point at
-  `13.9 dB` remains above `1e-6` while the `14.0 dB` point is already below
-  roughly `2e-8` by zero-error upper bound.
+- before the paired MC-core follow-up below, this calibration made h=18 look
+  like the best next candidate. The later paired h16/h18 run changes that
+  recommendation.
 
 Two short h12/h14/h15/h16 probes were also run under the one-hour aggregate
 experiment budget and are recorded in `round30_h_selection_addendum.csv`.
@@ -156,6 +155,59 @@ accepted four completed paired points:
 - all four paired points matched exactly;
 - the run was stopped before later in-flight SNR points completed, so no
   in-flight point is reported or used.
+
+## Paired MC-Core h16/h18 Follow-Up
+
+The later user question asked whether weakening h from 18 to 15/16 would be
+better because the h18 MC-core run had only 38 post-FEC errors at `13.9 dB`.
+The accepted paired MC-core evidence now supports h=16 over h=18 for the
+current "low-BER waterfall near 14.0 dB" target.
+
+Source CSVs:
+
+- `results/raw/round30_formal_h16_mc_core_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_formal_h16_mc_core_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_formal_h16_mc_core_real_ofec_curve_diff.csv`
+- `results/raw/round30_formal_h16_mc_core_real_ofec_timing.csv`
+- `results/raw/round30_formal_h18_mc_core_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_formal_h18_mc_core_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_formal_h18_mc_core_real_ofec_curve_diff.csv`
+- `results/raw/round30_formal_h18_mc_core_real_ofec_timing.csv`
+
+Accepted paired rows:
+
+| h | SNR Es/N0 dB | post errors / total bits | post-FEC BER or 95% zero-error upper | stop | paired diff |
+|---:|---:|---:|---:|---|---|
+| 16 | 13.9 | `188 / 67108864` | `2.8014183044433594e-06` | target_errors_reached | exact match |
+| 16 | 14.0 | `0 / 671088640` | zero-error upper approx. `4.463988956260323e-09` | max_blocks_reached | exact match |
+| 18 | 13.9 | `38 / 209715200` | `1.811981201171875e-07` | max_blocks_reached | exact match |
+| 18 | 14.0 | `0 / 209715200` | zero-error upper approx. `1.4284764593419652e-08` | max_blocks_reached | exact match |
+
+Current decision:
+
+- h=16 is the better supported candidate for the requested target because
+  `13.9 dB` has a positive, adequately counted point (`188` errors), while
+  `14.0 dB` has zero observed errors over a larger denominator than h18.
+- h=18 remains bit-exact and faster than the reference backend, but its
+  `13.9 dB` point has only `38` errors and is therefore too weak to use as the
+  main calibration evidence.
+- h=15 remains plausible from the earlier official-backend calibration, but a
+  full paired MC-core h15 run was not started because the one-hour aggregate
+  experiment-budget rule favored analyzing the completed h16/h18 evidence.
+
+Timing summary:
+
+| h | point-wall ratio syndrome_lut/block_lut | decode ratio syndrome_lut/block_lut |
+|---:|---:|---:|
+| 16 | `1.0487933321772949` | `1.0573324636310466` |
+| 18 | `1.0953119272474656` | `1.058312426807149` |
+
+One MC-runner issue was found and fixed before accepting the paired MC-core
+data: early stopping used backend-speed-dependent completed chunks, which
+could make the two backends aggregate different chunk sets. The runner now
+aggregates MC chunks wave-synchronously before applying the stop rule, so the
+paired backends consume the same seed/chunk set. The failed h18 refine run
+from before this fix is not used as evidence.
 
 ## SNR Definition
 
@@ -206,6 +258,8 @@ Generated from committed CSVs:
 
 - `results/figures/round30_real_ofec_ber.png`
 - `results/figures/round30_real_ofec_ber.pdf`
+- `results/figures/round30_real_ofec_h16_mc_ber.png`
+- `results/figures/round30_real_ofec_h16_mc_ber.pdf`
 - `results/figures/fig2_fixed_map_speedup.png`
 - `results/figures/fig2_fixed_map_speedup.pdf`
 - `results/figures/fig3_block_width_cache_sweep.png`
@@ -231,5 +285,5 @@ python -B -m pytest -q
 
 Results:
 
-- external package: `3 passed, 1 warning`
-- `fec_linear_backend`: `308 passed, 1 skipped, 27 warnings`
+- external package: `5 passed, 1 warning`
+- `fec_linear_backend`: `310 passed, 1 skipped, 27 warnings`

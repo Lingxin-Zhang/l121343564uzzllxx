@@ -29,12 +29,23 @@ plain backend label and constructs its backend locally:
 
 No instantiated backend object is pickled into a worker.
 
+The runner also now supports an external MC measurement mode for paired
+backend runs. In that mode each worker constructs its own backend and MC chunks
+are aggregated wave-synchronously before applying the stop rule, so the
+reference backend and block-LUT backend consume the same seed/chunk set. This
+fix avoids backend-speed-dependent early stopping. A h18 refine run produced
+before this fix is not used as evidence.
+
 Test update:
 
 - `ofec_block_lut_backend/tests/test_block_lut_backend_equivalence.py`
 
 The added test verifies that point-parallel output matches serial output for
 the same seeds.
+
+Additional MC-mode tests verify that paired backends match after
+warmup/measure/discard and that early stopping keeps the same chunk count for
+both backends.
 
 Repository plotting updates:
 
@@ -196,13 +207,13 @@ The zero-error rows mean finite-sample zero observations. They are not claims
 that the BER is zero.
 
 For the specific question "which h puts the roughly `1e-6` to `1e-8`
-waterfall region near `14.0 dB`", the current evidence points to h=18 as the
-best next formal-sweep candidate:
+waterfall region near `14.0 dB`", this official-backend calibration initially
+made h=18 look like the best next candidate:
 
 | h | 13.9 dB evidence | 14.0 dB evidence | current interpretation |
 |---:|---|---|---|
 | 15 | `1.7447905106977983e-06`, `161 / 92274688` | `0 / 151912448`, zero-error upper approx. `1.97e-8` | close backup; likely slightly earlier than 14.0 for `1e-7` |
-| 18 | `5.6425730387369794e-06`, `142 / 25165824` | `0 / 148979712`, zero-error upper approx. `2.01e-8` | preferred candidate; brackets the target region between 13.9 and 14.0 |
+| 18 | `5.6425730387369794e-06`, `142 / 25165824` | `0 / 148979712`, zero-error upper approx. `2.01e-8` | initially preferred candidate; later paired MC-core evidence favors h=16 |
 | 20 | `0 / 145375232`, zero-error upper approx. `2.06e-8` | `0 / 145375232`, zero-error upper approx. `2.06e-8` | too strong/left-shifted for the requested target |
 | 22 | `0 / 142606336`, zero-error upper approx. `2.10e-8` | `0 / 142606336`, zero-error upper approx. `2.10e-8` | too strong/left-shifted for the requested target |
 
@@ -211,6 +222,58 @@ under the one-hour aggregate experiment budget. All reported probe points had
 more than 60 post-FEC errors, so they are recorded. However, they stopped after
 only 4 to 16 measurement blocks and are startup-transient dominated. They are
 smoke data only and are not used to choose h.
+
+## Paired MC-Core h16/h18 Follow-Up
+
+After the user asked whether h=15/16 would be better than h=18, paired MC-core
+experiments were run for h16 and h18 at `13.9` and `14.0 dB`. These runs use
+both backends and therefore provide end-to-end paired exactness evidence, not
+just official-backend calibration.
+
+Copied repository CSVs:
+
+- `results/raw/round30_formal_h16_mc_core_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_formal_h16_mc_core_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_formal_h16_mc_core_real_ofec_curve_diff.csv`
+- `results/raw/round30_formal_h16_mc_core_real_ofec_timing.csv`
+- `results/raw/round30_formal_h18_mc_core_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_formal_h18_mc_core_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_formal_h18_mc_core_real_ofec_curve_diff.csv`
+- `results/raw/round30_formal_h18_mc_core_real_ofec_timing.csv`
+
+Accepted rows:
+
+| h | SNR Es/N0 dB | post errors | total bits | post-FEC BER / upper bound | stop | paired diff |
+|---:|---:|---:|---:|---:|---|---|
+| 16 | 13.9 | 188 | 67108864 | `2.8014183044433594e-06` | target_errors_reached | exact match |
+| 16 | 14.0 | 0 | 671088640 | zero-error upper approx. `4.463988956260323e-09` | max_blocks_reached | exact match |
+| 18 | 13.9 | 38 | 209715200 | `1.811981201171875e-07` | max_blocks_reached | exact match |
+| 18 | 14.0 | 0 | 209715200 | zero-error upper approx. `1.4284764593419652e-08` | max_blocks_reached | exact match |
+
+The current recommendation is h=16:
+
+- h16 gives a positive, better-counted `13.9 dB` point (`188` post-FEC errors),
+  and a `14.0 dB` zero-observation upper bound below `1e-8`.
+- h18 is still paired bit-exact, but its `13.9 dB` point has only `38` errors,
+  so it is too weak to be the main calibration evidence.
+- h15 remains plausible from the official-backend calibration, but a full
+  paired MC-core h15 run was not started because the aggregate experiment
+  budget was already better spent analyzing the completed h16/h18 data.
+
+Timing summary:
+
+| h | syndrome_lut point wall s | block_lut point wall s | point-wall ratio | decode ratio |
+|---:|---:|---:|---:|---:|
+| 16 | 845.703773999936 | 806.358839299879 | `1.0487933321772949` | `1.0573324636310466` |
+| 18 | 630.7593108000001 | 575.8718545000302 | `1.0953119272474656` | `1.058312426807149` |
+
+Generated h16 paired figure:
+
+- `results/figures/round30_real_ofec_h16_mc_ber.png`
+- `results/figures/round30_real_ofec_h16_mc_ber.pdf`
+
+The h16 figure plots zero-error points as 95% one-sided upper bounds on the
+log-scale axis instead of plotting literal zero.
 
 ## Formal h=10 Low/Mid Partial
 
@@ -253,6 +316,8 @@ Generated files:
 
 - `results/figures/round30_real_ofec_ber.png`
 - `results/figures/round30_real_ofec_ber.pdf`
+- `results/figures/round30_real_ofec_h16_mc_ber.png`
+- `results/figures/round30_real_ofec_h16_mc_ber.pdf`
 - `results/figures/fig2_fixed_map_speedup.png`
 - `results/figures/fig2_fixed_map_speedup.pdf`
 - `results/figures/fig3_block_width_cache_sweep.png`
@@ -322,9 +387,9 @@ python -B -m pytest -q
 Observed results:
 
 - point-parallel regression: `1 passed, 1 warning`
-- external backend tests: `3 passed, 1 warning`
-- plotting smoke tests: `5 passed, 1 warning`
-- full `fec_linear_backend` suite: `308 passed, 1 skipped, 27 warnings`
+- external backend tests: `5 passed, 1 warning`
+- plotting smoke tests: `7 passed, 1 warning`
+- full `fec_linear_backend` suite: `310 passed, 1 skipped, 27 warnings`
 
 ## Not Done
 

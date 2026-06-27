@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
 from pathlib import Path
 from typing import Any
 
@@ -65,12 +66,30 @@ def _save_figure(fig: plt.Figure, output_dir: Path, stem: str) -> None:
     plt.close(fig)
 
 
-def _curve(rows: list[dict[str, Any]]) -> tuple[list[float], list[float], list[str]]:
+def _display_ber(row: dict[str, Any]) -> tuple[float, bool]:
+    post_errors = int(row.get("post_fec_errors", "0") or 0)
+    total_bits = int(row.get("total_bits", "0") or 0)
+    ber = float(row["post_fec_ber"])
+    if post_errors == 0 and total_bits > 0:
+        return 1.0 - math.pow(0.05, 1.0 / total_bits), True
+    return ber, False
+
+
+def _curve(rows: list[dict[str, Any]]) -> tuple[list[float], list[float], list[str], list[bool]]:
     ordered = sorted(rows, key=lambda row: float(row["snr_db"]))
     snr = [float(row["snr_db"]) for row in ordered]
-    ber = [float(row["post_fec_ber"]) for row in ordered]
+    display = [_display_ber(row) for row in ordered]
+    ber = [value for value, _zero_error in display]
+    zero_error = [zero_error for _value, zero_error in display]
     stop = [str(row["stop_reason"]) for row in ordered]
-    return snr, ber, stop
+    return snr, ber, stop, zero_error
+
+
+def _title_from_rows(rows: list[dict[str, Any]]) -> str:
+    h_values = sorted({str(row.get("h", "")).strip() for row in rows if str(row.get("h", "")).strip()})
+    if len(h_values) == 1:
+        return f"Real OFEC BER, h={h_values[0]}"
+    return "Real OFEC BER"
 
 
 def plot_round30_real_ofec_ber(
@@ -79,6 +98,7 @@ def plot_round30_real_ofec_ber(
     block_lut_csv: Path = DEFAULT_BLOCK_LUT_CSV,
     diff_csv: Path = DEFAULT_DIFF_CSV,
     output_dir: Path = DEFAULT_OUTPUT_DIR,
+    output_stem: str = OUTPUT_STEM,
 ) -> None:
     _setup_style()
     reference_rows = read_csv_rows(reference_csv)
@@ -87,8 +107,8 @@ def plot_round30_real_ofec_ber(
     matched_count = sum(1 for row in diff_rows if str(row["matched"]) == "True")
     mismatch_count = len(diff_rows) - matched_count
 
-    ref_snr, ref_ber, ref_stop = _curve(reference_rows)
-    lut_snr, lut_ber, lut_stop = _curve(block_lut_rows)
+    ref_snr, ref_ber, ref_stop, ref_zero_error = _curve(reference_rows)
+    lut_snr, lut_ber, lut_stop, lut_zero_error = _curve(block_lut_rows)
 
     fig, ax = plt.subplots(figsize=(4.9, 3.2))
     ax.plot(
@@ -108,14 +128,16 @@ def plot_round30_real_ofec_ber(
         color="#2AA6A1",
         label="block-LUT backend",
     )
-    for snr, ber, stop in zip(lut_snr, lut_ber, lut_stop):
+    for snr, ber, stop, zero_error in zip(lut_snr, lut_ber, lut_stop, lut_zero_error):
         if stop in {"time_capped", "max_blocks_reached"}:
             ax.scatter([snr], [ber], marker="^", s=38, color="#8B1A1A", zorder=4)
+        if zero_error:
+            ax.scatter([snr], [ber], marker="v", s=44, color="#2AA6A1", edgecolor="#333333", zorder=5)
 
     ax.set_yscale("log")
     ax.set_xlabel("SNR Es/N0 (dB)")
     ax.set_ylabel("Post-FEC BER")
-    ax.set_title("Real OFEC BER, h=10")
+    ax.set_title(_title_from_rows(reference_rows))
     ax.grid(True, which="both", alpha=0.24, linewidth=0.55)
     ax.tick_params(direction="out", length=3.5, width=0.8)
     ax.legend(frameon=True, loc="best")
@@ -140,9 +162,20 @@ def plot_round30_real_ofec_ber(
             fontsize=7,
             color="#8B1A1A",
         )
+    if any(ref_zero_error) or any(lut_zero_error):
+        ax.text(
+            0.03,
+            0.15,
+            "zero-error points shown as 95% upper bounds",
+            transform=ax.transAxes,
+            ha="left",
+            va="bottom",
+            fontsize=7,
+            color="#333333",
+        )
     for spine in ax.spines.values():
         spine.set_linewidth(0.9)
-    _save_figure(fig, output_dir, OUTPUT_STEM)
+    _save_figure(fig, output_dir, output_stem)
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -151,6 +184,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--block-lut-csv", type=Path, default=DEFAULT_BLOCK_LUT_CSV)
     parser.add_argument("--diff-csv", type=Path, default=DEFAULT_DIFF_CSV)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--output-stem", type=str, default=OUTPUT_STEM)
     return parser
 
 
@@ -161,6 +195,7 @@ def main(argv: list[str] | None = None) -> int:
         block_lut_csv=args.block_lut_csv,
         diff_csv=args.diff_csv,
         output_dir=args.output_dir,
+        output_stem=args.output_stem,
     )
     return 0
 
