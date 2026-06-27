@@ -29,7 +29,7 @@ command output directly prove it.
 | Produce paired real-OFEC BER evidence | `results/raw/round30_real_ofec_*`, `round30_formal_h16_mc_core_*`, `round30_formal_h18_mc_core_*`; paired diff CSVs are all zero for accepted points. | Proven for accepted points |
 | Push BER as close as current run reached to `1e-7` without fabricating values | h10 review sweep reaches `1.0597088898163606e-07` at `15.95 dB` with `26 / 245350400`; summary explicitly labels it as low-error, not high-confidence. | Proven as observed point, weak for precision |
 | Run formal h=10 sweep with `min_post_errors=200`, `max_blocks=500000`, broad SNR window, and one-hour cap | Current formal h10 low/mid CSV has only four completed SNRs up to `14.45 dB`; current h10 1e-7-near sweep uses `max_blocks=60000`, not `500000`. | Not complete |
-| Enforce one-hour global cap with in-flight point salvage via progress/checkpoint records | Runner has `time_budget_s`, but current point-parallel path submits all futures and only writes completed results; MC single-point path does not expose in-flight partial rows. No accepted time-capped row proves this behavior. | Not proven |
+| Enforce one-hour/global cap and discard low-error interrupted points | External MC runner now accepts a per-point time budget, marks capped MC points as `time_capped`, and filters time-capped pairs unless `post_fec_errors` is greater than the configured threshold. External tests and CLI smoke cover low-error discard. No formal h10 accepted time-capped row has been produced yet. | Runner support partially proven; formal use not complete |
 | Later h selection around 14.0 dB | Paired MC-core h16/h18 CSVs: h16 has `188 / 67108864` at `13.9 dB`, zero observed over `671088640` bits at `14.0 dB`, paired diff zero. | Proven for h16/h18 accepted points |
 | Fig. 2/Fig. 3 high-repeat convergence and `a` to `w` label change | High-repeat CSVs exist; Fig. 2/Fig. 3 PNG/PDF exist; plot scripts use block width `w`. | Proven by files and plot smoke tests |
 | Review bundle includes required review artifacts | Zip contains external backend/runner, scripts, tests, raw CSVs, PNG/PDF figures, and review notes. | Proven by zip entry audit |
@@ -38,9 +38,8 @@ command output directly prove it.
 
 The active goal should not be marked complete yet if the original h=10 formal
 requirement remains binding. The missing proof is a formal h=10 sweep with the
-large `max_blocks=500000` budget, the intended broad SNR window, and a real
-one-hour cap/partial-point policy. Current results are useful review evidence,
-but they do not satisfy that specific gate.
+large `max_blocks=500000` budget and the intended broad SNR window. Current
+results are useful review evidence, but they do not satisfy that specific gate.
 
 The later h16 paired MC-core evidence answers the updated "put the low-BER
 region near 14.0 dB" question, but it does not retroactively prove the original
@@ -48,11 +47,7 @@ h=10 formal sweep.
 
 ## Next Work If The Original h=10 Gate Remains Required
 
-1. Add or verify a runner path that can stop on the one-hour wall-clock budget
-   without waiting for all submitted point-parallel futures to finish.
-2. Record partial in-flight point state only when the post-error count meets
-   the requested threshold; otherwise discard the point.
-3. Run the formal h=10 paired sweep with the stated parameters and copy the
+1. Run the formal h=10 paired sweep with the stated parameters and copy the
    accepted CSVs/figure into `results/raw` and `results/figures`.
-4. Rebuild `round30_real_ofec_review_snapshot.zip`, rerun tests, and update the
+2. Rebuild `round30_real_ofec_review_snapshot.zip`, rerun tests, and update the
    summaries with accepted/time-capped points.

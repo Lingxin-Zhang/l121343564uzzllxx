@@ -41,6 +41,11 @@ reference backend and block-LUT backend consume the same seed/chunk set. This
 fix avoids backend-speed-dependent early stopping. A h18 refine run produced
 before this fix is not used as evidence.
 
+The MC runner also supports time-capped points and filters interrupted
+time-capped pairs unless the post-FEC error count is greater than the
+configured acceptance threshold. The current default threshold is `60`, matching
+the later "greater than 60 errors" instruction for interrupted final points.
+
 Test update:
 
 - `ofec_block_lut_backend/tests/test_block_lut_backend_equivalence.py`
@@ -49,8 +54,8 @@ The added test verifies that point-parallel output matches serial output for
 the same seeds.
 
 Additional MC-mode tests verify that paired backends match after
-warmup/measure/discard and that early stopping keeps the same chunk count for
-both backends.
+warmup/measure/discard, early stopping keeps the same chunk count for both
+backends, and low-error time-capped pairs are not written as accepted BER rows.
 
 Repository plotting updates:
 
@@ -392,7 +397,7 @@ python -B -m pytest -q
 Observed results:
 
 - point-parallel regression: `1 passed, 1 warning`
-- external backend tests: `5 passed, 1 warning`
+- external backend tests: `8 passed, 1 warning`
 - plotting smoke tests: `7 passed, 1 warning`
 - full `fec_linear_backend` suite: `310 passed, 1 skipped, 27 warnings`
 

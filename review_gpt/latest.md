@@ -28,8 +28,9 @@ Completion audit:
 - `review_gpt/round_30_completion_audit.md`
 - The audit marks the h16/h18 follow-up, Fig. 2/Fig. 3 high-repeat outputs,
   accepted paired BER points, and review bundle as proven.
-- It does not mark the original h=10 formal one-hour, `max_blocks=500000`
-  sweep as complete, because current accepted h10 CSVs do not prove that gate.
+- The external MC runner now supports time-capped low-error point discard, but
+  the audit still does not mark the original h=10 formal `max_blocks=500000`
+  sweep as complete because current accepted h10 CSVs do not prove that gate.
 
 ## Parallel Injection Gate
 
@@ -298,5 +299,5 @@ python -B -m pytest -q
 
 Results:
 
-- external package: `5 passed, 1 warning`
+- external package: `8 passed, 1 warning`
 - `fec_linear_backend`: `310 passed, 1 skipped, 27 warnings`
