@@ -1,0 +1,4 @@
+snr_db,matched,total_blocks_delta,emitted_blocks_delta,total_bits_delta,pre_fec_errors_delta,post_fec_errors_delta,pre_fec_ber_delta,post_fec_ber_delta
+13.7,True,0,0,0,0,0,0.0,0.0
+13.95,True,0,0,0,0,0,0.0,0.0
+14.2,True,0,0,0,0,0,0.0,0.0

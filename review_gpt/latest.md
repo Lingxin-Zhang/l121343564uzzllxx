@@ -223,6 +223,49 @@ aggregates MC chunks wave-synchronously before applying the stop rule, so the
 paired backends consume the same seed/chunk set. The failed h18 refine run
 from before this fix is not used as evidence.
 
+## Formal Fig. 4 h16 Sweep
+
+After the later instruction to use the previously identified suitable h value
+for the best Fig. 4, a formal paired MC-core h16 sweep was run and selected as
+the Fig. 4 candidate.
+
+Source CSVs:
+
+- `results/raw/round30_fig4_h16_formal_6h_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_fig4_h16_formal_6h_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_fig4_h16_formal_6h_real_ofec_curve_diff.csv`
+- `results/raw/round30_fig4_h16_formal_6h_real_ofec_timing.csv`
+
+Accepted paired rows:
+
+| SNR Es/N0 dB | post errors / total bits | post-FEC BER | stop | paired diff |
+|---:|---:|---:|---|---|
+| 13.75 | `231439 / 79134720` | `0.0029246201919966358` | target_errors_reached | exact match |
+| 13.80 | `56183 / 79134720` | `0.0007099664976384576` | target_errors_reached | exact match |
+| 13.85 | `1399 / 79134720` | `1.767871295936853e-05` | target_errors_reached | exact match |
+| 13.90 | `291 / 712212480` | `4.085859321083506e-07` | target_errors_reached | exact match |
+| 13.95 | `9 / 1740963840` | `5.169550218802936e-09` | max_blocks_reached | exact match |
+| 14.00 | `0 / 1740963840` | 95% zero-error upper approx. `1.720732001331271e-09` | max_blocks_reached | exact match |
+
+The h16 figure is:
+
+- `results/figures/round30_fig4_h16_formal_ber.png`
+- `results/figures/round30_fig4_h16_formal_ber.pdf`
+
+Timing ratio for this h16 sweep:
+
+- point wall-clock ratio, reference/block-LUT: `1.1126846823150944`
+- decode-time ratio, reference/block-LUT: `1.1199946694709428`
+
+Interpretation boundary: the `13.95 dB` point has only `9` post-FEC errors and
+the `14.0 dB` point has zero observed errors, so the low-BER tail is shown as
+observed/upper-bound evidence rather than a high-confidence floor estimate.
+
+h15 was started as a backup but stopped after its first exact point
+(`13.85 dB`, BER `6.721951314155629e-05`) once h16 became the supported Fig. 4
+choice. The h10 formal MC-core partial run is retained for audit, but not used
+for the selected Fig. 4 curve.
+
 ## SNR Definition
 
 The local OFEC channel uses normalized 16QAM with average symbol power 1 and
@@ -274,6 +317,8 @@ Generated from committed CSVs:
 - `results/figures/round30_real_ofec_ber.pdf`
 - `results/figures/round30_real_ofec_h16_mc_ber.png`
 - `results/figures/round30_real_ofec_h16_mc_ber.pdf`
+- `results/figures/round30_fig4_h16_formal_ber.png`
+- `results/figures/round30_fig4_h16_formal_ber.pdf`
 - `results/figures/fig2_fixed_map_speedup.png`
 - `results/figures/fig2_fixed_map_speedup.pdf`
 - `results/figures/fig3_block_width_cache_sweep.png`

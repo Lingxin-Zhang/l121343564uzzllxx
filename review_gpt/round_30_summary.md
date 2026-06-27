@@ -285,6 +285,60 @@ Generated h16 paired figure:
 The h16 figure plots zero-error points as 95% one-sided upper bounds on the
 log-scale axis instead of plotting literal zero.
 
+## Formal Fig. 4 h16 Sweep
+
+After the later instruction to use the previously identified suitable h value
+for the best Fig. 4, the formal Fig. 4 sweep was run with h=16:
+
+- SNR Es/N0 grid: `13.75, 13.80, 13.85, 13.90, 13.95, 14.00`
+- `min_post_errors=200`
+- `max_blocks=500000`
+- `batch_blocks=16`
+- `measurement_mode=mc`
+- `mc_workers=6`
+- `block_width=14`
+
+Copied repository CSVs:
+
+- `results/raw/round30_fig4_h16_formal_6h_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_fig4_h16_formal_6h_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_fig4_h16_formal_6h_real_ofec_curve_diff.csv`
+- `results/raw/round30_fig4_h16_formal_6h_real_ofec_timing.csv`
+
+Accepted rows:
+
+| SNR Es/N0 dB | post errors | total bits | post-FEC BER / upper bound | stop | paired diff |
+|---:|---:|---:|---:|---|---|
+| 13.75 | 231439 | 79134720 | `0.0029246201919966358` | target_errors_reached | exact match |
+| 13.80 | 56183 | 79134720 | `0.0007099664976384576` | target_errors_reached | exact match |
+| 13.85 | 1399 | 79134720 | `1.767871295936853e-05` | target_errors_reached | exact match |
+| 13.90 | 291 | 712212480 | `4.085859321083506e-07` | target_errors_reached | exact match |
+| 13.95 | 9 | 1740963840 | `5.169550218802936e-09` | max_blocks_reached | exact match |
+| 14.00 | 0 | 1740963840 | zero-error upper approx. `1.720732001331271e-09` | max_blocks_reached | exact match |
+
+The selected Fig. 4 files are:
+
+- `results/figures/round30_fig4_h16_formal_ber.png`
+- `results/figures/round30_fig4_h16_formal_ber.pdf`
+
+Timing summary for this h16 sweep:
+
+| metric | syndrome_lut | block_lut | ratio syndrome_lut/block_lut |
+|---|---:|---:|---:|
+| summed point wall-clock s | 4792.179022299941 | 4306.861681899987 | `1.1126846823150944` |
+| summed decode s | 25657.941754299216 | 22908.985599386273 | `1.1199946694709428` |
+| total input blocks | 1298304 | 1298304 | n/a |
+| total emitted blocks | 1081920 | 1081920 | n/a |
+
+The `13.95 dB` point has only `9` post-FEC errors and the `14.00 dB` point
+has zero observed errors. They are included as observed/upper-bound evidence,
+not as high-confidence floor estimates.
+
+h15 was started as a backup and stopped after its first exact point
+(`13.85 dB`, BER `6.721951314155629e-05`) once h16 became the supported Fig. 4
+choice. The h10 formal MC-core partial run is retained for audit, but not used
+for the selected Fig. 4 curve.
+
 ## Formal h=10 Low/Mid Partial
 
 A later formal-parameter h=10 run was started with:
@@ -328,6 +382,8 @@ Generated files:
 - `results/figures/round30_real_ofec_ber.pdf`
 - `results/figures/round30_real_ofec_h16_mc_ber.png`
 - `results/figures/round30_real_ofec_h16_mc_ber.pdf`
+- `results/figures/round30_fig4_h16_formal_ber.png`
+- `results/figures/round30_fig4_h16_formal_ber.pdf`
 - `results/figures/fig2_fixed_map_speedup.png`
 - `results/figures/fig2_fixed_map_speedup.pdf`
 - `results/figures/fig3_block_width_cache_sweep.png`
