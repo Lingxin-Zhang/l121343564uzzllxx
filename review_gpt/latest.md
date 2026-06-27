@@ -103,6 +103,7 @@ intended paper framing.
 Additional MC-style calibration data exists in:
 
 - `results/raw/round30_h_calibration_mc_summary.csv`
+- `results/raw/round30_h_selection_addendum.csv`
 
 It is useful for discussion only and is not paired block-LUT evidence.
 
@@ -117,6 +118,44 @@ Summary:
 
 The zero-error rows mean finite-sample zero observations, not BER equal to zero.
 These h values are not part of the current h=10 primary conclusion.
+
+Addendum for the later "put the 1e-6 to 1e-8 waterfall region near 14.0 dB"
+question:
+
+- the reliable h-selection evidence is the MC warmup/measure/discard
+  calibration for h=15/18/20/22;
+- h=15 has `1.7447905106977983e-06` at `13.9 dB` and zero observed errors
+  at `14.0 dB` over `151912448` bits, giving an approximate 95% zero-error
+  upper bound of `1.97e-8`;
+- h=18 has `5.6425730387369794e-06` at `13.9 dB` and zero observed errors
+  at `14.0 dB` over `148979712` bits, giving an approximate 95% zero-error
+  upper bound of `2.01e-8`;
+- h=20 and h=22 already have zero observed errors at `13.9 dB`, so they look
+  too strong/left-shifted for placing the low-BER waterfall region around
+  `14.0 dB`;
+- the current best candidate for the next formal sweep is h=18, with h=15 as
+  a close backup. h=18 is preferred because the finite positive point at
+  `13.9 dB` remains above `1e-6` while the `14.0 dB` point is already below
+  roughly `2e-8` by zero-error upper bound.
+
+Two short h12/h14/h15/h16 probes were also run under the one-hour aggregate
+experiment budget and are recorded in `round30_h_selection_addendum.csv`.
+Every reported point had more than 60 post-FEC errors, but these probes stopped
+after only 4 to 16 measurement blocks and are startup-transient dominated. They
+are smoke data only and are not used to choose h.
+
+The h10 `min_post_errors=200`, `max_blocks=500000` low/mid-SNR partial run
+accepted four completed paired points:
+
+- source CSVs:
+  `results/raw/round30_formal_h10_low_mid_real_ofec_syndrome_lut_ber.csv`,
+  `results/raw/round30_formal_h10_low_mid_real_ofec_block_lut_ber.csv`,
+  `results/raw/round30_formal_h10_low_mid_real_ofec_curve_diff.csv`, and
+  `results/raw/round30_formal_h10_low_mid_real_ofec_timing.csv`;
+- accepted SNRs: `13.70`, `13.95`, `14.20`, `14.45`;
+- all four paired points matched exactly;
+- the run was stopped before later in-flight SNR points completed, so no
+  in-flight point is reported or used.
 
 ## SNR Definition
 
@@ -144,6 +183,14 @@ Exactness/timing summary:
 
 - block-width high-repeat: 176 rows, 176 exactness pass, 164 timed;
 - three-backend high-repeat: 96 rows, 96 exactness pass, 72 timed.
+- `fixed_map_three_backend_highrep.csv` has 32 rows per backend. Untimed rows
+  are intentional: `galois_per_codeword` is timed only up to batch `1000`, and
+  the `5000000` long-batch rows are present but not timed.
+- Fig. 2 speedups are reproducible from CSV as
+  `throughput_Mbit_s(block-LUT) / throughput_Mbit_s(direct vectorized GF(2)
+  matmul)` at the same task and batch. For batch `1`, block-LUT is slower than
+  direct for both syndrome and parity (`0.349x` and `0.344x` respectively), so
+  no "always faster" wording is supported.
 
 Fig. 3 now plots from the high-repeat CSV. The r16 panel uses batch `300000`;
 the r27 panel uses batch `10000`, selected because the high-repeat

@@ -175,11 +175,12 @@ work points for the intended paper framing.
 
 ## h Calibration Probe
 
-The user later requested an h≈20 calibration, then restored the original h=10
-objective. The partially/completely finished h-calibration results were still
-preserved as a separate probe:
+The user later requested h calibration around the literature-like waterfall
+region. The partially/completely finished h-calibration results were preserved
+as a separate probe:
 
 - `results/raw/round30_h_calibration_mc_summary.csv`
+- `results/raw/round30_h_selection_addendum.csv`
 
 The probe used OFEC's `mc` mode and the official `syndrome_lut` backend, so it
 is not paired block-LUT evidence.
@@ -193,6 +194,51 @@ is not paired block-LUT evidence.
 
 The zero-error rows mean finite-sample zero observations. They are not claims
 that the BER is zero.
+
+For the specific question "which h puts the roughly `1e-6` to `1e-8`
+waterfall region near `14.0 dB`", the current evidence points to h=18 as the
+best next formal-sweep candidate:
+
+| h | 13.9 dB evidence | 14.0 dB evidence | current interpretation |
+|---:|---|---|---|
+| 15 | `1.7447905106977983e-06`, `161 / 92274688` | `0 / 151912448`, zero-error upper approx. `1.97e-8` | close backup; likely slightly earlier than 14.0 for `1e-7` |
+| 18 | `5.6425730387369794e-06`, `142 / 25165824` | `0 / 148979712`, zero-error upper approx. `2.01e-8` | preferred candidate; brackets the target region between 13.9 and 14.0 |
+| 20 | `0 / 145375232`, zero-error upper approx. `2.06e-8` | `0 / 145375232`, zero-error upper approx. `2.06e-8` | too strong/left-shifted for the requested target |
+| 22 | `0 / 142606336`, zero-error upper approx. `2.10e-8` | `0 / 142606336`, zero-error upper approx. `2.10e-8` | too strong/left-shifted for the requested target |
+
+Additional short probes for h12/h14/h15/h16 were run by parallel subagents
+under the one-hour aggregate experiment budget. All reported probe points had
+more than 60 post-FEC errors, so they are recorded. However, they stopped after
+only 4 to 16 measurement blocks and are startup-transient dominated. They are
+smoke data only and are not used to choose h.
+
+## Formal h=10 Low/Mid Partial
+
+A later formal-parameter h=10 run was started with:
+
+```powershell
+python -B -m ofec_block_lut_backend.run_real_ofec_sweep --snr-min 13.7 --snr-max 14.95 --snr-step 0.25 --h 10 --min-post-errors 200 --max-blocks 500000 --batch-blocks 16 --seed 42 --block-width 14 --codec-mode batched --target-post-ber 1e-9 --time-budget-s 1800 --point-parallel-workers 8 --output-dir results/round30_formal_h10_low_mid
+```
+
+The runner was stopped before later in-flight SNR points completed, so only the
+completed paired rows are accepted. Copied repository CSVs:
+
+- `results/raw/round30_formal_h10_low_mid_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_formal_h10_low_mid_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_formal_h10_low_mid_real_ofec_curve_diff.csv`
+- `results/raw/round30_formal_h10_low_mid_real_ofec_timing.csv`
+
+Accepted rows:
+
+| SNR Es/N0 dB | post errors | total bits | post-FEC BER | paired diff |
+|---:|---:|---:|---:|---|
+| 13.70 | 508 | 49152 | 0.010335286458333334 | exact match |
+| 13.95 | 348 | 49152 | 0.007080078125 | exact match |
+| 14.20 | 302 | 49152 | 0.006144205729166667 | exact match |
+| 14.45 | 221 | 114688 | 0.0019271414620535715 | exact match |
+
+No interrupted in-flight SNR point is reported because no completed row with a
+verifiable post-error count was written before termination.
 
 ## SNR Definition
 
