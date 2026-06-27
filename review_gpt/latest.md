@@ -69,7 +69,7 @@ External files included in the bundle:
 `BlockLUTBCHBackend` imports OFEC's own `build_syndrome_lut_tables()` and
 therefore uses the same `column_syndrome_bits`, packed-bit convention, and
 decode arrays as `SyndromeLUTBCHBackend`. It replaces only the online
-syndrome/parity linear-map evaluation with:
+syndrome/parity linear-map evaluation with `PackedBlockLUTKernel.apply_many_packed`:
 
 - `PackedBlockLUTKernel(..., block_width=14, packed_word_bits=16)`
 

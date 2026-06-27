@@ -57,7 +57,7 @@ and parity generation is `uP`.
 
 The new backend imports OFEC's own `build_syndrome_lut_tables()` and reuses
 those exact tables. It only replaces the online GF(2) linear map with
-`PackedBlockLUTKernel.apply_many_packed`.
+`PackedBlockLUTKernel.apply_many_packed`; the run uses `block_width=14`.
 
 ## Implementation Files
 
