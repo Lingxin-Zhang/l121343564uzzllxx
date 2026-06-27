@@ -18,6 +18,11 @@ Review bundle path:
 
 - `round30_real_ofec_review_snapshot.zip`
 
+The current bundle is the full Round 30 review package: external backend and
+runner files, paired real-OFEC BER CSVs/diffs/timing, h16/h18 MC-core
+follow-up CSVs, high-repeat Fig. 2/Fig. 3 CSVs, generated PNG/PDF figures, plot
+scripts, tests, and these review notes.
+
 ## Parallel Injection Gate
 
 The external runner now supports point-level process parallelism. Each worker

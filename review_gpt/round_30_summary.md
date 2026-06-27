@@ -15,6 +15,10 @@ Review bundle:
 
 - `round30_real_ofec_review_snapshot.zip`
 
+The bundle contains the external backend/runner files, paired real-OFEC BER
+CSVs/diffs/timing, h16/h18 MC-core follow-up CSVs, high-repeat Fig. 2/Fig. 3
+CSVs, generated PNG/PDF figures, plot scripts, tests, and these review notes.
+
 ## Implementation Delta
 
 External runner update:
