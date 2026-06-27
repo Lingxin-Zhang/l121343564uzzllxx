@@ -1,198 +1,181 @@
 # Latest Review Summary
 
-Current round: Round 27 paper-figure post-processing from Round 26 CSVs.
+Current round: Round 28 M2 minimal end-to-end product-code BER simulator.
 
 ## Goal
 
-Produce paper-facing plots from already committed raw CSVs, without rerunning
-large benchmarks:
-
-- Fig. 2: online fixed-map speedup versus batch size.
-- Fig. 3: throughput versus block width and cache fit.
-- Fig. 4: decode-level decision exactness and wall-clock ratio for syndrome
-  backend replacement.
+Build a new minimal end-to-end simulator outside the GF(2) kernel repository
+and verify that replacing only the component syndrome backend with block-LUT
+does not change the resulting BER-vs-SNR curve.
 
 Review bundle path:
 
-- `round27_paper_figures_review_bundle.zip`
+- `round28_m2_ofec_sim_review_bundle.zip`
 
-## Files Added Or Updated
+## Boundary
 
-Added:
+The new simulator lives in the sibling directory:
 
-- `scripts/plot_paper_fig2.py`
-- `scripts/plot_paper_fig3.py`
-- `scripts/plot_paper_fig4.py`
-- `tests/test_paper_round27_plots.py`
-- `results/figures/fig2_fixed_map_speedup.png`
-- `results/figures/fig2_fixed_map_speedup.pdf`
-- `results/figures/fig3_block_width_cache_sweep.png`
-- `results/figures/fig3_block_width_cache_sweep.pdf`
-- `results/figures/fig4_decode_syndrome_accel.png`
-- `results/figures/fig4_decode_syndrome_accel.pdf`
-- `review_gpt/round_27_summary.md`
-- `round27_paper_figures_review_bundle.zip`
+- `D:\PKU\acp2026\m2_ofec_sim`
 
-Updated:
+This follows `fec_linear_backend/AGENTS.md`: BER simulation and full decoder
+runs are not added to the GF(2) kernel repository. The review bundle checked
+into this repository contains the M2 source and generated CSVs for review.
 
-- `review_gpt/latest.md`
+## Local OFEC Study
 
-Pre-existing uncommitted local files were left unstaged.
+Files read:
 
-## Display Label Mapping
+- `D:\PKU\OFEC\project\ofec-0.1.0\scripts\reproduce_fig3_baseline.py`
+- `D:\PKU\OFEC\project\ofec-0.1.0\ofec\codec\*.py`
+- `D:\PKU\OFEC\project\ofec-huawei-github\HUAWEI-OFEC-Tao\...`
 
-The raw CSV backend names remain unchanged. The paper plotting scripts map them
-to neutral display labels:
+Key points:
 
-| Raw backend | Figure display label |
-|---|---|
-| `PackedBatchGF2Kernel.apply_many` | `direct vectorized GF(2) matmul` |
-| `PackedBlockLUTKernel.apply_many_packed` | `block-LUT (cache-aware)` |
-| `galois_per_codeword` | `naive per-codeword` |
+- `h` is the number of hard-decision decoder stages. The local decoder window
+  size is derived as `10*h + 1` blocks.
+- `min_post_errors` stops one SNR point after enough post-FEC bit errors have
+  accumulated.
+- `max_blocks` is the per-SNR safety cap.
+- `batch_blocks` controls how many output blocks are generated and pushed
+  through the channel/decoder per outer loop batch.
+- The local script counts only emitted measurement-phase blocks after decoder
+  warmup/window latency.
+- Local `ofec-0.1.0` reaches low BER quickly because it has a batched
+  Python/NumPy path, a dense syndrome-LUT EBCH backend, windowed streaming
+  measurement, and optional parallel modes.
+- The Huawei reference tree is a compiled AFF3CT-style C++ implementation with
+  templated encoder/decoder modules and performance-oriented monitor/decoder
+  structure; it is not copied here.
 
-The figure titles, legends, and axis labels use the neutral display labels.
+## M2 Structure
 
-## Fig. 2
+M2 source files in the bundle:
 
-Script:
+- `m2_ofec_sim/AGENTS.md`
+- `m2_ofec_sim/m2_ofec_sim/channel.py`
+- `m2_ofec_sim/m2_ofec_sim/cli.py`
+- `m2_ofec_sim/m2_ofec_sim/paths.py`
+- `m2_ofec_sim/m2_ofec_sim/product_code.py`
+- `m2_ofec_sim/m2_ofec_sim/sim.py`
+- `m2_ofec_sim/tests/test_m2_end_to_end.py`
 
-- `scripts/plot_paper_fig2.py`
+The simulator implements:
 
-Data source:
+- component code: BCH(255,239), using
+  `make_bch255_t2_syndrome_matrix_galois_systematic()`
+- product-code block: `255 x 255`, built by row parity then column parity
+- channel: normalized 16-QAM AWGN hard decision, with padding removed after
+  demodulation
+- decoder: `h` row/column BDD sweeps
+- locator: shared `BDDLUTDecoder` syndrome-to-position table for t<=2
+- reference syndrome backend: `PackedBatchGF2Kernel.apply_many`
+- accelerated syndrome backend: `PackedBlockLUTKernel.apply_many_packed`,
+  `block_width=14`
 
-- `results/raw/fixed_map_three_backend.csv`
+Only the syndrome linear map backend changes. The BDD locator and correction
+logic are shared between the two curves.
 
-Figure outputs:
+## Run
 
-- `results/figures/fig2_fixed_map_speedup.png`
-- `results/figures/fig2_fixed_map_speedup.pdf`
+Command:
 
-Data handling:
+```bash
+python -B -m m2_ofec_sim.cli --snr-min 13.7 --snr-max 14.2 --snr-step 0.1 --h 10 --min-post-errors 100 --max-blocks 10 --batch-blocks 1 --seed 42 --block-width 14 --time-budget-s 1800 --output-dir results/raw
+```
 
-- profile: `bch_255_239_r16`
-- tasks: `syndrome` and `parity`
-- rows used: `timed=True` and `correctness_passed=True`
-- x-axis: batch size, log scale
-- y-axis: `block-LUT throughput / direct vectorized GF(2) matmul throughput`
-- shaded per-iteration range: `100..100000`
-- block-LUT point annotations are Mbit/s values read from the CSV
-- batch `1` is kept; the plotted speedups are below `1x` there
+Raw CSVs in the bundle:
 
-Computed ranges from the CSV:
+- `m2_ofec_sim/results/raw/m2_reference_ber.csv`
+- `m2_ofec_sim/results/raw/m2_block_lut_ber.csv`
+- `m2_ofec_sim/results/raw/m2_curve_diff.csv`
+- `m2_ofec_sim/results/raw/m2_timing.csv`
 
-- syndrome: batches `1, 10, 100, 1000, 10000, 100000`; speedup range
-  `0.230x..10.157x`
-- parity: batches `1, 10, 100, 1000, 10000, 100000`; speedup range
-  `0.263x..16.279x`
+## BER Equality
 
-## Fig. 3
+All six SNR points matched exactly:
 
-Script:
+- SNR: `13.7, 13.8, 13.9, 14.0, 14.1, 14.2`
+- `blocks_delta = 0`
+- `total_bits_delta = 0`
+- `pre_errors_delta = 0`
+- `post_errors_delta = 0`
+- `pre_ber_delta = 0.0`
+- `post_ber_delta = 0.0`
 
-- `scripts/plot_paper_fig3.py`
+This is the end-to-end result for M2: same seed, same channel draws, same
+product-code iterative decoder, same locator, and identical BER outputs after
+only replacing the syndrome backend.
 
-Data source:
+## Timing
 
-- `results/raw/block_width_cache_sweep.csv`
+From `m2_timing.csv`:
 
-Figure outputs:
+- reference total elapsed: `2.9768890000414103 s`
+- block-LUT total elapsed: `2.782408499857411 s`
+- total ratio, reference/block-LUT: `1.0698964584797546x`
+- reference online elapsed: `0.3521323000313714 s`
+- block-LUT online elapsed: `0.15540809993399307 s`
+- online ratio, reference/block-LUT: `2.265858`
 
-- `results/figures/fig3_block_width_cache_sweep.png`
-- `results/figures/fig3_block_width_cache_sweep.pdf`
+The one-time matrix/table initialization dominates this smoke run. The online
+row/column decoding portion is where the block-LUT backend is visibly faster.
 
-Data handling:
+## Per-SNR Results
 
-- task: `syndrome`
-- representative batch: `1000` for both panels
-- rows used: `timed=True` and `correctness_passed=True`
-- left y-axis: measured throughput in Mbit/s
-- right y-axis: theoretical block count `B=ceil(n/a)`
-- background bands: `cache_level_fit` read from the CSV
-- horizontal dashed line: direct vectorized GF(2) matmul throughput from the
-  same profile/task/batch
+Post-FEC BER values are read from the CSV:
 
-Computed peaks from the CSV:
+| SNR dB | blocks | post errors | post BER |
+|---:|---:|---:|---:|
+| 13.7 | 1 | 819 | 0.01259515570934256 |
+| 13.8 | 1 | 541 | 0.008319876970396002 |
+| 13.9 | 1 | 437 | 0.006720492118415994 |
+| 14.0 | 1 | 278 | 0.004275278738946559 |
+| 14.1 | 1 | 336 | 0.00516724336793541 |
+| 14.2 | 3 | 145 | 0.0007433038574907087 |
 
-- `bch_255_239_r16`: peak at `a=14`, throughput `521.899 Mbit/s`
-- `bch_511_484_r27`: peak at `a=12`, throughput `562.713 Mbit/s`
+This is a short smoke/demo BER curve, not a low-floor production run.
 
-This panel shows the measured peak shifts left for the r=27 profile in this
-batch, while the theoretical block count continues decreasing with larger
-block width.
+## Budget Note
 
-## Fig. 4
+The run completed well inside the 30 minute budget; no timeout stop occurred.
 
-Script:
+Observed online time per product-code block:
 
-- `scripts/plot_paper_fig4.py`
+- reference: `0.04401653750392143 s/block`
+- block-LUT: `0.019426012491749134 s/block`
 
-Data source:
+For a simple counting estimate of 100 post errors at a target BER over 65025
+bits/block, the observed online throughput implies:
 
-- `results/raw/decode_syndrome_accel.csv`
+| target BER | blocks | reference online | block-LUT online |
+|---:|---:|---:|---:|
+| 1e-6 | 1538 | 1.1283 min | 0.4980 min |
+| 1e-7 | 15379 | 11.2822 min | 4.9792 min |
+| 1e-8 | 153788 | 112.8203 min | 49.7915 min |
 
-Figure outputs:
-
-- `results/figures/fig4_decode_syndrome_accel.png`
-- `results/figures/fig4_decode_syndrome_accel.pdf`
-
-Data handling:
-
-- rows used: `correctness_passed=True`
-- left panel sums decision/status/corrected mismatch counts from the CSV
-- right panel plots `Naive median_runtime_s / block-LUT median_runtime_s`
-
-Computed values from the CSV:
-
-- mismatch totals: decision `0`, status `0`, corrected `0`
-- `bch_255_239_r16` wall-clock ratio range: `1.830x..3.703x`
-- `bch_511_484_r27` wall-clock ratio range: `2.616x..6.222x`
-
-The figure explicitly states that only the syndrome backend changes and the
-error locator is unchanged.
-
-## Data Quality Note
-
-Known timing jitter retained for review, not plotted as a correction:
-
-- Same nominal configuration example:
-  `bch_255_239_r16`, `syndrome`, `block-LUT`, `a=12`, `batch=1000`.
-- In `fixed_map_three_backend.csv`: `241.454 Mbit/s`.
-- In `block_width_cache_sweep.csv`: `454.060 Mbit/s`.
-- Ratio: `1.881x`.
-
-This is treated as single-thread small-scale timing noise in the demo-scale
-post-processing round. The current figures are generated from the committed
-CSV rows as-is. A later high-repeat measurement round should check whether the
-large-batch region settles into a stable platform.
+This is only a throughput-based estimate for future planning, not a claim that
+the current high-SNR M2 channel reaches those floors in this round.
 
 ## Not Done
 
-- No large benchmark rerun.
-- No new benchmark scale increase.
-- No BER simulation or end-to-end OFEC/staircase run.
-- No BER curve figure; that remains a separate future round.
+- No long BER floor run.
+- No 1e-8 claim.
+- No end-to-end OFEC/staircase replacement of local `ofec-0.1.0`.
+- No changes to existing GF(2) kernels.
 
 ## Verification
 
 Commands run:
 
 ```bash
-python -B -m pytest tests/test_paper_round27_plots.py -q
-python -B scripts/plot_paper_fig2.py
-python -B scripts/plot_paper_fig3.py
-python -B scripts/plot_paper_fig4.py
+python -B -m pytest tests -q
+python -B -m m2_ofec_sim.cli --snr-min 13.7 --snr-max 14.2 --snr-step 0.1 --h 10 --min-post-errors 100 --max-blocks 10 --batch-blocks 1 --seed 42 --block-width 14 --time-budget-s 1800 --output-dir results/raw
 python -B -m pytest
 ```
 
 Results:
 
-- Round 27 smoke test: `3 passed, 1 warning`
-- Full test suite: `306 passed, 1 skipped, 27 warnings`
-
-## Boundaries
-
-- All plotted values are read from `results/raw/*.csv`.
-- No manually typed throughput, speedup, or mismatch value is used inside the
-  plotting scripts.
-- Raw backend names are only internal CSV keys; figure display labels are
-  neutralized in the plotting layer.
+- M2 smoke test: `1 passed`
+- BER sweep: `points=6 matched=True reference_over_block_lut=1.0699`
+- `fec_linear_backend` full test suite: `306 passed, 1 skipped, 27 warnings`
