@@ -1,0 +1,25 @@
+profile,check_name,operation,coverage,comparator,reference_backend,tested_backend,input_width,output_width,num_inputs,mismatch_count,status,notes
+bch_255_239_r16,parity_single_bit,parity,all_single_bit_messages,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,239,16,239,0,PASS,
+bch_255_239_r16,parity_single_bit,parity,all_single_bit_messages,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,239,16,239,0,PASS,
+bch_255_239_r16,parity_random_batch,parity,random_batch_size=65536;density=0.05,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,239,16,65536,0,PASS,
+bch_255_239_r16,parity_random_batch,parity,random_batch_size=65536;density=0.05,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,239,16,65536,0,PASS,
+bch_255_239_r16,syndrome_single_bit,syndrome,all_single_bit_words,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,255,16,255,0,PASS,
+bch_255_239_r16,syndrome_single_bit,syndrome,all_single_bit_words,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,255,16,255,0,PASS,
+bch_255_239_r16,syndrome_double_bit,syndrome,all_double_bit_words,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,255,16,32385,0,PASS,
+bch_255_239_r16,syndrome_double_bit,syndrome,all_double_bit_words,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,255,16,32385,0,PASS,
+bch_255_239_r16,syndrome_random_batch,syndrome,random_batch_size=65536;density=0.05,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,255,16,65536,0,PASS,
+bch_255_239_r16,syndrome_random_batch,syndrome,random_batch_size=65536;density=0.05,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,255,16,65536,0,PASS,
+bch_255_239_r16,bdd_decoder_consistency,component_bdd_lut_decode,random_received_words,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,255,16,4096,0,PASS,correction_mask_mismatches=0; status_mismatches=0
+bch_255_239_r16,bdd_decoder_consistency,component_bdd_lut_decode,random_received_words,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,255,16,4096,0,PASS,correction_mask_mismatches=0; status_mismatches=0
+ebch_256_239_r17,parity_single_bit,parity,all_single_bit_messages,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,239,17,239,0,PASS,
+ebch_256_239_r17,parity_single_bit,parity,all_single_bit_messages,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,239,17,239,0,PASS,
+ebch_256_239_r17,parity_random_batch,parity,random_batch_size=65536;density=0.05,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,239,17,65536,0,PASS,
+ebch_256_239_r17,parity_random_batch,parity,random_batch_size=65536;density=0.05,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,239,17,65536,0,PASS,
+ebch_256_239_r17,syndrome_single_bit,syndrome,all_single_bit_words,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,256,17,256,0,PASS,
+ebch_256_239_r17,syndrome_single_bit,syndrome,all_single_bit_words,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,256,17,256,0,PASS,
+ebch_256_239_r17,syndrome_double_bit,syndrome,all_double_bit_words,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,256,17,32640,0,PASS,
+ebch_256_239_r17,syndrome_double_bit,syndrome,all_double_bit_words,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,256,17,32640,0,PASS,
+ebch_256_239_r17,syndrome_random_batch,syndrome,random_batch_size=65536;density=0.05,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,256,17,65536,0,PASS,
+ebch_256_239_r17,syndrome_random_batch,syndrome,random_batch_size=65536;density=0.05,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,256,17,65536,0,PASS,
+ebch_256_239_r17,bdd_decoder_consistency,component_bdd_lut_decode,random_received_words,bit_exact_equal,NaiveGF2Kernel.apply_many,BlockLUTKernel.apply_many,256,17,4096,0,PASS,correction_mask_mismatches=0; status_mismatches=0
+ebch_256_239_r17,bdd_decoder_consistency,component_bdd_lut_decode,random_received_words,bit_exact_equal,NaiveGF2Kernel.apply_many,PackedBlockLUTKernel.apply_many_packed,256,17,4096,0,PASS,correction_mask_mismatches=0; status_mismatches=0

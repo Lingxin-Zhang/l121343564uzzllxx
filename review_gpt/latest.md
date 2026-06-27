@@ -1,122 +1,139 @@
 # Latest Review Summary
 
-Current round: Round 8.1 cache-aware artifact fix + final export data-quality
-guard.
+Current round: Round 25 exactness certificate and fair baseline throughput.
 
 ## Goal
 
-Fix the Round 08 final artifact chain after review flagged that the cache-aware
-evidence files could be empty while still being cited by final figures and
-tables.
+Add two benchmark entry points without refactoring existing kernels:
 
-This round is an artifact/data-quality fix. It does not add a new code profile,
-does not run BER, does not implement a full decoder, and does not run a broad
-full sweep.
+1. `benchmarks/bench_exactness_certificate.py`
+   - bit-exact certificate for `p = u P` and `s = v H^T`;
+   - reference backend is `NaiveGF2Kernel`;
+   - tested backends are `BlockLUTKernel` and `PackedBlockLUTKernel`;
+   - output is `results/raw/exactness_certificate.csv`.
+2. `benchmarks/bench_fair_baseline_throughput.py`
+   - same-task throughput benchmark for syndrome and parity;
+   - compares Naive, PackedBatch, galois, and PackedBlockLUT under one harness;
+   - reports absolute `Mbit/s` and `Mcodeword/s`;
+   - output is `results/raw/fair_baseline_throughput.csv`.
+
+This round remains a GF(2) kernel benchmark round. It does not add BER
+simulation, a full OFEC decoder, or end-to-end results.
 
 ## Skills Used
 
-- `results-analysis`: audited cache-aware CSV row counts, correctness fields,
-  required block-width coverage, and final table source validity.
-- `paper-figures-advise`: kept figure/table claims aligned with the available
-  evidence and avoided empty diagnostic plots.
-- `plot-from-data`: used for final figure data-quality expectations.
-- `research-experiment-driver`: kept the fix scoped to final artifact
-  reproducibility rather than expanding the experiment plan.
-- `superpowers:test-driven-development`: added failing tests for empty
-  cache-aware export and synthetic candidate-profile selection before fixing.
-- `superpowers:verification-before-completion`: used for final verification.
+- `superpowers:test-driven-development`: added smoke tests first and verified
+  RED before implementing the benchmark modules.
+- `superpowers:verification-before-completion`: used before reporting test and
+  benchmark status.
 
-No subagent was used in this round; the work was tightly coupled across one
-export script, tests, and review notes.
+No subagent was used.
 
-## What Was Fixed
+## Files Added
 
-1. Cache-aware artifact audit:
-   - `results/raw/cache_aware.csv`: 9216 rows, non-empty.
-   - `results/summary/cache_aware_summary.csv`: 9216 rows, non-empty.
-   - Both include `bch_255_239_r16` and `ebch_256_239_r17`.
-   - Both include PackedBlockLUT packed-output rows for block widths
-     `4,6,8,10,12,14,16,18,20` at `batch_size=4096`, `density=0.05`.
-   - Correctness fields are all true.
-   - No targeted rerun was needed because the current checked-out artifacts
-     are already non-empty and satisfy the final figure requirements.
+- `benchmarks/bench_exactness_certificate.py`
+- `benchmarks/bench_fair_baseline_throughput.py`
+- `tests/test_exactness_certificate_benchmark.py`
+- `tests/test_fair_baseline_throughput_benchmark.py`
+- `results/raw/exactness_certificate.csv`
+- `results/raw/fair_baseline_throughput.csv`
+- `review_gpt/round_25_summary.md`
 
-2. Final exporter data-quality guard:
-   - `scripts/export_final_paper_figures.py` now raises `ValueError` when a
-     critical CSV or plotted-row subset is empty.
-   - Guarded inputs include cache-aware raw/summary rows, long-stream rows,
-     cache-aware planner paper rows, candidate full rows, event-update rows,
-     BCH syndrome rows, component-loop rows, and component exactness rows.
-   - This prevents silent "successful" empty figures.
+## Exp 0: Exactness Certificate
 
-3. Candidate representative row:
-   - `final_representative_table.csv` now prioritizes `bch_255_239_r16`, then
-     `ebch_256_239_r17`, before synthetic fallback.
-   - The current Candidate testing row uses `bch_255_239_r16`.
-
-4. Regenerated final artifacts:
-   - `results/summary/final_claim_audit.csv`
-   - `results/summary/final_exactness_table.csv`
-   - `results/summary/final_representative_table.csv`
-   - `results/paper_figures_final/*.pdf`
-   - `results/raw/artifact_provenance.json`
-
-## Modified Files
-
-- `scripts/export_final_paper_figures.py`
-- `tests/test_final_paper_export.py`
-- `tests/test_result_summary.py`
-- `results/summary/final_representative_table.csv`
-- `results/raw/artifact_provenance.json`
-- `results/paper_figures_final/*.pdf`
-- `review_gpt/latest.md`
-- `review_gpt/experiment_round_08_summary.md`
-- `review_gpt/experiment_round_08_1_cache_aware_artifact_fix.md`
-
-## Commands Run
+Command:
 
 ```bash
-python -m pytest tests/test_final_paper_export.py tests/test_result_summary.py -q
-python scripts/summarize_results.py
-python scripts/export_final_paper_figures.py
-python -m pytest -q
+python -B -m benchmarks.bench_exactness_certificate
+```
+
+Result:
+
+- Wrote `results/raw/exactness_certificate.csv`.
+- CSV has 24 rows.
+- `status=PASS` for all 24 rows.
+- Every `mismatch_count` is `0`.
+- Coverage includes parity single-bit, parity random batch, syndrome single-bit,
+  syndrome all-double-bit, syndrome random batch, and BDD-LUT decoder
+  consistency.
+- Random coverage used the benchmark default:
+  `random_batch_size=65536`, `decoder_random_words=4096`, `density=0.05`.
+
+This exactness pass gates the throughput rows below. No throughput observation
+should be used without this CSV.
+
+## Exp 1: Fair Baseline Throughput
+
+Command:
+
+```bash
+python -B -m benchmarks.bench_fair_baseline_throughput --batch-sizes 1,10,100,1000,10000,100000,1000000 --repeats 3 --warmups 1
+```
+
+Result:
+
+- Wrote `results/raw/fair_baseline_throughput.csv`.
+- CSV has 112 rows:
+  `2 profiles * 2 tasks * 7 batch sizes * 4 backends`.
+- `correctness_passed=True` for all 112 rows.
+- Batch sizes covered:
+  `1, 10, 100, 1000, 10000, 100000, 1000000`.
+- Backends:
+  - `NaiveGF2Kernel.apply_many`: labeled
+    `vectorization-overhead reference only`;
+  - `PackedBatchGF2Kernel.apply_many`: fair vectorized baseline;
+  - `galois.GF2_matmul`: third-party verified same-task baseline;
+  - `PackedBlockLUTKernel.apply_many_packed`: packed block-LUT kernel under
+    test.
+- Environment fields recorded in each row: CPU model, L1/L2/L3 cache bytes,
+  Python version, NumPy version, galois version, and thread settings.
+
+Observed crossover from this CSV:
+
+| Profile | Task | LUT beats PackedBatch at batch sizes | LUT beats galois at batch sizes |
+|---|---|---|---|
+| `bch_255_239_r16` | parity | `100, 1000, 10000, 100000, 1000000` | `1000, 10000` |
+| `bch_255_239_r16` | syndrome | `10, 100, 1000, 10000, 100000, 1000000` | `10, 10000` |
+| `ebch_256_239_r17` | parity | `100, 1000, 10000, 100000, 1000000` | `1000, 10000` |
+| `ebch_256_239_r17` | syndrome | `100, 1000, 10000, 100000, 1000000` | `1000, 10000` |
+
+Interpretation boundary:
+
+- LUT net gain over the fair vectorized `PackedBatchGF2Kernel` starts at
+  batch `100` for parity, batch `10` for BCH syndrome, and batch `100` for
+  eBCH syndrome in this run.
+- LUT gain over `galois` is narrow and not stable across the full sweep; it
+  appears at batch `1000` and `10000` for three profile/task combinations and
+  at batch `10` and `10000` for BCH syndrome.
+- Do not describe Naive-relative ratios as headline speedups; Naive is present
+  only to quantify vectorization/interpreter overhead.
+- Do not generalize the galois comparison beyond the recorded batch/profile/task
+  rows.
+
+## Verification
+
+Commands run:
+
+```bash
+python -B -m pytest tests/test_exactness_certificate_benchmark.py tests/test_fair_baseline_throughput_benchmark.py
+python -B -m benchmarks.bench_exactness_certificate
+python -B -m benchmarks.bench_fair_baseline_throughput --batch-sizes 1,10,100,1000,10000,100000,1000000 --repeats 3 --warmups 1
+python -B -m pytest
 ```
 
 Results:
 
-- Targeted tests: `12 passed, 1 warning`
-- `scripts/summarize_results.py`: completed
-- `scripts/export_final_paper_figures.py`: completed
-- Full test suite: `298 passed, 1 skipped, 27 warnings`
-
-## Push / Remote Artifact Status
-
-The Round 8.1 commit has been pushed and remote `origin/main` was confirmed at:
-
-```text
-5ced7b8f74d333b0710bdf2ce8d8ee9527e6f706
-```
-
-Remote GitHub artifact verification:
-
-| File | Local rows | GitHub blob SHA match | GitHub size |
-|---|---:|---|---:|
-| `results/raw/cache_aware.csv` | 9216 | yes | 2199418 bytes |
-| `results/summary/cache_aware_summary.csv` | 9216 | yes | 1650238 bytes |
-
-The GitHub Contents API blob SHA matched the local `HEAD` blob SHA for both
-files, so the files on GitHub are the same non-empty 9216-row CSVs checked
-locally.
+- New smoke tests: `2 passed`.
+- Exactness certificate: all 24 rows PASS, all mismatch counts 0.
+- Fair throughput CSV: all 112 rows have `correctness_passed=True`.
+- Full test suite: `300 passed, 1 skipped, 27 warnings`.
 
 ## Claim Boundaries
 
-- `fig_cache_memory_tradeoff` now has non-empty cache-aware block-width data
-  behind Panel A/B.
-- Long-stream panels still use the corrected `stream_input_bits` /
-  `stream_input_bytes` schema.
-- L2 remains mixed and is not a stable strong claim.
-- L3 remains condition-specific eBCH-like long-stream evidence.
-- Optical trace workloads remain trace-level kernel-call evidence, not a full
-  decoder or BER result.
-- No `paper/`, `references/`, `external_refs/`, `AGENTS.local.md`, or local
-  absolute paths should be committed.
+- This is a kernel exactness and same-task throughput benchmark round.
+- No BER simulation was run.
+- No full component-code, staircase, OFEC, or iBDD outer-loop decoder was added.
+- Any speed statement must be tied to `results/raw/exactness_certificate.csv`
+  and `results/raw/fair_baseline_throughput.csv`.
+- Distinguish LUT net gain over `PackedBatchGF2Kernel` from vectorization gain
+  over `NaiveGF2Kernel`.
