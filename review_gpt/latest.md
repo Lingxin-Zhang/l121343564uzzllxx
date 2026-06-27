@@ -266,6 +266,46 @@ h15 was started as a backup but stopped after its first exact point
 choice. The h10 formal MC-core partial run is retained for audit, but not used
 for the selected Fig. 4 curve.
 
+## Formal h=10 One-Hour Sweep
+
+To close the original h=10 gate, a paired MC-core h=10 sweep was run with
+`min_post_errors=200`, `max_blocks=500000`, `SNR=13.7..15.2` in `0.1 dB`
+steps, `batch_blocks=16`, `mc_workers=6`, `block_width=14`, and
+`accept_time_capped_min_errors=100`.
+
+Source CSVs:
+
+- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_curve_diff.csv`
+- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_timing.csv`
+
+Accepted paired rows:
+
+| SNR Es/N0 dB | post errors / total bits | post-FEC BER or 95% zero-error upper | stop | paired diff |
+|---:|---:|---:|---|---|
+| 13.70 | `239519 / 50331648` | `0.004758814970652263` | target_errors_reached | exact match |
+| 13.80 | `57500 / 50331648` | `0.001142422358194987` | target_errors_reached | exact match |
+| 13.90 | `623 / 100663296` | `6.18894894917806e-06` | target_errors_reached | exact match |
+| 14.00 | `0 / 1711276032` | zero-error upper approx. `1.7505839000619972e-09` | max_blocks_reached | exact match |
+
+Generated figure:
+
+- `results/figures/round30_formal_h10_full_1h_ber.png`
+- `results/figures/round30_formal_h10_full_1h_ber.pdf`
+
+Timing ratio for accepted rows:
+
+- point wall-clock ratio, reference/block-LUT: `1.098757945096654`
+- decode-time ratio, reference/block-LUT: `1.113483092381407`
+
+Interpretation boundary: this formal h=10 run did not produce a counted
+`1e-7` point. It reached a counted `6.19e-6` point at `13.9 dB`, then a
+zero-error max-block upper-bound point at `14.0 dB`. The run entered an
+in-flight `14.1 dB` point near the one-hour boundary and was manually stopped
+at about `66.5` minutes; no complete paired row or verifiable post-error count
+was written for that in-flight point, so it is not reported.
+
 ## SNR Definition
 
 The local OFEC channel uses normalized 16QAM with average symbol power 1 and
@@ -319,6 +359,8 @@ Generated from committed CSVs:
 - `results/figures/round30_real_ofec_h16_mc_ber.pdf`
 - `results/figures/round30_fig4_h16_formal_ber.png`
 - `results/figures/round30_fig4_h16_formal_ber.pdf`
+- `results/figures/round30_formal_h10_full_1h_ber.png`
+- `results/figures/round30_formal_h10_full_1h_ber.pdf`
 - `results/figures/fig2_fixed_map_speedup.png`
 - `results/figures/fig2_fixed_map_speedup.pdf`
 - `results/figures/fig3_block_width_cache_sweep.png`
@@ -328,9 +370,9 @@ Fig. 3 now uses block width `w` in the axis label and peak annotation.
 
 ## Not Done In This Snapshot
 
-- No final `min_post_errors=200`, `max_blocks=500000` h=10 one-hour capped
-  sweep was completed. The current primary curve is the completed 10-point
-  `max_blocks=60000` review sweep.
+- The formal h=10 one-hour run did not obtain a high-confidence counted
+  `1e-7` point; the lowest counted h=10 point is `6.19e-6`, and the lower
+  `14.0 dB` value is a zero-error upper bound.
 - No OFEC source-tree file was modified.
 
 ## Verification

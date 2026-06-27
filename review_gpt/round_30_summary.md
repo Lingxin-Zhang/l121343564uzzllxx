@@ -339,6 +339,51 @@ h15 was started as a backup and stopped after its first exact point
 choice. The h10 formal MC-core partial run is retained for audit, but not used
 for the selected Fig. 4 curve.
 
+## Formal h=10 One-Hour Sweep
+
+The original h=10 formal gate was rerun with the stated large-block parameters:
+
+```powershell
+python -B -m ofec_block_lut_backend.run_real_ofec_sweep --snr-min 13.7 --snr-max 15.2 --snr-step 0.1 --h 10 --min-post-errors 200 --max-blocks 500000 --batch-blocks 16 --seed 73010 --block-width 14 --target-post-ber 1e-9 --codec-mode batched --time-budget-s 3600 --measurement-mode mc --mc-workers 6 --accept-time-capped-min-errors 100 --output-dir results/round30_formal_h10_full_1h_20260628
+```
+
+Copied repository CSVs:
+
+- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_curve_diff.csv`
+- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_timing.csv`
+
+Accepted rows:
+
+| SNR Es/N0 dB | post errors | total bits | post-FEC BER / upper bound | stop | paired diff |
+|---:|---:|---:|---:|---|---|
+| 13.70 | 239519 | 50331648 | `0.004758814970652263` | target_errors_reached | exact match |
+| 13.80 | 57500 | 50331648 | `0.001142422358194987` | target_errors_reached | exact match |
+| 13.90 | 623 | 100663296 | `6.18894894917806e-06` | target_errors_reached | exact match |
+| 14.00 | 0 | 1711276032 | zero-error upper approx. `1.7505839000619972e-09` | max_blocks_reached | exact match |
+
+Generated h10 formal figure:
+
+- `results/figures/round30_formal_h10_full_1h_ber.png`
+- `results/figures/round30_formal_h10_full_1h_ber.pdf`
+
+Timing summary for accepted rows:
+
+| metric | syndrome_lut | block_lut | ratio syndrome_lut/block_lut |
+|---|---:|---:|---:|
+| summed point wall-clock s | 1223.6342593000736 | 1113.6522513995878 | `1.098757945096654` |
+| summed decode s | 6110.206089695683 | 5487.470920306281 | `1.113483092381407` |
+| total input blocks | 559056 | 559056 | n/a |
+| total emitted blocks | 466944 | 466944 | n/a |
+
+The formal h=10 sweep still does not yield a counted high-confidence `1e-7`
+point within the one-hour budget. It reaches a counted `6.19e-6` point at
+`13.9 dB`; `14.0 dB` is a zero-error max-block upper-bound point. The run
+entered an in-flight `14.1 dB` point near the time boundary and was manually
+stopped at about `66.5` minutes. No complete paired row or verifiable
+post-error count was written for that in-flight point, so it is not reported.
+
 ## Formal h=10 Low/Mid Partial
 
 A later formal-parameter h=10 run was started with:
@@ -384,6 +429,8 @@ Generated files:
 - `results/figures/round30_real_ofec_h16_mc_ber.pdf`
 - `results/figures/round30_fig4_h16_formal_ber.png`
 - `results/figures/round30_fig4_h16_formal_ber.pdf`
+- `results/figures/round30_formal_h10_full_1h_ber.png`
+- `results/figures/round30_formal_h10_full_1h_ber.pdf`
 - `results/figures/fig2_fixed_map_speedup.png`
 - `results/figures/fig2_fixed_map_speedup.pdf`
 - `results/figures/fig3_block_width_cache_sweep.png`
@@ -459,7 +506,7 @@ Observed results:
 
 ## Not Done
 
-- No final `min_post_errors=200`, `max_blocks=500000` one-hour capped sweep was
-  completed. This review snapshot uses the completed `max_blocks=60000` paired
-  run.
+- The formal h=10 one-hour sweep did not produce a counted high-confidence
+  `1e-7` point; the lowest counted accepted point is `6.19e-6`, while `14.0 dB`
+  is a zero-error upper-bound point.
 - No OFEC source-tree file was modified.
