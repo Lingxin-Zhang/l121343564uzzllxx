@@ -12,6 +12,7 @@ Round 30 extends the real local OFEC evidence from Round 29:
 - verify real OFEC BER curves remain pointwise identical after replacing only
   the BCH syndrome/parity backend;
 - regenerate Fig. 2/Fig. 3/Fig. 4-style real OFEC BER figures from CSVs.
+- rerun Fig. 2/Fig. 3 fixed-map data with higher repeats.
 
 Review bundle path:
 
@@ -123,6 +124,35 @@ The local OFEC channel uses normalized 16QAM with average symbol power 1 and
 noise variance per real dimension `1 / (2 * SNR_linear)`. The figure axis is
 therefore labeled `SNR Es/N0 (dB)`.
 
+## High-Repeat Fixed-Map Data
+
+New high-repeat CSVs:
+
+- `results/raw/block_width_cache_sweep_highrep.csv`
+- `results/raw/fixed_map_three_backend_highrep.csv`
+
+Settings:
+
+- repeats: `15`
+- warmups: `3`
+- block-width batch sizes: `1000, 10000, 100000, 300000`
+- three-backend batch sizes: `1, 10, 100, 1000, 10000, 100000, 300000`
+- max timed batch size: `300000`
+- galois per-codeword timing capped at batch `1000`
+
+Exactness/timing summary:
+
+- block-width high-repeat: 176 rows, 176 exactness pass, 164 timed;
+- three-backend high-repeat: 96 rows, 96 exactness pass, 72 timed.
+
+Fig. 3 now plots from the high-repeat CSV. The r16 panel uses batch `300000`;
+the r27 panel uses batch `10000`, selected because the high-repeat
+`batch=1000` row still had visible small-batch noise.
+
+The r27 curve is improved versus the old `batch=1000` panel, but it still has a
+small secondary bump around `w=13`. The result is reported as measured data,
+not smoothed or edited.
+
 ## Figures
 
 Generated from committed CSVs:
@@ -138,9 +168,6 @@ Fig. 3 now uses block width `w` in the axis label and peak annotation.
 
 ## Not Done In This Snapshot
 
-- The requested high-repeat Fig. 2/Fig. 3 reruns were not completed in this
-  snapshot. Fig. 3(b) r27 remains visibly jagged in the existing CSV-derived
-  plot; it is not claimed fixed.
 - No final `min_post_errors=200`, `max_blocks=500000` h=10 one-hour capped
   sweep was completed. The current primary curve is the completed 10-point
   `max_blocks=60000` review sweep.

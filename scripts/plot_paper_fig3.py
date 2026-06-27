@@ -24,6 +24,10 @@ DEFAULT_OUTPUT_DIR = ROOT / "results" / "figures"
 OUTPUT_STEM = "fig3_block_width_cache_sweep"
 TASK = "syndrome"
 PREFERRED_BATCH = 1000
+PREFERRED_BATCH_BY_PROFILE = {
+    "bch_255_239_r16": 300_000,
+    "bch_511_484_r27": 10_000,
+}
 BLOCK_WIDTH_LABEL = "Block width w (input bits per LUT block)"
 
 CACHE_COLORS = {
@@ -92,6 +96,9 @@ def select_batch(rows: list[dict[str, Any]], profile: str) -> int:
         and _is_true(row["correctness_passed"])
     ]
     batches = sorted({int(row["batch_size"]) for row in lut_rows})
+    profile_preference = PREFERRED_BATCH_BY_PROFILE.get(profile)
+    if profile_preference in batches:
+        return int(profile_preference)
     if PREFERRED_BATCH in batches:
         return PREFERRED_BATCH
     best_batch = batches[0]

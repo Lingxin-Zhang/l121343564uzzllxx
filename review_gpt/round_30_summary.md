@@ -220,6 +220,48 @@ Plot scripts:
 
 Fig. 3 now uses block-width notation `w` in labels and annotations.
 
+## High-Repeat Fig. 2/Fig. 3 Data
+
+After the review snapshot, the fixed-map benchmarks were rerun with higher
+repeat count:
+
+```powershell
+python -B -m benchmarks.bench_block_width_cache_sweep --batch-sizes 1000,10000,100000,300000 --block-widths 8,10,11,12,13,14,16,18,20 --repeats 15 --warmups 3 --max-in-memory-rows 300000 --max-timed-batch-size 300000 --max-galois-batch-size 1000 --seed 20260830 --output results/raw/block_width_cache_sweep_highrep.csv
+python -B -m benchmarks.bench_fixed_map_three_backend --batch-sizes 1,10,100,1000,10000,100000,300000 --repeats 15 --warmups 3 --block-width-source results/raw/block_width_cache_sweep_highrep.csv --selection-batch-size 100000 --max-in-memory-rows 300000 --max-timed-batch-size 300000 --max-galois-batch-size 1000 --seed 20260831 --output results/raw/fixed_map_three_backend_highrep.csv
+```
+
+Outputs:
+
+- `results/raw/block_width_cache_sweep_highrep.csv`
+- `results/raw/fixed_map_three_backend_highrep.csv`
+
+Summary:
+
+- block-width high-repeat: 176 rows, 176 exactness pass, 164 timed;
+- three-backend high-repeat: 96 rows, 96 exactness pass, 72 timed;
+- repeats: `15`;
+- warmups: `3`;
+- timed batch sizes extend to `300000`;
+- per-codeword galois timing is capped at batch `1000`.
+
+The regenerated figures now read from these high-repeat CSVs:
+
+```powershell
+python scripts\plot_paper_fig2.py --csv results\raw\fixed_map_three_backend_highrep.csv
+python scripts\plot_paper_fig3.py --csv results\raw\block_width_cache_sweep_highrep.csv
+```
+
+Fig. 3 profile batch choices:
+
+| profile | task | plotted batch | measured peak |
+|---|---|---:|---|
+| BCH(255,239), r=16 | syndrome | 300000 | `w=18`, L3 |
+| BCH(511,484), r=27 | syndrome | 10000 | `w=11`, L2 |
+
+The r27 curve is substantially less jagged than the old `batch=1000` panel,
+but it still has a small secondary bump around `w=13`. No smoothing or
+hand-edited values were used.
+
 ## Verification
 
 Fresh commands completed in this snapshot:
@@ -240,9 +282,6 @@ Observed results:
 
 ## Not Done
 
-- The requested high-repeat Fig. 2/Fig. 3 benchmark reruns were not completed.
-  The regenerated Fig. 3 uses `w` labels, but r27 remains visibly jagged from
-  the existing CSV; no convergence claim is made.
 - No final `min_post_errors=200`, `max_blocks=500000` one-hour capped sweep was
   completed. This review snapshot uses the completed `max_blocks=60000` paired
   run.
