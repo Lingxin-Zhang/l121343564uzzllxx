@@ -1,132 +1,59 @@
 # Latest Review Summary
 
-Current round: Round 29 real OFEC backend injection.
+Current round: Round 30 review snapshot.
 
-## Goal
+## Scope
 
-Without modifying `D:\PKU\OFEC\project\ofec-0.1.0`, inject an external
-block-LUT BCH component backend into the real local OFEC simulator and verify
-that the end-to-end BER-vs-SNR curve matches the official `syndrome_lut`
-backend point by point while running faster.
+Round 30 extends the real local OFEC evidence from Round 29:
+
+- keep `D:\PKU\OFEC\project\ofec-0.1.0` read-only;
+- inject the external `BlockLUTBCHBackend` from
+  `D:\PKU\acp2026\ofec_block_lut_backend`;
+- verify real OFEC BER curves remain pointwise identical after replacing only
+  the BCH syndrome/parity backend;
+- regenerate Fig. 2/Fig. 3/Fig. 4-style real OFEC BER figures from CSVs.
 
 Review bundle path:
 
-- `round29_real_ofec_block_lut_review_bundle.zip`
+- `round30_real_ofec_review_snapshot.zip`
 
-## Boundary
+## Parallel Injection Gate
 
-External backend package:
+The external runner now supports point-level process parallelism. Each worker
+self-constructs its backend from a backend label plus fixed parameters instead
+of receiving a pickled backend object. This avoids modifying OFEC source files.
 
-- `D:\PKU\acp2026\ofec_block_lut_backend`
+Gate result:
 
-The OFEC source tree was inspected but not edited. The GF(2) kernel repository
-still does not host BER simulation source; this repository only contains the
-review summary and review bundle.
+- serial vs point-parallel, 3 SNR points: all BER/error/count fields matched;
+- external backend tests: `3 passed, 1 warning`.
 
-## OFEC Protocol Notes
+Important boundary: OFEC's built-in `mc` worker path still stringifies backend
+objects, so it was not used as block-LUT paired evidence. The paired evidence
+below comes from the external runner that calls the real OFEC
+`simulate_snr_point()` in each worker.
 
-Files inspected:
+## Primary h=10 Sweep
 
-- `D:\PKU\OFEC\project\ofec-0.1.0\ofec\codec\_ebch_backends.py`
-- `D:\PKU\OFEC\project\ofec-0.1.0\ofec\codec\_ebch_lut.py`
-- `D:\PKU\OFEC\project\ofec-0.1.0\ofec\codec\ebch.py`
-- `D:\PKU\OFEC\project\ofec-0.1.0\scripts\reproduce_fig3_baseline.py`
+Source CSVs:
 
-Confirmed interface:
+- `results/raw/round30_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round30_real_ofec_block_lut_ber.csv`
+- `results/raw/round30_real_ofec_curve_diff.csv`
+- `results/raw/round30_real_ofec_timing.csv`
 
-- `BCHBackend.encode(info)` maps 239 information bits to a 255-bit BCH word.
-- `BCHBackend.decode(rx_base)` maps a 255-bit received word to
-  `(corrected_word, indicator)`.
-- `BCHBackend.encode_many(info_batch)` maps `(batch,239)` to `(batch,255)`.
-- `BCHBackend.decode_many(rx_base_batch)` maps `(batch,255)` to
-  `(corrected_batch, indicators)`.
-- indicator semantics: `-1` failure, `0` no correction, `1/2` one or two BCH
-  bit corrections.
-- `build_bch_backend()` returns a non-string backend object directly, so
-  `EBCH256_239(backend=<object>)` injects the external backend.
+Run parameters:
 
-Confirmed matrix and locator convention:
+- h: `10`
+- SNR Es/N0: `13.70` to `15.95` dB, step `0.25`
+- `min_post_errors=100`
+- `max_blocks=60000`
+- `batch_blocks=16`
+- `block_width=14`
+- external measured wall-clock: `1124.2542795 s`
 
-- official `_build_column_syndromes()` constructs the first 239 columns by
-  one-hot encoding through `galois.BCH(255,239)` and taking the systematic
-  parity suffix.
-- parity columns are the identity, so the unpacked matrix is `H^T=[P;I]`.
-- `column_syndrome_bits` is the unpacked `(255,16)` matrix used by
-  `(batch @ column_syndrome_bits) & 1`.
-- official correction uses `decode_lut`, `decode_counts`, and
-  `decode_positions` for 0/1/2-error patterns.
+All 10 paired points matched exactly:
 
-## Implementation
-
-External files included in the bundle:
-
-- `ofec_block_lut_backend/AGENTS.md`
-- `ofec_block_lut_backend/ofec_block_lut_backend/__init__.py`
-- `ofec_block_lut_backend/ofec_block_lut_backend/backend.py`
-- `ofec_block_lut_backend/ofec_block_lut_backend/run_real_ofec_sweep.py`
-- `ofec_block_lut_backend/tests/test_block_lut_backend_equivalence.py`
-
-`BlockLUTBCHBackend` imports OFEC's own `build_syndrome_lut_tables()` and
-therefore uses the same `column_syndrome_bits`, packed-bit convention, and
-decode arrays as `SyndromeLUTBCHBackend`. It replaces only the online
-syndrome/parity linear-map evaluation with `PackedBlockLUTKernel.apply_many_packed`:
-
-- `PackedBlockLUTKernel(..., block_width=14, packed_word_bits=16)`
-
-The OFEC encoder, sliding-window decoder, hard-stage schedule, eBCH wrapper,
-and error locator are not copied or replaced.
-
-## Bit-Exact Gate
-
-Command:
-
-```bash
-python -B -m pytest tests -q
-```
-
-Run from:
-
-- `D:\PKU\acp2026\ofec_block_lut_backend`
-
-Result:
-
-- `2 passed, 1 warning`
-
-The tests compare:
-
-- BCH `encode_many`
-- BCH `decode_many` on mixed 0/1/2/3+ error cases
-- `EBCH256_239(...).encode_many`
-- `EBCH256_239(...).decode_many` result fields:
-  `word`, `error_location`, `status`, `bch_error_indicator`,
-  `parity_flip`, and `total_error_estimate`
-
-## Real OFEC Sweep
-
-Command:
-
-```bash
-python -B -m ofec_block_lut_backend.run_real_ofec_sweep --snr-min 13.7 --snr-max 14.2 --snr-step 0.1 --h 10 --min-post-errors 5000 --max-blocks 1000 --batch-blocks 16 --seed 42 --block-width 14 --codec-mode batched --time-budget-s 1800 --output-dir results/raw
-```
-
-The runner imports the real local `reproduce_fig3_baseline.py` and calls its
-same-process `simulate_snr_point()` function. It uses `parallel_mode=serial`
-because OFEC's process-worker paths stringify backend objects. It uses
-`codec_mode=batched` so the real OFEC hard-stage path exercises
-`EBCH256_239.decode_many`.
-
-Raw CSVs in the bundle:
-
-- `ofec_block_lut_backend/results/raw/real_ofec_syndrome_lut_ber.csv`
-- `ofec_block_lut_backend/results/raw/real_ofec_block_lut_ber.csv`
-- `ofec_block_lut_backend/results/raw/real_ofec_curve_diff.csv`
-- `ofec_block_lut_backend/results/raw/real_ofec_timing.csv`
-
-## BER Match
-
-All six SNR points matched exactly:
-
-- SNR: `13.7, 13.8, 13.9, 14.0, 14.1, 14.2`
 - `total_blocks_delta = 0`
 - `emitted_blocks_delta = 0`
 - `total_bits_delta = 0`
@@ -135,79 +62,100 @@ All six SNR points matched exactly:
 - `pre_fec_ber_delta = 0.0`
 - `post_fec_ber_delta = 0.0`
 
-The BER curve is therefore unchanged point by point after injecting the
-block-LUT backend into the real OFEC chain.
+Lowest primary-sweep BER:
+
+- `1.0597088898163606e-07` at `15.95 dB`
+- `26 / 245350400` post-FEC bit errors
+- stop reason: `max_blocks_reached`
+
+This is close to `1e-7` but is below the requested 100-error reliability
+threshold, so it is reported as an observed low-error point, not a precision
+floor claim.
 
 ## Timing
 
-From `real_ofec_timing.csv`:
+From `round30_real_ofec_timing.csv`:
 
-| quantity | syndrome_lut | block_lut | ratio syndrome_lut/block_lut |
+| metric | syndrome_lut | block_lut | ratio |
 |---|---:|---:|---:|
-| total point wall-clock s | 58.89823750004871 | 52.053269700089004 | 1.13149928600831 |
-| total wall-clock incl. common table init s | 61.048795700015035 | 54.20382790005533 | 1.126282000093811 |
-| total decode s | 49.7945703008445 | 43.503093599225394 | 1.1446213632432598 |
-| total input blocks | 5024 | 5024 | n/a |
-| total emitted measurement blocks | 4424 | 4424 | n/a |
+| summed point wall s | 4452.421527999919 | 4335.98079149978 | 1.026854532365182 |
+| summed wall incl. common init s | 4469.39580150001 | 4352.811351599812 | 1.0267837129806576 |
+| summed decode s | 3875.640491998871 | 3765.669281698705 | 1.0292036294410212 |
 
-Common OFEC syndrome-table construction is recorded separately. Block-LUT
-backend construction is included in `point_wall_sec` through
-`external_backend_init_sec`.
+These are end-to-end real OFEC ratios for this runner, not isolated-kernel
+speedups.
 
-## BER Rows
+## Extension Probe
 
-The two backend CSVs have identical BER/error rows. Shared post-FEC rows:
+Two additional h=10 points were run after the primary sweep:
 
-| SNR dB | total blocks | emitted blocks | post errors | post BER | stop |
-|---:|---:|---:|---:|---:|---|
-| 13.7 | 352 | 252 | 5009 | 0.004852779327876984 | target_errors_reached |
-| 13.8 | 672 | 572 | 5063 | 0.0021609859866695805 | target_errors_reached |
-| 13.9 | 1000 | 900 | 847 | 0.0002297634548611111 | max_blocks_reached |
-| 14.0 | 1000 | 900 | 501 | 0.00013590494791666666 | max_blocks_reached |
-| 14.1 | 1000 | 900 | 426 | 0.00011555989583333333 | max_blocks_reached |
-| 14.2 | 1000 | 900 | 338 | 9.168836805555555e-05 | max_blocks_reached |
+- `16.20 dB`: `8.559187186978297e-08`, `21 / 245350400`
+- `16.45 dB`: `9.781928213689482e-08`, `24 / 245350400`
 
-This is a real OFEC short run, not an M2 product-code run and not a 1e-8 floor
-claim.
+Both extension points matched exactly between backends. They are kept in
+separate CSVs and are not mixed into the primary 10-point curve because the
+later h-window discussion made these high-SNR points questionable for the
+intended paper framing.
 
-## Budget And Estimates
+## h Calibration Probe
 
-The run completed under the 30 minute budget. Lowest observed BER in this run:
+Additional MC-style calibration data exists in:
 
-- `9.168836805555555e-05` at `14.2 dB`
+- `results/raw/round30_h_calibration_mc_summary.csv`
 
-Throughput-based estimates for collecting 100 post errors at lower target BER,
-using 4096 measured bits per emitted OFEC block and the observed emitted-block
-wall time:
+It is useful for discussion only and is not paired block-LUT evidence.
 
-| target BER | emitted blocks | syndrome_lut estimate | block_lut estimate |
-|---:|---:|---:|---:|
-| 1e-6 | 24415 | 5.4174 min | 4.7878 min |
-| 1e-7 | 244141 | 54.1722 min | 47.8765 min |
-| 1e-8 | 2441407 | 541.7216 min | 478.7644 min |
+Summary:
 
-These are planning estimates only.
+| h | rows | approx BER=1e-3 SNR | best positive BER | first zero-error SNR | sec/input block |
+|---:|---:|---:|---:|---:|---:|
+| 15 | 12 | 13.786148850324029 | 1.7447905106977983e-06 @ 13.9 | 14.0 | 0.004691350227004699 |
+| 18 | 12 | 13.758343935901685 | 5.6425730387369794e-06 @ 13.9 | 14.0 | 0.00525976700398677 |
+| 20 | 12 | 13.764714867870186 | 0.0004134178161621094 @ 13.8 | 13.9 | 0.005769333680676488 |
+| 22 | 6 | 13.757065915664533 | 0.00030863285064697266 @ 13.8 | 13.9 | 0.008848963103144458 |
+
+The zero-error rows mean finite-sample zero observations, not BER equal to zero.
+These h values are not part of the current h=10 primary conclusion.
+
+## SNR Definition
+
+The local OFEC channel uses normalized 16QAM with average symbol power 1 and
+noise variance per real dimension `1 / (2 * SNR_linear)`. The figure axis is
+therefore labeled `SNR Es/N0 (dB)`.
+
+## Figures
+
+Generated from committed CSVs:
+
+- `results/figures/round30_real_ofec_ber.png`
+- `results/figures/round30_real_ofec_ber.pdf`
+- `results/figures/fig2_fixed_map_speedup.png`
+- `results/figures/fig2_fixed_map_speedup.pdf`
+- `results/figures/fig3_block_width_cache_sweep.png`
+- `results/figures/fig3_block_width_cache_sweep.pdf`
+
+Fig. 3 now uses block width `w` in the axis label and peak annotation.
+
+## Not Done In This Snapshot
+
+- The requested high-repeat Fig. 2/Fig. 3 reruns were not completed in this
+  snapshot. Fig. 3(b) r27 remains visibly jagged in the existing CSV-derived
+  plot; it is not claimed fixed.
+- No final `min_post_errors=200`, `max_blocks=500000` h=10 one-hour capped
+  sweep was completed. The current primary curve is the completed 10-point
+  `max_blocks=60000` review sweep.
+- No OFEC source-tree file was modified.
 
 ## Verification
 
-Commands run:
+Fresh verification commands:
 
-```bash
+```powershell
 python -B -m pytest tests -q
-python -B -m ofec_block_lut_backend.run_real_ofec_sweep --snr-min 13.7 --snr-max 14.2 --snr-step 0.1 --h 10 --min-post-errors 5000 --max-blocks 1000 --batch-blocks 16 --seed 42 --block-width 14 --codec-mode batched --time-budget-s 1800 --output-dir results/raw
-python -B -m pytest
+python -B -m pytest -q
 ```
 
 Results:
 
-- external backend tests: `2 passed, 1 warning`
-- real OFEC sweep: `points=6 matched=True syndrome_lut_over_block_lut=1.1315`
-- `fec_linear_backend` full test suite: `306 passed, 1 skipped, 27 warnings`
-
-## Not Done
-
-- No OFEC source-tree modifications.
-- No process-parallel object injection, because OFEC's worker path stringifies
-  backend objects.
-- No 1e-8 floor run.
-- No M2 product-code curve reused for this evidence.
+- external package: `3 passed, 1 warning`
+- `fec_linear_backend`: `308 passed, 1 skipped, 27 warnings`

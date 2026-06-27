@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from scripts import plot_paper_fig2, plot_paper_fig3, plot_paper_fig4
+from scripts import (
+    plot_paper_fig2,
+    plot_paper_fig3,
+    plot_paper_fig4,
+    plot_round30_real_ofec_ber,
+)
 
 
 def test_backend_display_labels_are_neutral() -> None:
@@ -34,6 +39,22 @@ def test_round27_plot_scripts_write_png_and_pdf(tmp_path: Path) -> None:
     ):
         assert (figure_dir / f"{stem}.png").exists()
         assert (figure_dir / f"{stem}.pdf").exists()
+
+
+def test_round30_real_ofec_plot_writes_png_and_pdf(tmp_path: Path) -> None:
+    figure_dir = tmp_path / "figures"
+
+    assert plot_round30_real_ofec_ber.main(["--output-dir", str(figure_dir)]) == 0
+
+    assert (figure_dir / "round30_real_ofec_ber.png").exists()
+    assert (figure_dir / "round30_real_ofec_ber.pdf").exists()
+    assert plot_round30_real_ofec_ber.load_curve_match_count(
+        plot_round30_real_ofec_ber.DEFAULT_DIFF_CSV
+    ) == 10
+
+
+def test_fig3_uses_block_width_w_label() -> None:
+    assert "Block width w" in plot_paper_fig3.BLOCK_WIDTH_LABEL
 
 
 def test_fig2_speedup_data_uses_timed_rows_and_keeps_batch_one() -> None:

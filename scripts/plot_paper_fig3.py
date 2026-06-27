@@ -24,6 +24,7 @@ DEFAULT_OUTPUT_DIR = ROOT / "results" / "figures"
 OUTPUT_STEM = "fig3_block_width_cache_sweep"
 TASK = "syndrome"
 PREFERRED_BATCH = 1000
+BLOCK_WIDTH_LABEL = "Block width w (input bits per LUT block)"
 
 CACHE_COLORS = {
     "L1": "#E8F5E9",
@@ -197,7 +198,7 @@ def _plot_panel(ax: plt.Axes, data: dict[str, Any], *, show_twin_ylabel: bool) -
     best_y = data["throughput"][best_idx]
     ax.scatter([best_a], [best_y], s=46, color="#d62728", zorder=4, label="measured peak")
     ax.annotate(
-        f"peak a={best_a}",
+        f"peak w={best_a}",
         (best_a, best_y),
         textcoords="offset points",
         xytext=(5, 8),
@@ -205,7 +206,7 @@ def _plot_panel(ax: plt.Axes, data: dict[str, Any], *, show_twin_ylabel: bool) -
         color="#8B1A1A",
     )
     ax.set_title(f"{_profile_title(data['profile'])}, batch={data['batch_size']}")
-    ax.set_xlabel("Block width a (input bits per LUT block)")
+    ax.set_xlabel(BLOCK_WIDTH_LABEL)
     ax.set_ylabel("Throughput (Mbit/s)")
     ax.grid(True, alpha=0.24, linewidth=0.55)
     ax.tick_params(direction="out", length=3.5, width=0.8)
@@ -220,7 +221,7 @@ def _plot_panel(ax: plt.Axes, data: dict[str, Any], *, show_twin_ylabel: bool) -
         color="#2ca02c",
         linewidth=1.35,
         alpha=0.75,
-        label="B=ceil(n/a)",
+        label="B=ceil(n/w)",
     )
     if show_twin_ylabel:
         twin.set_ylabel("LUT blocks per codeword B")

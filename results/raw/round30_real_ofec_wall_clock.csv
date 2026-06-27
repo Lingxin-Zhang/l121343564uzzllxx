@@ -1,0 +1,3 @@
+run,source_dir,external_wall_s,paired_points,included_in_primary_ber_figure,notes
+round30_final_h10,D:\PKU\acp2026\ofec_block_lut_backend\results\round30_final_h10,1124.2542795,10,True,"Measure-Command TotalSeconds for h=10 paired sweep, SNR 13.7..15.95"
+round30_final_h10_extend,D:\PKU\acp2026\ofec_block_lut_backend\results\round30_final_h10_extend,932.5082207,2,False,"Measure-Command TotalSeconds for high-SNR extension probe, SNR 16.2..16.45"
