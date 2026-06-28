@@ -1,247 +1,173 @@
 # Latest Review Summary
 
-Current round: Round 32.
+Current round: Round 33.
 
 Review bundle path:
 
-- `round32_review_bundle.zip`
+- `round33_review_bundle.zip`
 
 ## Scope
 
-Round 32 refreshes the paper-figure artifacts without rerunning real OFEC
-simulation:
+Round 33 is limited to the fixed-width Fig. 3 diagnostic requested for
+`PackedBlockLUTKernel` at block width `w=14`. It does not touch Fig. 2, Fig. 4,
+OFEC simulation code, or decoder/BER artifacts.
 
-- Fig. 2: BER overlap from existing R31 CSVs plus a decode-time inset.
-- Fig. 3: absolute throughput vs batch, multi-round anti-noise rerun.
-- Fig. 4: block width vs cache, multi-round throughput plus cache-fit fallback
-  panel because hardware cache-miss counters are unavailable on this Windows
-  host.
+The measured task is the same fixed GF(2) linear map in each comparison:
 
-The OFEC BER curve and decode-time inset reuse existing committed R31 data.
-No true OFEC simulation was rerun.
+- syndrome: `v H^T` for BCH(255,239), r16
+- parity: `u P` for BCH(255,239), r16
+
+The plotted baseline is `PackedBatchGF2Kernel.apply_many`, labelled in figures
+as `direct vectorized GF(2) matmul`. The measured LUT backend is
+`PackedBlockLUTKernel.apply_many_packed`, labelled as `block-LUT (w=14)`.
 
 ## Added Files
 
-Benchmarks:
+Benchmark:
 
-- `benchmarks/bench_round32_cache_probe.py`
-- `benchmarks/bench_round32_fixed_map_antinoisy.py`
-- `benchmarks/bench_round32_width_antinoisy.py`
-- `benchmarks/round32_common.py`
+- `benchmarks/bench_round33_fig3_dense_batch.py`
 
-Plot scripts:
+Plot and summary script:
 
-- `scripts/plot_round32_fig2_ber_inset.py`
-- `scripts/plot_round32_fig3_throughput.py`
-- `scripts/plot_round32_fig4_cache_width.py`
-- `scripts/plot_round32_same_tier_proxy.py`
+- `scripts/plot_round33_fig3_dense_batch.py`
 
 Test:
 
-- `tests/test_round32_artifacts.py`
+- `tests/test_round33_fig3.py`
 
-Dependency metadata:
+## Raw Data
 
-- `requirements.txt` now lists `pandas>=1.5`, used by the new aggregation and
-  plotting scripts.
+Merged CSVs:
 
-## Counter Probe
+- `results/raw/round33_fig3_throughput_all.csv`
+- `results/raw/round33_fig3_stage_breakdown_all.csv`
+- `results/raw/round33_fig3_throughput_summary.csv`
+- `results/raw/round33_fig3_speedup_summary.csv`
 
-Read-only counter probe result:
+Worker/source CSVs:
 
-- `perf`: not found
-- `taskset`: not found
-- `/proc/sys/kernel/perf_event_paranoid`: not found
-- Windows `typeperf`: found, but it exposes system counters, not a Linux
-  `perf_event_open`-style way to wrap the LUT kernel.
+- `results/raw/round33_worker_e_throughput.csv`
+- `results/raw/round33_worker_g_throughput.csv`
+- `results/raw/round33_worker_d_stage.csv`
+- `results/raw/round33_worker_d_stage_throughput.csv`
 
-Therefore Fig. 4(b) is emitted as `cache_fit_fallback` and does not contain
-fabricated L1/L2/LLC miss rates. Miss-rate fields are blank.
+The original full three-round throughput shards A/B/C were stopped before the
+1-hour per-process limit after roughly 53 minutes because they had not reached
+the final CSV write. Fallback worker E completed batch sizes `10` through
+`100000` with two rounds, `repeats=15`, and `warmups=10`. Worker G completed
+batch `300000` with one round, `repeats=15`, and `warmups=2`. Worker D completed
+the stage diagnostic for all requested dense batch sizes, including `1000000`
+and `3000000`.
 
-Counter/fallback CSV:
+Throughput for `1000000` and `3000000` is not reported in this round. Those
+long-stream points exceeded the practical budget with the current end-write CSV
+runner. The stage diagnostic still covers those sizes.
 
-- `results/raw/round32_cache_counter_probe.csv`
+## Figures
 
-The fallback still verifies that cache-fit boundaries are batch independent:
-for each profile and width, the cache level is identical at batch `100`,
-`1000`, and `100000`, as expected from table size being independent of batch.
+Generated from the merged CSVs:
 
-## Fig. 2
+- `results/figures/round33_fig3_dense_batch.png`
+- `results/figures/round33_fig3_dense_batch.pdf`
+- `results/figures/round33_fig3_dense_batch_median.png`
+- `results/figures/round33_fig3_dense_batch_median.pdf`
+- `results/figures/round33_fig3_dense_batch_envelope.png`
+- `results/figures/round33_fig3_dense_batch_envelope.pdf`
+- `results/figures/round33_fig3_scatter.png`
+- `results/figures/round33_fig3_scatter.pdf`
+- `results/figures/round33_fig3_stage_breakdown.png`
+- `results/figures/round33_fig3_stage_breakdown.pdf`
 
-Outputs:
+The paper-facing primary file is the min-view plot
+`round33_fig3_dense_batch.*`; the median, max-envelope, scatter, and stage plots
+are review diagnostics.
 
-- `results/figures/round32_fig2_ber_decode_inset.png`
-- `results/figures/round32_fig2_ber_decode_inset.pdf`
+## Correctness Gate
 
-Inputs:
+All timed throughput rows passed the exactness check against `NaiveGF2Kernel`:
 
-- `results/raw/round31_fig4_real_ofec_syndrome_lut_ber.csv`
-- `results/raw/round31_fig4_real_ofec_block_lut_ber.csv`
-- `results/raw/round31_fig4_real_ofec_curve_diff.csv`
+- throughput rows: 248 timed rows, 248 correctness-passed rows
+- stage rows: 72 rows, all correctness-passed
 
-Result:
+No speed number in the Round33 CSV is reported for a row that failed exactness.
 
-- paired BER rows: `10`
-- mismatch count: `0`
-- aggregated decode-time ratio: `1.1125625601918068x`
-- per-point decode-time ratio range: `1.018156381027306x` to
-  `1.1923112775917915x`
+## Main Throughput Observations
 
-The `13.95 dB` point remains the existing low-event open-marker tail point.
-The excluded `14.00 dB` zero-error upper-bound point is not plotted.
+Bulk mode, median throughput:
 
-## Fig. 3
+| task | best LUT batch | LUT Mbit/s | direct Mbit/s | LUT/direct at best LUT | best ratio batch | best LUT/direct |
+|---|---:|---:|---:|---:|---:|---:|
+| syndrome | 2000 | 517.230 | 18.065 | 28.632 | 700 | 30.517 |
+| parity | 2000 | 570.438 | 17.176 | 33.210 | 1500 | 34.186 |
 
-Outputs:
-
-- `results/figures/round32_fig3_throughput.png`
-- `results/figures/round32_fig3_throughput.pdf`
-- `results/figures/round32_fig3_throughput_min.png`
-- `results/figures/round32_fig3_throughput_min.pdf`
-- `results/figures/round32_fig3_throughput_envelope.png`
-- `results/figures/round32_fig3_throughput_envelope.pdf`
-- `results/figures/round32_fig3_throughput_scatter.png`
-- `results/figures/round32_fig3_throughput_scatter.pdf`
-
-CSV:
-
-- `results/raw/round32_fig3_throughput_rounds.csv`
-- `results/raw/round32_fig3_throughput_summary.csv`
-- `results/raw/round32_fig3_speedup_summary.csv`
-- raw source traces:
-  - `results/raw/round32_fig3_throughput_rounds_worker.csv`
-  - `results/raw/round32_fig3_throughput_rounds_main.csv`
-
-The plot uses absolute throughput. It does not use a speedup y-axis.
-
-Median LUT/direct ratios from `round32_fig3_speedup_summary.csv`:
+Fixed-chunk streaming mode with `chunk_size=1000`, median throughput:
 
 | task | batch | LUT Mbit/s | direct Mbit/s | LUT/direct |
 |---|---:|---:|---:|---:|
-| syndrome | 1000 | 589.731685 | 43.561171 | 13.538013 |
-| syndrome | 100000 | 271.392371 | 44.844492 | 6.051855 |
-| parity | 1000 | 631.343567 | 45.651635 | 13.829594 |
-| parity | 100000 | 271.903099 | 44.812819 | 6.067529 |
+| syndrome | 100000 | 234.243 | 17.293 | 13.546 |
+| syndrome | 300000 | 486.455 | 35.539 | 13.688 |
+| parity | 100000 | 253.327 | 17.354 | 14.598 |
+| parity | 300000 | 506.370 | 35.772 | 14.155 |
 
-The batch-1000 spike is still visible, but the figure now reports min, median,
-max envelope, and all-round scatter instead of hiding the spread. The worker
-trace was more stable than the main fallback trace at parity batch 100/1000.
+The `300000` rows are single-round rows, so their CV is blank. They are useful
+as a long-stream extension, but the two-round `100000` rows are the safer
+stability reference.
 
-## Fig. 4
+## Batch-1000 / L1-Fit Diagnosis
 
-Outputs:
+The data does not support a narrow claim that a true throughput peak occurs
+exactly at batch `1000` because of L1 input fit.
 
-- `results/figures/round32_fig4_cache_width.png`
-- `results/figures/round32_fig4_cache_width.pdf`
-- `results/figures/round32_fig4_cache_width_min.png`
-- `results/figures/round32_fig4_cache_width_min.pdf`
-- `results/figures/round32_fig4_cache_width_envelope.png`
-- `results/figures/round32_fig4_cache_width_envelope.pdf`
-- `results/figures/round32_fig4_cache_width_selected_r16_r24.png`
-- `results/figures/round32_fig4_cache_width_selected_r16_r24.pdf`
-- `results/figures/round32_fig4_cache_width_scatter.png`
-- `results/figures/round32_fig4_cache_width_scatter.pdf`
+Evidence:
 
-CSV:
+- syndrome bulk LUT throughput is a plateau from roughly batch `700` to `2000`,
+  with the measured maximum at `2000`, not `1000`.
+- parity bulk LUT throughput also reaches its measured maximum at `2000`.
+- batch `1000` has active input around 31 KiB for syndrome and 29 KiB for
+  parity, close to a nominal 32 KiB L1D size, but batch `1500` and `2000` are
+  already above that active-input footprint and remain as fast or faster.
+- stage timing is dominated by index calculation across the range. Around
+  batch `1000` to `2000`, index share stays around 68-70 percent, read/prepare
+  around 21-24 percent, lookup around 5-6 percent, with no isolated L1-edge
+  transition.
 
-- `results/raw/round32_width_throughput_rounds.csv`
-- `results/raw/round32_width_throughput_summary.csv`
-- `results/raw/round32_cache_width_decision_summary.csv`
-- raw source traces:
-  - `results/raw/round32_width_throughput_r16_r24.csv`
-  - `results/raw/round32_width_throughput_r16_r24_main.csv`
-  - `results/raw/round32_width_throughput_r27_r30.csv`
+Conservative interpretation: the current data supports a small/mid-batch
+throughput plateau and a later drop after roughly `2000` to `3000` codewords.
+It does not justify a stronger "batch 1000 is the true L1-fit peak" claim.
 
-Best median widths:
+## Budget Notes
 
-| profile | best w | median Mbit/s | CV | cache fit |
-|---|---:|---:|---:|---|
-| BCH(255,239), r16 | 14 | 621.034225 | 0.026576 | L2 |
-| BCH(255,231), r24 | 20 | 582.016468 | 0.083610 | DRAM |
-| BCH(511,484), r27 | 16 | 631.334383 | 0.100321 | L3 |
-| BCH(1023,993), r30 | 14 | 626.857452 | 0.054965 | L3 |
+The over-heavy original shard configuration was:
 
-The selected paper-facing panel is the r16/r24 version because those were the
-priority codes and r16 shows the cleanest cache-boundary alignment. The r24
-best width moved into the DRAM-fit band in this run, so it is reported as data,
-not forced into an L2-boundary story.
+- all 18 requested batch sizes
+- syndrome and parity
+- bulk and fixed-chunk streaming
+- two backends
+- three rounds per worker
+- `repeats=15`, `warmups=30`
 
-## Same-Tier Control
-
-CSV:
-
-- `results/raw/round32_same_tier_dram_pressure_proxy.csv`
-- `results/raw/round32_same_tier_summary.csv`
-
-Figure:
-
-- `results/figures/round32_same_tier_dram_pressure_proxy.png`
-- `results/figures/round32_same_tier_dram_pressure_proxy.pdf`
-
-This is a read-only cache-pressure proxy, not a true hardware guarantee that
-every table lookup is served from DRAM. It did not become monotone:
-
-- BCH(255,239), natural: non-monotone
-- BCH(255,239), pressure proxy: non-monotone
-- BCH(255,231), natural: non-monotone
-- BCH(255,231), pressure proxy: non-monotone
-
-Therefore it is kept as a diagnostic control and should not be used as evidence
-for the stronger "same-tier DRAM makes timing monotone" claim.
-
-## Noise Handling
-
-All Round32 timing rows record:
-
-- `round_index`
-- probe loop timings
-- raw and probe-normalized throughput columns
-
-CSV:
-
-- `results/raw/round32_noise_normalization_summary.csv`
-
-The probe normalization is a software frequency proxy. It is useful for
-diagnostics but does not fully remove Python/thermal scheduling noise.
-
-Affinity:
-
-- Fig. 4 r16/r24 worker: `psutil cpu_affinity set to 2`
-- Fig. 4 r27/r30: `psutil cpu_affinity set to 4`
-- Fig. 3 main trace: `psutil cpu_affinity set to 6`
-
-Windows did not expose a Linux-style P/E-core proof path. The summary reports
-affinity setting rather than claiming confirmed P-core residency.
-
-## Parallelism And Timing
-
-Subagent split:
-
-- Beauvoir: Fig. 4 r16/r24 cache-fit fallback and width sweep.
-- Harvey: Fig. 3 throughput rerun.
-- Main agent: Fig. 2 inset, r27/r30 lightweight Fig. 4 supplement, proxy
-  control, merge/plot/test/docs.
-
-Observed experiment durations:
-
-- Fig. 4 r16/r24 cache probe: `0.280 s`
-- Fig. 4 r16/r24 width worker: `20.174 s`
-- Fig. 3 worker: `365.136 s`
-- Fig. 3 main fallback trace: about `273.5 s`
-- Fig. 4 r27/r30 supplement: about `15.4 s`
-- same-tier pressure proxy: about `40.8 s`
-
-No command hit the 1-hour per-process cap, and the total experiment time stayed
-under the 3-hour round cap.
+That configuration did not finish a worker CSV before the 1-hour per-process
+limit. The fallback configuration kept `repeats=15` and the dense small/mid
+batch grid, reduced rounds and warmups, and added a single `300000` long-stream
+extension.
 
 ## Verification
 
-Round32 smoke:
+Commands run:
 
-- `python -B -m pytest tests/test_round32_artifacts.py -q`
-- result: `4 passed, 1 warning`
-
-Full suite:
-
+- `python -B -m pytest tests/test_round33_fig3.py -q`
 - `python -B -m pytest tests -q`
-- result: `318 passed, 1 skipped, 27 warnings`
+
+Results:
+
+- Round33 test: 4 passed
+- full suite: 322 passed, 1 skipped
+
+## Push Status
+
+The Round33 commit was created locally and pushed after transient GitHub
+connectivity failures:
+
+- attempt 1: `Could not resolve host: github.com`
+- attempt 2: `Recv failure: Connection was reset`
+- attempt 3: push succeeded
