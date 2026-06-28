@@ -1,390 +1,232 @@
 # Latest Review Summary
 
-Current round: Round 30 review snapshot.
-
-## Scope
-
-Round 30 extends the real local OFEC evidence from Round 29:
-
-- keep `D:\PKU\OFEC\project\ofec-0.1.0` read-only;
-- inject the external `BlockLUTBCHBackend` from
-  `D:\PKU\acp2026\ofec_block_lut_backend`;
-- verify real OFEC BER curves remain pointwise identical after replacing only
-  the BCH syndrome/parity backend;
-- regenerate Fig. 2/Fig. 3/Fig. 4-style real OFEC BER figures from CSVs.
-- rerun Fig. 2/Fig. 3 fixed-map data with higher repeats.
+Current round: Round 31 review snapshot.
 
 Review bundle path:
 
-- `round30_real_ofec_review_snapshot.zip`
+- `round31_review_bundle.zip`
 
-The current bundle is the full Round 30 review package: external backend and
-runner files, paired real-OFEC BER CSVs/diffs/timing, h16/h18 MC-core
-follow-up CSVs, high-repeat Fig. 2/Fig. 3 CSVs, generated PNG/PDF figures, plot
-scripts, tests, and these review notes.
+## Scope
 
-Completion audit:
+Round 31 is a post-R30 stabilization and paper-figure refresh round:
 
-- `review_gpt/round_30_completion_audit.md`
-- The audit marks the h16/h18 follow-up, Fig. 2/Fig. 3 high-repeat outputs,
-  accepted paired BER points, and review bundle as proven.
-- The external MC runner now supports time-capped low-error point discard, but
-  the audit still does not mark the original h=10 formal `max_blocks=500000`
-  sweep as complete because current accepted h10 CSVs do not prove that gate.
+- Fig. 2 is redrawn as absolute online throughput, not speedup.
+- Fig. 3 is rerun as a wider block-width/cache sweep over `w=4..24`.
+- Fig. 4 reuses the accepted R30 `h=16` deep points and adds only the
+  low-SNR shoulder points `13.50..13.70`.
+- The OFEC source tree remains read-only; no source files under
+  `D:\PKU\OFEC\project\ofec-0.1.0` were edited.
 
-## Parallel Injection Gate
+All reported values below are read from committed CSV outputs. No paper figure
+uses specific software-library names in labels or legends.
 
-The external runner now supports point-level process parallelism. Each worker
-self-constructs its backend from a backend label plus fixed parameters instead
-of receiving a pickled backend object. This avoids modifying OFEC source files.
+## New Or Updated Artifacts
 
-Gate result:
+Benchmark and plotting scripts:
 
-- serial vs point-parallel, 3 SNR points: all BER/error/count fields matched;
-- external backend tests: `3 passed, 1 warning`.
+- `benchmarks/bench_round31_cache_width.py`
+- `scripts/plot_round31_fig2_throughput.py`
+- `scripts/plot_round31_fig3_cache_width.py`
+- `scripts/plot_round31_fig4_ber.py`
 
-Important boundary: OFEC's built-in `mc` worker path still stringifies backend
-objects, so it was not used as block-LUT paired evidence. The paired evidence
-below comes from the external runner that calls the real OFEC
-`simulate_snr_point()` in each worker.
+Smoke test:
 
-## Primary h=10 Sweep
+- `tests/test_round31_artifacts.py`
 
-Source CSVs:
+Raw CSV outputs:
 
-- `results/raw/round30_real_ofec_syndrome_lut_ber.csv`
-- `results/raw/round30_real_ofec_block_lut_ber.csv`
-- `results/raw/round30_real_ofec_curve_diff.csv`
-- `results/raw/round30_real_ofec_timing.csv`
+- `results/raw/round31_block_width_cache_sweep.csv`
+- `results/raw/round31_block_width_batch_sweep.csv`
+- `results/raw/round31_same_tier_dram_proxy.csv`
+- `results/raw/round31_cache_width_summary.csv`
+- `results/raw/round31_fixed_map_throughput.csv`
+- `results/raw/round31_fig2_throughput_summary.csv`
+- `results/raw/round31_fig4_low_snr_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round31_fig4_low_snr_real_ofec_block_lut_ber.csv`
+- `results/raw/round31_fig4_low_snr_real_ofec_curve_diff.csv`
+- `results/raw/round31_fig4_low_snr_real_ofec_timing.csv`
+- `results/raw/round31_fig4_real_ofec_syndrome_lut_ber.csv`
+- `results/raw/round31_fig4_real_ofec_block_lut_ber.csv`
+- `results/raw/round31_fig4_real_ofec_curve_diff.csv`
 
-Run parameters:
+Figures:
 
-- h: `10`
-- SNR Es/N0: `13.70` to `15.95` dB, step `0.25`
-- `min_post_errors=100`
-- `max_blocks=60000`
-- `batch_blocks=16`
-- `block_width=14`
-- external measured wall-clock: `1124.2542795 s`
+- `results/figures/round31_fig2_actual_throughput.png`
+- `results/figures/round31_fig2_actual_throughput.pdf`
+- `results/figures/round31_fig3_cache_width.png`
+- `results/figures/round31_fig3_cache_width.pdf`
+- `results/figures/round31_fig4_real_ofec_ber.png`
+- `results/figures/round31_fig4_real_ofec_ber.pdf`
 
-All 10 paired points matched exactly:
+## Fig. 2: Absolute Throughput
 
-- `total_blocks_delta = 0`
-- `emitted_blocks_delta = 0`
-- `total_bits_delta = 0`
-- `pre_fec_errors_delta = 0`
+Data source:
+
+- `results/raw/round31_fixed_map_throughput.csv`
+
+Plot script:
+
+- `scripts/plot_round31_fig2_throughput.py`
+
+Display labels are neutralized in the plotting layer:
+
+- `PackedBatchGF2Kernel.apply_many` -> `direct vectorized GF(2) matmul`
+- `PackedBlockLUTKernel.apply_many_packed` -> `block-LUT (cache-aware)`
+- `galois_per_codeword` -> `naive per-codeword`
+
+The adopted Fig. 2 run uses Round31 cache-sweep width source explicitly:
+
+- `--block-width-source results/raw/round31_block_width_cache_sweep.csv`
+- `--selection-batch-size 1000`
+- resulting displayed BCH(255,239) block-LUT width: `w=14`
+
+The first Fig. 2 attempt accidentally used the older default
+`results/raw/block_width_cache_sweep.csv`, which selected `w=13` for the r16
+rows. That output was overwritten and is not used.
+
+Selected BCH(255,239) r16 rows:
+
+| task | batch | direct Mbit/s | block-LUT Mbit/s | LUT/direct |
+|---|---:|---:|---:|---:|
+| syndrome | 1 | 17.229734 | 4.473687 | 0.259649 |
+| syndrome | 100 | 83.061918 | 99.415215 | 1.196881 |
+| syndrome | 1000 | 37.085514 | 486.827005 | 13.127147 |
+| syndrome | 100000 | 43.529918 | 223.721694 | 5.139493 |
+| syndrome | 300000 | 39.107838 | 200.986383 | 5.139286 |
+| parity | 1 | 17.835840 | 4.704721 | 0.263779 |
+| parity | 100 | 36.561109 | 277.584343 | 7.592339 |
+| parity | 1000 | 55.389464 | 527.710227 | 9.527267 |
+| parity | 100000 | 43.737503 | 195.285210 | 4.464937 |
+| parity | 300000 | 40.554535 | 206.478173 | 5.091371 |
+
+Batch `1` remains below the direct baseline and is kept in the figure.
+
+## Fig. 3: Block Width And Cache
+
+Data sources:
+
+- `results/raw/round31_block_width_cache_sweep.csv`
+- `results/raw/round31_block_width_batch_sweep.csv`
+- `results/raw/round31_same_tier_dram_proxy.csv`
+- `results/raw/round31_cache_width_summary.csv`
+
+Plot script:
+
+- `scripts/plot_round31_fig3_cache_width.py`
+
+Benchmark settings:
+
+- block widths: `w=4..24`
+- main Fig. 3 batch: `1000`
+- task: syndrome
+- warmups/repeats: `30` / `15`
+- exactness checked before timing for every timed row
+- maximum LUT table budget: `402653184` bytes; oversized rows are marked
+  skipped instead of forced
+
+Best measured widths from the multicode batch-1000 sweep:
+
+| profile | best w | throughput Mbit/s | CV | cache fit | table bytes | predicted L1/L2/L3 w |
+|---|---:|---:|---:|---|---:|---|
+| BCH(255,239), r16 | 14 | 533.249650 | 0.036438 | L2 | 622592 | 9 / 14 / 19 |
+| BCH(255,231), r24 | 14 | 532.247921 | 0.011267 | L2 | 933888 | 8 / 14 / 18 |
+| BCH(511,484), r27 | 14 | 529.149829 | 0.273345 | L3 | 2424832 | 6 / 12 / 17 |
+| BCH(1023,993), r30 | 10 | 483.094055 | 0.043067 | L2 | 421888 | 5 / 11 / 16 |
+
+The r30 case shifts the best observed width left to `w=10`, consistent with
+larger per-entry storage increasing cache pressure. The r27 row is noisy
+(`CV=0.273345`) and should not be over-interpreted.
+
+Batch-drift control for BCH(255,239) r16:
+
+| batch | best w | throughput Mbit/s | CV | cache fit |
+|---:|---:|---:|---:|---|
+| 100 | 21 | 327.342701 | 0.436173 | DRAM |
+| 1000 | 22 | 484.883015 | 0.032465 | DRAM |
+| 10000 | 12 | 454.959048 | 0.189781 | L2 |
+| 100000 | 18 | 222.434674 | 0.070831 | L3 |
+| 300000 | 24 | 210.305578 | 0.042340 | DRAM |
+
+This batch sweep shows substantial small-run drift. It is kept as a data
+quality warning, not as a claim that very large DRAM-sized tables are generally
+best. Follow-up high-repeat platform-pinned runs should validate the stable
+batch regime.
+
+Same-tier memory control:
+
+- natural measurement best: `w=16`, `687.887727 Mbit/s`, `CV=0.018128`, L3 fit
+- cache-flushed DRAM-proxy best: `w=8`, `20.407837 Mbit/s`, `CV=0.019061`, L1 fit
+
+The DRAM-proxy mode touches a flush buffer before each timing call. It is a
+software proxy for cache disruption, not a hardware guarantee that every table
+lookup is served from DRAM.
+
+The right-axis compute guide uses the continuous monotone trend
+`input_width / w`. The CSV also stores the raw ceiling-based count
+`ceil(input_width / w)`.
+
+## Fig. 4: Real OFEC BER
+
+Data sources:
+
+- low shoulder, seed 42:
+  `results/raw/round31_fig4_low_snr_real_ofec_*`
+- reused accepted R30 h16 formal points:
+  `results/raw/round31_fig4_real_ofec_*`
+
+Plot script:
+
+- `scripts/plot_round31_fig4_ber.py`
+
+The plotted curve contains `13.50..13.95 dB`; the `14.00 dB` zero-error upper
+bound point is excluded. The low-SNR shoulder points `13.50..13.70` were run in
+this round with seed `42`. The deeper `13.75..13.95` points are reused from the
+accepted R30 h16 formal sweep, as requested for Round31.
+
+All 10 paired reference/backend rows match exactly:
+
 - `post_fec_errors_delta = 0`
-- `pre_fec_ber_delta = 0.0`
-- `post_fec_ber_delta = 0.0`
+- `pre_fec_errors_delta = 0`
+- BER deltas are `0`
 
-Lowest primary-sweep BER:
+Selected BER rows:
 
-- `1.0597088898163606e-07` at `15.95 dB`
-- `26 / 245350400` post-FEC bit errors
-- stop reason: `max_blocks_reached`
+| SNR Es/N0 dB | post errors | BER | wall s | stop reason |
+|---:|---:|---:|---:|---|
+| 13.50 | 748351 | 9.456671e-03 | 100.091735 | target_errors_reached |
+| 13.70 | 379039 | 4.789794e-03 | 94.802907 | target_errors_reached |
+| 13.80 | 56183 | 7.099665e-04 | 94.414413 | target_errors_reached |
+| 13.85 | 1399 | 1.767871e-05 | 95.297739 | target_errors_reached |
+| 13.90 | 291 | 4.085859e-07 | 810.943356 | target_errors_reached |
+| 13.95 | 9 | 5.169550e-09 | 1996.622509 | max_blocks_reached |
 
-This is close to `1e-7` but is below the requested 100-error reliability
-threshold, so it is reported as an observed low-error point, not a precision
-floor claim.
+The `13.95 dB` point has fewer than 10 post-FEC errors and is drawn with an
+open marker. A log-linear interpolation between `13.90` and `13.95` places the
+`1e-7` crossing near `13.92 dB`, but that tail estimate inherits the low-event
+uncertainty of the `13.95 dB` point.
 
-## Timing
+## Timing And Limits
 
-From `round30_real_ofec_timing.csv`:
+No Round31 background experiment hit the 1-hour per-process kill limit.
 
-| metric | syndrome_lut | block_lut | ratio |
-|---|---:|---:|---:|
-| summed point wall s | 4452.421527999919 | 4335.98079149978 | 1.026854532365182 |
-| summed wall incl. common init s | 4469.39580150001 | 4352.811351599812 | 1.0267837129806576 |
-| summed decode s | 3875.640491998871 | 3765.669281698705 | 1.0292036294410212 |
+Observed wall times from status files:
 
-These are end-to-end real OFEC ratios for this runner, not isolated-kernel
-speedups.
+- Fig. 3 multicode sweep: about `18.7 s`
+- Fig. 3 multibatch sweep: about `678.6 s`
+- Fig. 3 same-tier proxy sweep: about `17.3 s`
+- Fig. 4 low-SNR shoulder sweep: about `996.5 s`
+- adopted Fig. 2 throughput rerun: `1642.699 s`
 
-## Extension Probe
-
-Two additional h=10 points were run after the primary sweep:
-
-- `16.20 dB`: `8.559187186978297e-08`, `21 / 245350400`
-- `16.45 dB`: `9.781928213689482e-08`, `24 / 245350400`
-
-Both extension points matched exactly between backends. They are kept in
-separate CSVs and are not mixed into the primary 10-point curve because the
-later h-window discussion made these high-SNR points questionable for the
-intended paper framing.
-
-## h Calibration Probe
-
-Additional MC-style calibration data exists in:
-
-- `results/raw/round30_h_calibration_mc_summary.csv`
-- `results/raw/round30_h_selection_addendum.csv`
-
-It is useful for discussion only and is not paired block-LUT evidence.
-
-Summary:
-
-| h | rows | approx BER=1e-3 SNR | best positive BER | first zero-error SNR | sec/input block |
-|---:|---:|---:|---:|---:|---:|
-| 15 | 12 | 13.786148850324029 | 1.7447905106977983e-06 @ 13.9 | 14.0 | 0.004691350227004699 |
-| 18 | 12 | 13.758343935901685 | 5.6425730387369794e-06 @ 13.9 | 14.0 | 0.00525976700398677 |
-| 20 | 12 | 13.764714867870186 | 0.0004134178161621094 @ 13.8 | 13.9 | 0.005769333680676488 |
-| 22 | 6 | 13.757065915664533 | 0.00030863285064697266 @ 13.8 | 13.9 | 0.008848963103144458 |
-
-The zero-error rows mean finite-sample zero observations, not BER equal to zero.
-These h values are not part of the current h=10 primary conclusion.
-
-Addendum for the later "put the 1e-6 to 1e-8 waterfall region near 14.0 dB"
-question:
-
-- the reliable h-selection evidence is the MC warmup/measure/discard
-  calibration for h=15/18/20/22;
-- h=15 has `1.7447905106977983e-06` at `13.9 dB` and zero observed errors
-  at `14.0 dB` over `151912448` bits, giving an approximate 95% zero-error
-  upper bound of `1.97e-8`;
-- h=18 has `5.6425730387369794e-06` at `13.9 dB` and zero observed errors
-  at `14.0 dB` over `148979712` bits, giving an approximate 95% zero-error
-  upper bound of `2.01e-8`;
-- h=20 and h=22 already have zero observed errors at `13.9 dB`, so they look
-  too strong/left-shifted for placing the low-BER waterfall region around
-  `14.0 dB`;
-- before the paired MC-core follow-up below, this calibration made h=18 look
-  like the best next candidate. The later paired h16/h18 run changes that
-  recommendation.
-
-Two short h12/h14/h15/h16 probes were also run under the one-hour aggregate
-experiment budget and are recorded in `round30_h_selection_addendum.csv`.
-Every reported point had more than 60 post-FEC errors, but these probes stopped
-after only 4 to 16 measurement blocks and are startup-transient dominated. They
-are smoke data only and are not used to choose h.
-
-The h10 `min_post_errors=200`, `max_blocks=500000` low/mid-SNR partial run
-accepted four completed paired points:
-
-- source CSVs:
-  `results/raw/round30_formal_h10_low_mid_real_ofec_syndrome_lut_ber.csv`,
-  `results/raw/round30_formal_h10_low_mid_real_ofec_block_lut_ber.csv`,
-  `results/raw/round30_formal_h10_low_mid_real_ofec_curve_diff.csv`, and
-  `results/raw/round30_formal_h10_low_mid_real_ofec_timing.csv`;
-- accepted SNRs: `13.70`, `13.95`, `14.20`, `14.45`;
-- all four paired points matched exactly;
-- the run was stopped before later in-flight SNR points completed, so no
-  in-flight point is reported or used.
-
-## Paired MC-Core h16/h18 Follow-Up
-
-The later user question asked whether weakening h from 18 to 15/16 would be
-better because the h18 MC-core run had only 38 post-FEC errors at `13.9 dB`.
-The accepted paired MC-core evidence now supports h=16 over h=18 for the
-current "low-BER waterfall near 14.0 dB" target.
-
-Source CSVs:
-
-- `results/raw/round30_formal_h16_mc_core_real_ofec_syndrome_lut_ber.csv`
-- `results/raw/round30_formal_h16_mc_core_real_ofec_block_lut_ber.csv`
-- `results/raw/round30_formal_h16_mc_core_real_ofec_curve_diff.csv`
-- `results/raw/round30_formal_h16_mc_core_real_ofec_timing.csv`
-- `results/raw/round30_formal_h18_mc_core_real_ofec_syndrome_lut_ber.csv`
-- `results/raw/round30_formal_h18_mc_core_real_ofec_block_lut_ber.csv`
-- `results/raw/round30_formal_h18_mc_core_real_ofec_curve_diff.csv`
-- `results/raw/round30_formal_h18_mc_core_real_ofec_timing.csv`
-
-Accepted paired rows:
-
-| h | SNR Es/N0 dB | post errors / total bits | post-FEC BER or 95% zero-error upper | stop | paired diff |
-|---:|---:|---:|---:|---|---|
-| 16 | 13.9 | `188 / 67108864` | `2.8014183044433594e-06` | target_errors_reached | exact match |
-| 16 | 14.0 | `0 / 671088640` | zero-error upper approx. `4.463988956260323e-09` | max_blocks_reached | exact match |
-| 18 | 13.9 | `38 / 209715200` | `1.811981201171875e-07` | max_blocks_reached | exact match |
-| 18 | 14.0 | `0 / 209715200` | zero-error upper approx. `1.4284764593419652e-08` | max_blocks_reached | exact match |
-
-Current decision:
-
-- h=16 is the better supported candidate for the requested target because
-  `13.9 dB` has a positive, adequately counted point (`188` errors), while
-  `14.0 dB` has zero observed errors over a larger denominator than h18.
-- h=18 remains bit-exact and faster than the reference backend, but its
-  `13.9 dB` point has only `38` errors and is therefore too weak to use as the
-  main calibration evidence.
-- h=15 remains plausible from the earlier official-backend calibration, but a
-  full paired MC-core h15 run was not started because the one-hour aggregate
-  experiment-budget rule favored analyzing the completed h16/h18 evidence.
-
-Timing summary:
-
-| h | point-wall ratio syndrome_lut/block_lut | decode ratio syndrome_lut/block_lut |
-|---:|---:|---:|
-| 16 | `1.0487933321772949` | `1.0573324636310466` |
-| 18 | `1.0953119272474656` | `1.058312426807149` |
-
-One MC-runner issue was found and fixed before accepting the paired MC-core
-data: early stopping used backend-speed-dependent completed chunks, which
-could make the two backends aggregate different chunk sets. The runner now
-aggregates MC chunks wave-synchronously before applying the stop rule, so the
-paired backends consume the same seed/chunk set. The failed h18 refine run
-from before this fix is not used as evidence.
-
-## Formal Fig. 4 h16 Sweep
-
-After the later instruction to use the previously identified suitable h value
-for the best Fig. 4, a formal paired MC-core h16 sweep was run and selected as
-the Fig. 4 candidate.
-
-Source CSVs:
-
-- `results/raw/round30_fig4_h16_formal_6h_real_ofec_syndrome_lut_ber.csv`
-- `results/raw/round30_fig4_h16_formal_6h_real_ofec_block_lut_ber.csv`
-- `results/raw/round30_fig4_h16_formal_6h_real_ofec_curve_diff.csv`
-- `results/raw/round30_fig4_h16_formal_6h_real_ofec_timing.csv`
-
-Accepted paired rows:
-
-| SNR Es/N0 dB | post errors / total bits | post-FEC BER | stop | paired diff |
-|---:|---:|---:|---|---|
-| 13.75 | `231439 / 79134720` | `0.0029246201919966358` | target_errors_reached | exact match |
-| 13.80 | `56183 / 79134720` | `0.0007099664976384576` | target_errors_reached | exact match |
-| 13.85 | `1399 / 79134720` | `1.767871295936853e-05` | target_errors_reached | exact match |
-| 13.90 | `291 / 712212480` | `4.085859321083506e-07` | target_errors_reached | exact match |
-| 13.95 | `9 / 1740963840` | `5.169550218802936e-09` | max_blocks_reached | exact match |
-| 14.00 | `0 / 1740963840` | 95% zero-error upper approx. `1.720732001331271e-09` | max_blocks_reached | exact match |
-
-The h16 figure is:
-
-- `results/figures/round30_fig4_h16_formal_ber.png`
-- `results/figures/round30_fig4_h16_formal_ber.pdf`
-
-Timing ratio for this h16 sweep:
-
-- point wall-clock ratio, reference/block-LUT: `1.1126846823150944`
-- decode-time ratio, reference/block-LUT: `1.1199946694709428`
-
-Interpretation boundary: the `13.95 dB` point has only `9` post-FEC errors and
-the `14.0 dB` point has zero observed errors, so the low-BER tail is shown as
-observed/upper-bound evidence rather than a high-confidence floor estimate.
-
-h15 was started as a backup but stopped after its first exact point
-(`13.85 dB`, BER `6.721951314155629e-05`) once h16 became the supported Fig. 4
-choice. The h10 formal MC-core partial run is retained for audit, but not used
-for the selected Fig. 4 curve.
-
-## Formal h=10 One-Hour Sweep
-
-To close the original h=10 gate, a paired MC-core h=10 sweep was run with
-`min_post_errors=200`, `max_blocks=500000`, `SNR=13.7..15.2` in `0.1 dB`
-steps, `batch_blocks=16`, `mc_workers=6`, `block_width=14`, and
-`accept_time_capped_min_errors=100`.
-
-Source CSVs:
-
-- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_syndrome_lut_ber.csv`
-- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_block_lut_ber.csv`
-- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_curve_diff.csv`
-- `results/raw/round30_formal_h10_full_1h_20260628_real_ofec_timing.csv`
-
-Accepted paired rows:
-
-| SNR Es/N0 dB | post errors / total bits | post-FEC BER or 95% zero-error upper | stop | paired diff |
-|---:|---:|---:|---|---|
-| 13.70 | `239519 / 50331648` | `0.004758814970652263` | target_errors_reached | exact match |
-| 13.80 | `57500 / 50331648` | `0.001142422358194987` | target_errors_reached | exact match |
-| 13.90 | `623 / 100663296` | `6.18894894917806e-06` | target_errors_reached | exact match |
-| 14.00 | `0 / 1711276032` | zero-error upper approx. `1.7505839000619972e-09` | max_blocks_reached | exact match |
-
-Generated figure:
-
-- `results/figures/round30_formal_h10_full_1h_ber.png`
-- `results/figures/round30_formal_h10_full_1h_ber.pdf`
-
-Timing ratio for accepted rows:
-
-- point wall-clock ratio, reference/block-LUT: `1.098757945096654`
-- decode-time ratio, reference/block-LUT: `1.113483092381407`
-
-Interpretation boundary: this formal h=10 run did not produce a counted
-`1e-7` point. It reached a counted `6.19e-6` point at `13.9 dB`, then a
-zero-error max-block upper-bound point at `14.0 dB`. The run entered an
-in-flight `14.1 dB` point near the one-hour boundary and was manually stopped
-at about `66.5` minutes; no complete paired row or verifiable post-error count
-was written for that in-flight point, so it is not reported.
-
-## SNR Definition
-
-The local OFEC channel uses normalized 16QAM with average symbol power 1 and
-noise variance per real dimension `1 / (2 * SNR_linear)`. The figure axis is
-therefore labeled `SNR Es/N0 (dB)`.
-
-## High-Repeat Fixed-Map Data
-
-New high-repeat CSVs:
-
-- `results/raw/block_width_cache_sweep_highrep.csv`
-- `results/raw/fixed_map_three_backend_highrep.csv`
-
-Settings:
-
-- repeats: `15`
-- warmups: `3`
-- block-width batch sizes: `1000, 10000, 100000, 300000`
-- three-backend batch sizes: `1, 10, 100, 1000, 10000, 100000, 300000`
-- max timed batch size: `300000`
-- galois per-codeword timing capped at batch `1000`
-
-Exactness/timing summary:
-
-- block-width high-repeat: 176 rows, 176 exactness pass, 164 timed;
-- three-backend high-repeat: 96 rows, 96 exactness pass, 72 timed.
-- `fixed_map_three_backend_highrep.csv` has 32 rows per backend. Untimed rows
-  are intentional: `galois_per_codeword` is timed only up to batch `1000`, and
-  the `5000000` long-batch rows are present but not timed.
-- Fig. 2 speedups are reproducible from CSV as
-  `throughput_Mbit_s(block-LUT) / throughput_Mbit_s(direct vectorized GF(2)
-  matmul)` at the same task and batch. For batch `1`, block-LUT is slower than
-  direct for both syndrome and parity (`0.349x` and `0.344x` respectively), so
-  no "always faster" wording is supported.
-
-Fig. 3 now plots from the high-repeat CSV. The r16 panel uses batch `300000`;
-the r27 panel uses batch `10000`, selected because the high-repeat
-`batch=1000` row still had visible small-batch noise.
-
-The r27 curve is improved versus the old `batch=1000` panel, but it still has a
-small secondary bump around `w=13`. The result is reported as measured data,
-not smoothed or edited.
-
-## Figures
-
-Generated from committed CSVs:
-
-- `results/figures/round30_real_ofec_ber.png`
-- `results/figures/round30_real_ofec_ber.pdf`
-- `results/figures/round30_real_ofec_h16_mc_ber.png`
-- `results/figures/round30_real_ofec_h16_mc_ber.pdf`
-- `results/figures/round30_fig4_h16_formal_ber.png`
-- `results/figures/round30_fig4_h16_formal_ber.pdf`
-- `results/figures/round30_formal_h10_full_1h_ber.png`
-- `results/figures/round30_formal_h10_full_1h_ber.pdf`
-- `results/figures/fig2_fixed_map_speedup.png`
-- `results/figures/fig2_fixed_map_speedup.pdf`
-- `results/figures/fig3_block_width_cache_sweep.png`
-- `results/figures/fig3_block_width_cache_sweep.pdf`
-
-Fig. 3 now uses block width `w` in the axis label and peak annotation.
-
-## Not Done In This Snapshot
-
-- The formal h=10 one-hour run did not obtain a high-confidence counted
-  `1e-7` point; the lowest counted h=10 point is `6.19e-6`, and the lower
-  `14.0 dB` value is a zero-error upper bound.
-- No OFEC source-tree file was modified.
+The Fig. 2 first run is not adopted because it used the old width source.
 
 ## Verification
 
-Fresh verification commands:
+Round31 smoke test:
 
-```powershell
-python -B -m pytest tests -q
-python -B -m pytest -q
-```
+- `python -B -m pytest tests/test_round31_artifacts.py -q`
+- result: `4 passed, 1 warning`
 
-Results:
+Full test suite:
 
-- external package: `8 passed, 1 warning`
-- `fec_linear_backend`: `310 passed, 1 skipped, 27 warnings`
+- `python -B -m pytest tests -q`
+- result: `314 passed, 1 skipped, 27 warnings`
