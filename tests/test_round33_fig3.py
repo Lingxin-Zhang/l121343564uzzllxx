@@ -50,6 +50,30 @@ def test_streaming_chunk_plan_counts_all_words():
     assert sum(chunks) == 2500
 
 
+def test_incremental_csv_writer_flushes_completed_rows(tmp_path: Path):
+    from benchmarks.bench_round33_fig3_dense_batch import IncrementalCsvWriter
+
+    csv_path = tmp_path / "rows.csv"
+    writer = IncrementalCsvWriter(csv_path)
+
+    writer.write({"batch_size": 10, "throughput_Mbit_s": 1.0})
+    observed = pd.read_csv(csv_path)
+    writer.close()
+
+    assert observed.to_dict("records") == [{"batch_size": 10, "throughput_Mbit_s": 1.0}]
+
+
+def test_incremental_csv_writer_can_create_empty_file(tmp_path: Path):
+    from benchmarks.bench_round33_fig3_dense_batch import IncrementalCsvWriter
+
+    csv_path = tmp_path / "empty.csv"
+    writer = IncrementalCsvWriter(csv_path)
+    writer.ensure_exists()
+
+    assert csv_path.exists()
+    assert csv_path.read_text(encoding="utf-8") == ""
+
+
 def test_round33_summary_identifies_bulk_and_streaming_speedups(tmp_path: Path):
     from scripts.plot_round33_fig3_dense_batch import summarize_speedups
 

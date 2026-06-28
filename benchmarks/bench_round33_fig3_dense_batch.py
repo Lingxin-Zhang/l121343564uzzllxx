@@ -33,6 +33,37 @@ BACKEND_DIRECT = "PackedBatchGF2Kernel.apply_many"
 BACKEND_LUT = "PackedBlockLUTKernel.apply_many_packed"
 
 
+class IncrementalCsvWriter:
+    """Write benchmark rows as soon as each point finishes."""
+
+    def __init__(self, path: Path):
+        self.path = path
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._file = None
+        self._writer: csv.DictWriter | None = None
+        self._wrote = False
+
+    def write(self, row: dict[str, Any]) -> None:
+        if self._writer is None:
+            self._file = self.path.open("w", newline="", encoding="utf-8")
+            self._writer = csv.DictWriter(self._file, fieldnames=list(row.keys()))
+            self._writer.writeheader()
+        self._writer.writerow(row)
+        self._wrote = True
+        assert self._file is not None
+        self._file.flush()
+
+    def close(self) -> None:
+        if self._file is not None:
+            self._file.close()
+            self._file = None
+            self._writer = None
+
+    def ensure_exists(self) -> None:
+        if not self._wrote:
+            self.path.write_text("", encoding="utf-8")
+
+
 def make_stream_chunks(total_rows: int, chunk_rows: int) -> tuple[int, ...]:
     total_rows = int(total_rows)
     chunk_rows = int(chunk_rows)
@@ -312,10 +343,54 @@ def run_round33_rows(
     cpu_core: int | None,
     include_stage: bool,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    affinity_status = _try_set_affinity(cpu_core)
-    specs = build_round31_matrix_specs(profiles)
     rows: list[dict[str, Any]] = []
     stage_rows: list[dict[str, Any]] = []
+    for kind, row in iter_round33_rows(
+        profiles=profiles,
+        tasks=tasks,
+        batch_sizes=batch_sizes,
+        modes=modes,
+        round_start=round_start,
+        rounds=rounds,
+        repeats=repeats,
+        warmups=warmups,
+        stage_repeats=stage_repeats,
+        stage_warmups=stage_warmups,
+        block_width=block_width,
+        stream_chunk_size=stream_chunk_size,
+        max_bulk_rows=max_bulk_rows,
+        seed=seed,
+        cpu_core=cpu_core,
+        include_stage=include_stage,
+    ):
+        if kind == "throughput":
+            rows.append(row)
+        else:
+            stage_rows.append(row)
+    return rows, stage_rows
+
+
+def iter_round33_rows(
+    *,
+    profiles: tuple[str, ...],
+    tasks: tuple[str, ...],
+    batch_sizes: tuple[int, ...],
+    modes: tuple[str, ...],
+    round_start: int,
+    rounds: int,
+    repeats: int,
+    warmups: int,
+    stage_repeats: int,
+    stage_warmups: int,
+    block_width: int,
+    stream_chunk_size: int,
+    max_bulk_rows: int,
+    seed: int,
+    cpu_core: int | None,
+    include_stage: bool,
+):
+    affinity_status = _try_set_affinity(cpu_core)
+    specs = build_round31_matrix_specs(profiles)
     for round_offset in range(int(rounds)):
         round_index = int(round_start) + round_offset
         rng = np.random.default_rng(int(seed) + round_index)
@@ -325,7 +400,8 @@ def run_round33_rows(
                 for batch_size in batch_sizes:
                     for mode in modes:
                         for backend in (BACKEND_DIRECT, BACKEND_LUT):
-                            rows.append(
+                            yield (
+                                "throughput",
                                 _row_for_backend(
                                     spec=spec,
                                     task=task,
@@ -342,10 +418,11 @@ def run_round33_rows(
                                     seed=int(seed),
                                     rng=rng,
                                     affinity_status=affinity_status,
-                                )
+                                ),
                             )
                     if include_stage:
-                        stage_rows.append(
+                        yield (
+                            "stage",
                             _stage_row(
                                 spec=spec,
                                 task=task,
@@ -356,9 +433,8 @@ def run_round33_rows(
                                 repeats=int(stage_repeats),
                                 warmups=int(stage_warmups),
                                 rng=rng,
-                            )
+                            ),
                         )
-    return rows, stage_rows
 
 
 def write_rows(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -410,6 +486,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--cpu-core", type=int, default=None)
     parser.add_argument("--no-stage", action="store_true")
+    parser.add_argument("--buffered-write", action="store_true", help="Collect rows in memory and write CSVs at the end.")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--stage-output", type=Path, default=DEFAULT_STAGE_OUTPUT)
     return parser
@@ -418,26 +495,42 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_arg_parser().parse_args(argv)
     ensure_result_dirs()
-    rows, stage_rows = run_round33_rows(
-        profiles=_parse_profile_keys(args.profiles),
-        tasks=_parse_tasks(args.tasks),
-        batch_sizes=_parse_int_list(args.batch_sizes),
-        modes=_parse_modes(args.modes),
-        round_start=args.round_start,
-        rounds=args.rounds,
-        repeats=args.repeats,
-        warmups=args.warmups,
-        stage_repeats=args.stage_repeats,
-        stage_warmups=args.stage_warmups,
-        block_width=args.block_width,
-        stream_chunk_size=args.stream_chunk_size,
-        max_bulk_rows=args.max_bulk_rows,
-        seed=args.seed,
-        cpu_core=args.cpu_core,
-        include_stage=not args.no_stage,
-    )
-    write_rows(args.output, rows)
-    write_rows(args.stage_output, stage_rows)
+    parsed = {
+        "profiles": _parse_profile_keys(args.profiles),
+        "tasks": _parse_tasks(args.tasks),
+        "batch_sizes": _parse_int_list(args.batch_sizes),
+        "modes": _parse_modes(args.modes),
+        "round_start": args.round_start,
+        "rounds": args.rounds,
+        "repeats": args.repeats,
+        "warmups": args.warmups,
+        "stage_repeats": args.stage_repeats,
+        "stage_warmups": args.stage_warmups,
+        "block_width": args.block_width,
+        "stream_chunk_size": args.stream_chunk_size,
+        "max_bulk_rows": args.max_bulk_rows,
+        "seed": args.seed,
+        "cpu_core": args.cpu_core,
+        "include_stage": not args.no_stage,
+    }
+    if args.buffered_write:
+        rows, stage_rows = run_round33_rows(**parsed)
+        write_rows(args.output, rows)
+        write_rows(args.stage_output, stage_rows)
+    else:
+        throughput_writer = IncrementalCsvWriter(args.output)
+        stage_writer = IncrementalCsvWriter(args.stage_output)
+        try:
+            for kind, row in iter_round33_rows(**parsed):
+                if kind == "throughput":
+                    throughput_writer.write(row)
+                else:
+                    stage_writer.write(row)
+        finally:
+            throughput_writer.close()
+            stage_writer.close()
+            throughput_writer.ensure_exists()
+            stage_writer.ensure_exists()
     print(f"wrote {args.output}")
     print(f"wrote {args.stage_output}")
     return 0
