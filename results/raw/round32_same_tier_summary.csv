@@ -1,0 +1,5 @@
+profile,measurement_mode,best_w,best_Mbit_s,monotone_non_decreasing,timed_rows,skipped_rows
+bch_255_231_r24,cache_flushed_dram_proxy,20,10.964370113201545,False,20,0
+bch_255_231_r24,natural,14,708.1366164845839,False,20,0
+bch_255_239_r16,cache_flushed_dram_proxy,13,10.981770245213298,False,21,0
+bch_255_239_r16,natural,14,717.1987635712838,False,21,0
