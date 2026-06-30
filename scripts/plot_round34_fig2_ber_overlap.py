@@ -57,15 +57,15 @@ def plot(reference: pd.DataFrame, block_lut: pd.DataFrame, output_dir: Path) -> 
     plt.rcParams.update(
         {
             "font.family": "DejaVu Sans",
-            "font.size": 10,
-            "axes.labelsize": 11,
-            "xtick.labelsize": 9,
-            "ytick.labelsize": 9,
-            "legend.fontsize": 9,
+            "font.size": 14,
+            "axes.labelsize": 18,
+            "xtick.labelsize": 15,
+            "ytick.labelsize": 15,
+            "legend.fontsize": 15,
             "axes.unicode_minus": False,
         }
     )
-    fig, ax = plt.subplots(figsize=(5.7, 3.8))
+    fig, ax = plt.subplots(figsize=(8.0, 5.2))
     ax.semilogy(
         reference["snr_db"],
         reference["post_fec_ber"],
@@ -77,7 +77,7 @@ def plot(reference: pd.DataFrame, block_lut: pd.DataFrame, output_dir: Path) -> 
         markeredgecolor="white",
         markeredgewidth=0.9,
         solid_capstyle="round",
-        label="reference syndrome backend",
+        label="bit-parallel GF(2)",
         zorder=2,
     )
     ax.semilogy(
